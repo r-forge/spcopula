@@ -2,42 +2,23 @@
 \alias{spCopula-package}
 \alias{spCopula}
 \docType{package}
-\title{
-What the package does (short line)
-~~ package title ~~
-}
-\description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
-}
+\title{spatial copula}
+\description{This package connects the functionality of copulas with the spatial (and sptaio-temporal) domain. It heavily relies on the packages \code{copula} and \code{sp}.}
 \details{
 \tabular{ll}{
 Package: \tab spCopula\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2011-03-01\cr
-License: \tab What license is it under?\cr
+Version: \tab 0.1-1\cr
+Date: \tab 2011-03-22\cr
+License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
-~~ An overview of how to use the package, including the most important ~~
-~~ functions ~~
-}
-\author{
-Who wrote it
 
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
 }
-\references{
-~~ Literature or other references for background information ~~
+\author{Benedikt Gräler \email{ben.graeler@uni-muenster.de}}
+\references{Some information can be found on my personal homepage \URL{http:\\ifgi.uni-muenster.de\graeler} and in the source code. (Will be extended)
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~
-~~ the R documentation directory ~~
 \keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
-\examples{
-~~ simple examples of the most important functions ~~
-}
+\usage{Currently there are two new copula classes (asCopula, cqsCopula) that are in many ways compatible with the classes provided in the copula package. A set of partial derivatives accesable through dducopual or ddvcopula with syntax similair to dcopula. Leading to the vine-copula approach, classes and functions on neighbourhoods are present.}
+\seealso{ }
+\examples{ }
