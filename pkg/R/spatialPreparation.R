@@ -122,16 +122,16 @@ return(neighbourhood(lData, dists, SpatialPoints(spData), index))
 }
 
 ## testing ## 
-data(meuse)
-coordinates(meuse) <- ~x+y
-str(SpatialPoints(meuse))
-
-neighbourSet <- getNeighbours(meuse,size=5)
-
-str(neighbourSet@index)
-
-library(lattice)
-spplot(neighbourSet,"zinc",col.regions=bpy.colors())
+# data(meuse)
+# coordinates(meuse) <- ~x+y
+# str(SpatialPoints(meuse))
+# 
+# neighbourSet <- getNeighbours(meuse,size=5)
+# 
+# str(neighbourSet@index)
+# 
+# library(lattice)
+# spplot(neighbourSet,"zinc",col.regions=bpy.colors())
 
 # 
 # as.data.frame(array(1:18,dim=c(2,3,3)))

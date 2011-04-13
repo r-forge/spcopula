@@ -7,7 +7,7 @@ export(fitCopula)
 export(neighbourhood)
 exportClasses(asCopula, cqsCopula, neighbourhood)
 export(dducopula,ddvcopula)
-export(setNeighbourLim)
+export(setSizeLim)
 export(getNeighbours)
 
 ## exportClasses(mvdc) ## S4 methods
