@@ -1,3 +1,23 @@
+#################################################################################
+##
+##   R package spcopula by Benedikt Gräler Copyright (C) 2011
+##
+##   This file is part of the R package spcopula.
+##
+##   The R package spcopula is free software: you can redistribute it and/or modify
+##   it under the terms of the GNU General Public License as published by
+##   the Free Software Foundation, either version 3 of the License, or
+##   (at your option) any later version.
+##
+##   The R package spcopula is distributed in the hope that it will be useful,
+##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##   GNU General Public License for more details.
+##
+##   You should have received a copy of the GNU General Public License
+##   along with the R package copula. If not, see <http://www.gnu.org/licenses/>.
+##
+#################################################################################
 ## some additional bivariate copulas extending the set of copulas in the package copula
 
 ####
@@ -49,6 +69,10 @@ ddu <- function(copula, pair){
 
 setGeneric("dducopula", function(copula, pair) standardGeneric("dducopula"))
 setGeneric("ddvcopula", function(copula, pair) standardGeneric("ddvcopula"))
+
+# inverse partial derivatives 
+setGeneric("invdducopula", function(copula, u) standardGeneric("invdducopula"))
+setGeneric("invddvcopula", function(copula, u) standardGeneric("invddvcopula"))
 
 ## 
 ## the spatial copula

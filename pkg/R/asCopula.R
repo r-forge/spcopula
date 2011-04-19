@@ -1,15 +1,15 @@
 #################################################################################
 ##
-##   R package spCopula by Benedikt Gräler Copyright (C) 2011
+##   R package spcopula by Benedikt Gräler Copyright (C) 2011
 ##
-##   This file is part of the R package spCopula.
+##   This file is part of the R package spcopula.
 ##
-##   The R package copula is free software: you can redistribute it and/or modify
+##   The R package spcopula is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 3 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package copula is distributed in the hope that it will be useful,
+##   The R package spcopula is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -133,6 +133,30 @@ function (copula, u)
     }
     return(res)
 }
+
+setMethod("invdducopula", signature("asCopula"),invdduASC2)
+
+## inverse partial derivative ddv
+invddvASC2 <-
+function (copula, u) 
+{
+    a <- copula@parameters[1]
+    b <- copula@parameters[2]
+    if (!is.matrix(u)) 
+        u <- matrix(u, ncol = 2)
+    u1 <- u[, 1]
+    u2 <- u[, 2]
+    res <- NULL
+    for (i in 1:nrow(u)) {
+        res <- rbind(res, optimize(function(x) (dduASC2(copula, 
+            cbind(rep(u[i, 2], length(x)), x)) - u[i, 1])^2, 
+            interval = c(0, 1))$minimum)
+    }
+    return(res)
+}
+
+setMethod("invddvcopula", signature("asCopula"),invddvASC2)
+
 
 ## random number generator
 rASC2 <-
