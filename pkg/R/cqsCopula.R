@@ -140,7 +140,7 @@ function (copula, u)
     return(res)
 }
 
-setMethod("invddvcopula", signature("cqsCopula"),invddvCQsec)
+setMethod("invddvcopula", signature("cqsCopula"),invddvCQSec)
 
 ## random generator
 
