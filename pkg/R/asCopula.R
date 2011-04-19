@@ -104,9 +104,7 @@ function (copula, pair)
     u1 <- pair[, 1]
     u2 <- pair[, 2]
 
-    return(u1 * (-a * (u1 - 1)^2 * u2 * (3 * u2 - 2) + b * (u1 - 
-        1) * (3 * (u1 - 1) * u2^2 - 2 * (u1 - 2) * u2 - 1) + 
-        1))
+    return(u1 * (-a * (u1 - 1)^2 * u2 * (3 * u2 - 2) + b * (u1 - 1) * (3 * (u1 - 1) * u2^2 - 2 * (u1 - 2) * u2 - 1) + 1))
 }
 
 setMethod("ddvcopula", signature("asCopula"),ddvASC2)
@@ -117,18 +115,14 @@ setMethod("ddvcopula", signature("asCopula"),ddvASC2)
 ## inverse partial derivative 
 
 invdduASC2 <-
-function (copula, u) 
+function (copula, u, y) 
 {
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(u)) 
-        u <- matrix(u, ncol = 2)
-    u1 <- u[, 1]
-    u2 <- u[, 2]
+    if (length(u) != length(y)) 
+        stop("Length of u and y differ!")
     res <- NULL
-    for (i in 1:nrow(u)) {
+    for (i in 1:length(u)) {
         res <- rbind(res, optimize(function(x) (dduASC2(copula, 
-            cbind(rep(u[i, 1], length(x)), x)) - u[i, 2])^2, 
+            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
             interval = c(0, 1))$minimum)
     }
     return(res)
@@ -138,18 +132,14 @@ setMethod("invdducopula", signature("asCopula"),invdduASC2)
 
 ## inverse partial derivative ddv
 invddvASC2 <-
-function (copula, u) 
+function (copula, v, y) 
 {
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
     if (!is.matrix(u)) 
         u <- matrix(u, ncol = 2)
-    u1 <- u[, 1]
-    u2 <- u[, 2]
     res <- NULL
     for (i in 1:nrow(u)) {
         res <- rbind(res, optimize(function(x) (dduASC2(copula, 
-            cbind(rep(u[i, 2], length(x)), x)) - u[i, 1])^2, 
+            cbind(rep(v[i], length(x)), x)) - y[i])^2, 
             interval = c(0, 1))$minimum)
     }
     return(res)

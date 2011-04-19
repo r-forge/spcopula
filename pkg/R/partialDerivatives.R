@@ -71,6 +71,8 @@ setMethod("ddvcopula", signature("indepCopula"),ddvIndep)
 ## Clayton Copula
 ##################
 
+## partial derivative and its inverse for u
+
 dduClayton <- function(copula, pair){
   rho <- copula@parameters
   if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
@@ -78,10 +80,21 @@ dduClayton <- function(copula, pair){
   u <- pair[,1]
   v <- pair[,2]
 
-  pmax(u^(-rho)+v^(-rho)-1,0)^((-1-rho)/rho)*u^(-rho-1)
+  pmax(u^(-rho)+v^(-rho)-1,0)^((-1-rho)/rho)*u^(-rho-1) # (u^(-rho)+v^(-rho)-1)^((-1-rho)/rho) * u^(-rho-1)
 }
 
-setMethod("dducopula", signature("claytonCopula"),dduClayton)
+setMethod("dducopula", signature("claytonCopula"), dduClayton)
+
+invdduClayton <- function(copula, u, y){
+    rho <- copula@parameters[1]
+    if (length(u)!=length(y)) 
+        stop("Length of u and y differ!")
+    return(((y^(rho/(-1-rho))-1)*u^(-rho)+1)^(-1/rho)) # by DL
+}
+
+setMethod("invdducopula", signature("claytonCopula"), invdduClayton)
+
+## partial derivative and its inverse for v 
 
 ddvClayton <- function(copula, pair){
   rho <- copula@parameters
@@ -94,6 +107,15 @@ ddvClayton <- function(copula, pair){
 }
 
 setMethod("ddvcopula", signature("claytonCopula"),ddvClayton)
+
+invddvClayton <- function(copula, v, y){
+    rho <- copula@parameters[1]
+    if (length(v)!=length(y)) 
+        stop("Length of v and y differ!")
+    return(((y^(rho/(-1-rho))-1)*v^(-rho)+1)^(-1/rho))
+}
+
+setMethod("invddvcopula", signature("claytonCopula"), invddvClayton)
 
 ## Gumbel Copula 
 #################
@@ -126,6 +148,8 @@ setMethod("ddvcopula", signature("gumbelCopula"),ddvGumbel)
 ## Frank Copula 
 ################
 
+## partial derivative and its inverse for u 
+
 dduFrank <- function(copula, pair){
   rho <- copula@parameters
   if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
@@ -138,6 +162,17 @@ dduFrank <- function(copula, pair){
 
 setMethod("dducopula", signature("frankCopula"),dduFrank)
 
+invdduClayton <- function(copula, u, y){
+    rho <- copula@parameters[1]
+    if (length(u)!=length(y)) 
+        stop("Length of u and y differ!")
+    return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*u)-y*(exp(-rho*u)-1)) +1) ) # by DL
+}
+
+setMethod("invdducopula", signature("claytonCopula"), invdduClayton)
+
+## partial derivative and its inverse for v 
+
 ddvFrank <- function(copula, pair){
   rho <- copula@parameters
   if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
@@ -149,3 +184,12 @@ ddvFrank <- function(copula, pair){
 }
 
 setMethod("ddvcopula", signature("frankCopula"),ddvFrank)
+
+invddvClayton <- function(copula, v, y){
+    rho <- copula@parameters[1]
+    if (length(v)!=length(y)) 
+        stop("Length of v and y differ!")
+    return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*v)-y*(exp(-rho*v)-1)) +1) )
+}
+
+setMethod("invddvcopula", signature("claytonCopula"), invddvClayton)

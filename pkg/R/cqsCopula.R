@@ -102,18 +102,14 @@ setMethod("ddvcopula", signature("cqsCopula"),ddvCQSec)
 ## inverse partial derivative 
 
 invdduCQSec <-
-function (copula, u) 
+function (copula, u, y) 
 {
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(u)) 
-        u <- matrix(u, ncol = 2)
-    u1 <- u[, 1]
-    u2 <- u[, 2]
+    if (length(u)!=length(y)) 
+        stop("Length of u and y differ!")
     res <- NULL
-    for (i in 1:nrow(u)) {
-        res <- rbind(res, optimize(function(x) (dduCQSec(copula, 
-            cbind(rep(u[i, 1], length(x)), x)) - u[i, 2])^2, 
+    for (i in 1:length(u)) {
+        res <- rbind(res, optimize(function(x) (ddvCQSec(copula, 
+            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
             interval = c(0, 1))$minimum)
     }
     return(res)
@@ -123,18 +119,14 @@ setMethod("invdducopula", signature("cqsCopula"),invdduCQSec)
 
 ## inverse partial derivative ddv
 invddvCQSec <-
-function (copula, u) 
+function (copula, v, y) 
 {
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(u)) 
-        u <- matrix(u, ncol = 2)
-    u1 <- u[, 1]
-    u2 <- u[, 2]
+    if (length(v)!=length(y)) 
+        stop("Length of v and y differ!")
     res <- NULL
-    for (i in 1:nrow(u)) {
+    for (i in 1:length(v)) {
         res <- rbind(res, optimize(function(x) (ddvCQSec(copula, 
-            cbind(rep(u[i, 2], length(x)), x)) - u[i, 1])^2, 
+            cbind(rep(v[i], length(x)), x)) - y[i])^2, 
             interval = c(0, 1))$minimum)
     }
     return(res)

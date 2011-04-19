@@ -63,16 +63,12 @@ setClass("cqsCopula",
 ####
 ## partial derivatives
 
-ddu <- function(copula, pair){
-
-}
-
 setGeneric("dducopula", function(copula, pair) standardGeneric("dducopula"))
 setGeneric("ddvcopula", function(copula, pair) standardGeneric("ddvcopula"))
 
-# inverse partial derivatives 
-setGeneric("invdducopula", function(copula, u) standardGeneric("invdducopula"))
-setGeneric("invddvcopula", function(copula, u) standardGeneric("invddvcopula"))
+## inverse partial derivatives 
+setGeneric("invdducopula", function(copula, u, y) standardGeneric("invdducopula"))
+setGeneric("invddvcopula", function(copula, v, y) standardGeneric("invddvcopula"))
 
 ## 
 ## the spatial copula
