@@ -1,4 +1,4 @@
-﻿#################################################################################
+#################################################################################
 ##
 ##   R package spcopula by Benedikt Gräler Copyright (C) 2011
 ##
@@ -169,7 +169,7 @@ invdduFrank <- function(copula, u, y){
     return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*u)-y*(exp(-rho*u)-1)) +1) ) # by DL
 }
 
-setMethod("invdducopula", signature("frankCopula"), invdduFrank)
+setMethod("invdducopula", signature("claytonFrank"), invdduFrank)
 
 ## partial derivative and its inverse for v 
 
