@@ -1,4 +1,4 @@
-#################################################################################
+﻿#################################################################################
 ##
 ##   R package spcopula by Benedikt Gräler Copyright (C) 2011
 ##
@@ -162,14 +162,14 @@ dduFrank <- function(copula, pair){
 
 setMethod("dducopula", signature("frankCopula"),dduFrank)
 
-invdduClayton <- function(copula, u, y){
+invdduFrank <- function(copula, u, y){
     rho <- copula@parameters[1]
     if (length(u)!=length(y)) 
         stop("Length of u and y differ!")
     return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*u)-y*(exp(-rho*u)-1)) +1) ) # by DL
 }
 
-setMethod("invdducopula", signature("claytonCopula"), invdduClayton)
+setMethod("invdducopula", signature("frankCopula"), invdduFrank)
 
 ## partial derivative and its inverse for v 
 
@@ -185,11 +185,11 @@ ddvFrank <- function(copula, pair){
 
 setMethod("ddvcopula", signature("frankCopula"),ddvFrank)
 
-invddvClayton <- function(copula, v, y){
+invddvFrank <- function(copula, v, y){
     rho <- copula@parameters[1]
     if (length(v)!=length(y)) 
         stop("Length of v and y differ!")
     return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*v)-y*(exp(-rho*v)-1)) +1) )
 }
 
-setMethod("invddvcopula", signature("claytonCopula"), invddvClayton)
+setMethod("invddvcopula", signature("frankCopula"), invddvFrank)
