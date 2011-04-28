@@ -15,7 +15,7 @@
 ##   GNU General Public License for more details.
 ##
 ##   You should have received a copy of the GNU General Public License
-##   along with the R package copula. If not, see <http://www.gnu.org/licenses/>.
+##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
 ##
 #################################################################################
 
@@ -87,7 +87,7 @@ setMethod("show", signature("spCopula"), showCopula)
 
 pSpCopula <- function (copula, u) {
 if (!is.matrix(u)) pair <- matrix(u,ncol=3)
-if (ncol(u)!=3) stop("point pairs need top be provided with their separating 
+if (ncol(u)!=3) stop("point pairs need to be provided with their separating 
 		  distance")
 
 # ascending sorted pairs allow for easy evaluation
@@ -163,7 +163,7 @@ setMethod("pcopula", signature("spCopula"), pSpCopula)
 # the non dynamic version: without depFun
 dSpCopula <- function (copula, u) {
 if (!is.matrix(u)) pair <- matrix(u,ncol=3)
-if (ncol(u)!=3) stop("point pairs need top be provided with their separating 
+if (ncol(u)!=3) stop("point pairs need to be provided with their separating 
 		  distance")
 
 # ascending sorted pairs allow for easy evaluation
@@ -321,7 +321,7 @@ setMethod("dducopula", signature("spCopula"), dduSpCopula)
 
 ddvSpCopula <- function (copula, pair) {
 if (!is.matrix(pair)) pair <- matrix(pair,ncol=3)
-if (ncol(pair)!=3) stop("point pairs need top be provided with their separating 
+if (ncol(pair)!=3) stop("point pairs need to be provided with their separating 
 		  distance")
 
 # ascending sorted pairs allow for easy evaluation

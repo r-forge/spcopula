@@ -15,7 +15,7 @@
 ##   GNU General Public License for more details.
 ##
 ##   You should have received a copy of the GNU General Public License
-##   along with the R package copula. If not, see <http://www.gnu.org/licenses/>.
+##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
 ##
 #################################################################################
 ## some additional bivariate copulas extending the set of copulas in the package copula
@@ -67,8 +67,34 @@ setGeneric("dducopula", function(copula, pair) standardGeneric("dducopula"))
 setGeneric("ddvcopula", function(copula, pair) standardGeneric("ddvcopula"))
 
 ## inverse partial derivatives 
-setGeneric("invdducopula", function(copula, u, y) standardGeneric("invdducopula"))
-setGeneric("invddvcopula", function(copula, v, y) standardGeneric("invddvcopula"))
+# numerical standard function
+invdduCop <- function(copula, u, y) {
+    if (length(u) != length(y)) 
+        stop("Length of u and y differ!")
+    res <- NULL
+    for (i in 1:length(u)) {
+        res <- rbind(res, optimize(function(x) (dducopula(copula, 
+            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
+            interval = c(0, 1))$minimum)
+    }
+    return(res)
+}
+
+setGeneric("invdducopula", invdduCop)
+
+invddvCop <- function(copula, v, y) {
+    if (length(v) != length(y)) 
+        stop("Length of v and y differ!")
+    res <- NULL
+    for (i in 1:length(v)) {
+        res <- rbind(res, optimize(function(x) (ddvcopula(copula, 
+            cbind(x, rep(v[i], length(x)))) - y[i])^2, 
+            interval = c(0, 1))$minimum)
+    }
+    return(res)
+}
+
+setGeneric("invddvcopula", invddvCop)
 
 ## 
 ## the spatial copula

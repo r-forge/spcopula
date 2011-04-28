@@ -15,7 +15,7 @@
 ##   GNU General Public License for more details.
 ##
 ##   You should have received a copy of the GNU General Public License
-##   along with the R package copula. If not, see <http://www.gnu.org/licenses/>.
+##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
 ##
 #################################################################################
 
@@ -126,7 +126,7 @@ function (copula, v, y)
     res <- NULL
     for (i in 1:length(v)) {
         res <- rbind(res, optimize(function(x) (ddvCQSec(copula, 
-            cbind(rep(v[i], length(x)), x)) - y[i])^2, 
+            cbind(x, rep(v[i], length(x)))) - y[i])^2, 
             interval = c(0, 1))$minimum)
     }
     return(res)

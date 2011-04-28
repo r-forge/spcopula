@@ -15,17 +15,19 @@
 ##   GNU General Public License for more details.
 ##
 ##   You should have received a copy of the GNU General Public License
-##   along with the R package copula. If not, see <http://www.gnu.org/licenses/>.
+##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
 ##
 #################################################################################
 
-## partial derivatives
-#######################
-# of some copulas from the copula package
+# partial derivatives and their inverse of some copulas from the copula package
 # new defined copulas store their partial derivative separately
 
-## Normal Copula
-#################
+###################
+## Normal Copula ##
+###################
+
+## partial derivative d/du
+##########################
 
 dduNorm <- function(copula, pair){
   rho <- copula@parameters
@@ -39,6 +41,19 @@ dduNorm <- function(copula, pair){
 
 setMethod("dducopula", signature("normalCopula"),dduNorm)
 
+## inverse of the partial derivative d/du
+#########################################
+
+invdduNorm <- function(copula, u, y){
+  rho <- copula@parameters
+  return(qnorm(y,mean=rho*u,sd=1-rho^2))
+}
+
+setMethod("invdducopula", signature("normalCopula"), invdduNorm)
+
+## partial derivative d/dv
+##########################
+
 ddvNorm <- function(copula, pair){
   rho <- copula@parameters
   if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
@@ -51,8 +66,22 @@ ddvNorm <- function(copula, pair){
 
 setMethod("ddvcopula", signature("normalCopula"),ddvNorm)
 
-## independent copula
-######################
+## inverse of the partial derivative d/dv
+#########################################
+
+invddvNorm <- function(copula, v, y){
+  rho <- copula@parameters
+  return(qnorm(y,mean=rho*v,sd=1-rho^2))
+}
+
+setMethod("invddvcopula", signature("normalCopula"), invddvNorm)
+
+########################
+## independent copula ##
+########################
+
+## partial derivative d/du
+##########################
 
 dduIndep <- function(copula, pair){
   if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
@@ -61,6 +90,18 @@ dduIndep <- function(copula, pair){
 
 setMethod("dducopula", signature("indepCopula"),dduIndep)
 
+## inverse of the partial derivative d/du
+#########################################
+
+invdduIndep <- function(copula, u, y){
+  return(y)
+}
+
+setMethod("invdducopula", signature("indepCopula"), invdduIndep)
+
+## partial derivative d/dv
+##########################
+
 ddvIndep <- function(copula, pair){
   if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
   return(pair[,1])
@@ -68,10 +109,22 @@ ddvIndep <- function(copula, pair){
 
 setMethod("ddvcopula", signature("indepCopula"),ddvIndep)
 
-## Clayton Copula
-##################
+## inverse of the partial derivative d/dv
+#########################################
 
-## partial derivative and its inverse for u
+invddvIndep <- function(copula, v, y){
+  return(y)
+}
+
+setMethod("invddvcopula", signature("indepCopula"), invddvIndep)
+
+
+####################
+## Clayton Copula ##
+####################
+
+## partial derivative d/du
+##########################
 
 dduClayton <- function(copula, pair){
   rho <- copula@parameters
@@ -85,6 +138,9 @@ dduClayton <- function(copula, pair){
 
 setMethod("dducopula", signature("claytonCopula"), dduClayton)
 
+## inverse of the partial derivative d/du
+#########################################
+
 invdduClayton <- function(copula, u, y){
     rho <- copula@parameters[1]
     if (length(u)!=length(y)) 
@@ -94,7 +150,8 @@ invdduClayton <- function(copula, u, y){
 
 setMethod("invdducopula", signature("claytonCopula"), invdduClayton)
 
-## partial derivative and its inverse for v 
+## partial derivative d/dv
+##########################
 
 ddvClayton <- function(copula, pair){
   rho <- copula@parameters
@@ -108,6 +165,9 @@ ddvClayton <- function(copula, pair){
 
 setMethod("ddvcopula", signature("claytonCopula"),ddvClayton)
 
+## inverse of the partial derivative d/dv
+#########################################
+
 invddvClayton <- function(copula, v, y){
     rho <- copula@parameters[1]
     if (length(v)!=length(y)) 
@@ -117,8 +177,13 @@ invddvClayton <- function(copula, v, y){
 
 setMethod("invddvcopula", signature("claytonCopula"), invddvClayton)
 
-## Gumbel Copula 
-#################
+
+###################
+## Gumbel Copula ##
+###################
+
+## partial derivative d/du
+##########################
 
 dduGumbel <- function(copula, pair){
   rho <- copula@parameters
@@ -131,6 +196,9 @@ dduGumbel <- function(copula, pair){
 }
 
 setMethod("dducopula", signature("gumbelCopula"),dduGumbel)
+
+## partial derivative d/dv
+##########################
 
 ddvGumbel <- function(copula, pair){
   rho <- copula@parameters
@@ -145,10 +213,12 @@ ddvGumbel <- function(copula, pair){
 setMethod("ddvcopula", signature("gumbelCopula"),ddvGumbel)
 
 
-## Frank Copula 
-################
+##################
+## Frank Copula ##
+##################
 
-## partial derivative and its inverse for u 
+## partial derivative d/du
+##########################
 
 dduFrank <- function(copula, pair){
   rho <- copula@parameters
@@ -162,6 +232,9 @@ dduFrank <- function(copula, pair){
 
 setMethod("dducopula", signature("frankCopula"),dduFrank)
 
+## inverse of the partial derivative d/du
+#########################################
+
 invdduFrank <- function(copula, u, y){
     rho <- copula@parameters[1]
     if (length(u)!=length(y)) 
@@ -171,7 +244,8 @@ invdduFrank <- function(copula, u, y){
 
 setMethod("invdducopula", signature("claytonFrank"), invdduFrank)
 
-## partial derivative and its inverse for v 
+## partial derivative d/dv
+##########################
 
 ddvFrank <- function(copula, pair){
   rho <- copula@parameters
@@ -184,6 +258,9 @@ ddvFrank <- function(copula, pair){
 }
 
 setMethod("ddvcopula", signature("frankCopula"),ddvFrank)
+
+## inverse of the partial derivative d/dv
+#########################################
 
 invddvFrank <- function(copula, v, y){
     rho <- copula@parameters[1]
