@@ -13,7 +13,7 @@ URL: ifgi.uni-muenster.de/graeler
 Collate:
   Classes.R 
   spcopula.R 
-  asCopula.R 
-  cqsCopula.R 
+  cqsCopula.R
+  asCopula.R  
   partialDerivatives.R 
   spatialPreparation.R

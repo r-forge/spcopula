@@ -64,7 +64,47 @@ return(u1*u2*(1- b*(1-u1)*(1-u2) + (b-a)*(1-u2)^2*(1-u1)^2))
 setMethod("pcopula", signature("cqsCopula"), pCQSec)
 
 ## partial derivatives ##
-## ddu
+
+# solves a*x^3 + b*x^2 + c*x + d = 0
+solveCubicEq <- function(a,b,c,d){
+eps <- .Machine$double.eps
+
+# using the reduced equation z^3 + 3 * p * z + q = 0 with:
+  p <- 3*a*c-b^2
+  q <- 2*b^3-9*a*b*c+27*a^2*d
+  D <- q^2+4*p^3
+
+  z <- matrix(NA,nrow=length(D),ncol=3)
+
+  ind <- abs(D) <= eps
+  if(any(ind)){
+    z[ind,1] <- 0.5*(-4*q[ind])^(1/3)
+    z[ind,2] <- -z[ind,1]
+  }
+
+  ind <- D > eps
+  if(any(ind)){
+    cubeRad <- -4*q[ind]+4*sqrt(D[ind])
+    r1 <- sign(cubeRad)*abs(cubeRad)^(1/3)
+    cubeRad <- -4*q[ind]-4*sqrt(D[ind])
+    r2 <- sign(cubeRad)*abs(cubeRad)^(1/3)
+    z[ind,1] <- 0.5*(r1+r2)
+  }
+
+  ind <- D < eps
+  if(any(ind)){
+    phi <- acos(-q[ind]/(2*sqrt(-p[ind]^3)))
+    triple <- NULL
+    triple <- sqrt(-p[ind])*2*cos(phi/3)
+    triple <- cbind(triple,sqrt(-p[ind])*2*cos((phi+2*pi)/3))
+    triple <- cbind(triple,sqrt(-p[ind])*2*cos((phi+4*pi)/3))
+    z[ind,] <- triple
+  }
+
+return((z-b)/(3*a))
+}
+
+## partial derivative ddu pCQSec
 
 dduCQSec <- function (copula, pair) 
 {
@@ -72,69 +112,101 @@ dduCQSec <- function (copula, pair)
     b <- copula@parameters[2]
     if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
 
-    u1 <- pair[, 1]
-    u2 <- pair[, 2]
+    u <- pair[, 1]
+    v <- pair[, 2]
 
-return( u2*(-a*(u1-1)*(3*u1-1)*(u2-1)^2+b*(u2-1)*(u1*(3*u1*(u2-1)-4*u2+2)+u2)+1) )
+return(v-b*(v-v^2-2*u*v+2*u*v^2)+(b-a)*(v-4*u*v+3*u^2*v-2*v^2+8*u*v^2-6*u^2*v^2+v^3-4*u*v^3+3*u^2*v^3))
 }
 
 setMethod("dducopula", signature("cqsCopula"),dduCQSec)
 
-## ddv
+## inverse partial derivative ddu
 
-ddvCQSec <- function (copula, pair) 
-{
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
-
-    u1 <- pair[, 1]
-    u2 <- pair[, 2]
-
-return( u1*(-a*(u1-1)^2*(u2-1)*(3*u2-1)+b*(u1-1)*(3*(u1-1)*u2^2-4*u1*u2+u1+2*u2)+1) )
-}
-
-setMethod("ddvcopula", signature("cqsCopula"),ddvCQSec)
-
-## random number generater
-# incorporating the inverse of the partial derivative that is solved numerically using optimize
-
-## inverse partial derivative 
-
-invdduCQSec <-
-function (copula, u, y) 
-{
+## inverse partial derivative ddu
+# seems to be accurate (1.4e-05 is the max out of 1000 random CQSec-copulas for 1000 random pairs (u,v) each.)
+invdduCQSec <- function (copula, u, y) {
     if (length(u)!=length(y)) 
         stop("Length of u and y differ!")
-    res <- NULL
-    for (i in 1:length(u)) {
-        res <- rbind(res, optimize(function(x) (ddvCQSec(copula, 
-            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
-            interval = c(0, 1))$minimum)
-    }
-    return(res)
+
+    a <- copula@parameters[1]
+    b <- copula@parameters[2]
+
+# solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+    usq <- u^2
+    c3 <- (b-a)*(1-4*u+3*usq)
+    c2 <- (b-a)*(-2+8*u-6*u^2)-b*(-1+2*u)
+    c1 <- (b-a)*(1-4*u+3*u^2)-b*(1-2*u)+1
+    c0 <- -y
+
+v <- solveCubicEq(c3,c2,c1,c0)
+
+filter <- function(vec){
+  vec <- vec[!is.na(vec)]
+  return(vec[vec >= 0 & vec <= 1])
+}
+
+return(apply(v,1,filter))
 }
 
 setMethod("invdducopula", signature("cqsCopula"),invdduCQSec)
 
+## partial derivative ddv
+
+ddvCQSec <- function (copula, pair) {
+    a <- copula@parameters[1]
+    b <- copula@parameters[2]
+    if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
+
+    u <- pair[, 1]
+    v <- pair[, 2]
+
+return(u-b*(u-2*u*v-u^2+2*u^2*v)+(b-a)*(u-2*u^2+u^3-4*u*v+8*u^2*v-4*u^3*v+3*u*v^2-6*u^2*v^2+3*u^3*v^2))
+}
+
+setMethod("ddvcopula", signature("cqsCopula"),ddvCQSec)
+
 ## inverse partial derivative ddv
-invddvCQSec <-
-function (copula, v, y) 
-{
+# seems to be accurate (1e-05 is the max out of 5000 random CQSec-copulas for 1000 random pairs (u,v) each. Very most are below 10*.Machine$double.eps)
+invddvCQSec <- function (copula, v, y) {
     if (length(v)!=length(y)) 
         stop("Length of v and y differ!")
-    res <- NULL
-    for (i in 1:length(v)) {
-        res <- rbind(res, optimize(function(x) (ddvCQSec(copula, 
-            cbind(x, rep(v[i], length(x)))) - y[i])^2, 
-            interval = c(0, 1))$minimum)
-    }
-    return(res)
+
+    a <- copula@parameters[1]
+    b <- copula@parameters[2]
+
+# solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+    vsq <- v^2
+    c3 <- (b-a)*(1-4*v+3*vsq)
+    c2 <- (b-a)*(-2+8*v-6*vsq)-b*(-1+2*v)
+    c1 <- (b-a)*(1-4*v+3*vsq)-b*(1-2*v)+1
+    c0 <- -y
+
+u <- solveCubicEq(c3,c2,c1,c0)
+
+filter <- function(vec){
+  vec <- vec[!is.na(vec)]
+  return(vec[vec >= 0 & vec <= 1])
 }
+
+return(apply(u,1,filter))
+}
+
+## testing
+test <- NULL
+for(i in 1:100){
+b <- runif(1,-1,1)
+a <- runif(1,limA(b),1)
+vs <- runif(1000)
+ys <- runif(1000)
+us <- invdduCQSec(cqsCopula(c(a,b)),vs,ys)
+test <- c(test,max(abs(dduCQSec(cqsCopula(c(a,b)),cbind(vs,us))-ys)))
+}
+hist(test)
+abline(h=2,col="red")
 
 setMethod("invddvcopula", signature("cqsCopula"),invddvCQSec)
 
-## random generator
+## random number generator
 
 rCQSec <-
 function (copula, n) 
