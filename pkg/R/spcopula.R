@@ -31,7 +31,7 @@
 # distances="numeric"       the linking distances + the range (will be assigned
 #			      to the independent copula)
 # unit="character"          measurement unit of distance
-# depFun="function"         a optinal spatial dependence function providing 
+# depFun="function"         a optional spatial dependence function providing 
 #                             Kendalls tau or Spearman's rho to calib* or exact 
 #                             parameters
 

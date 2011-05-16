@@ -66,8 +66,7 @@ function (copula, u)
         u <- matrix(u, ncol = 2)
     u1 <- u[, 1]
     u2 <- u[, 2]
-    return(u1 * u2 + u1 * u2 * (1 - u1) * (1 - u2) * ((a - b) * 
-        u2 * (1 - u1) + b))
+    return( u1 * u2 + u1 * u2 * (1 - u1) * (1 - u2) * ((a - b) * u2 * (1 - u1) + b) )
 }
 
 setMethod("pcopula", signature("asCopula"), pASC2)
@@ -82,12 +81,10 @@ function (copula, pair)
     b <- copula@parameters[2]
     if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
 
-    u1 <- pair[, 1]
-    u2 <- pair[, 2]
+    u <- pair[, 1]
+    v <- pair[, 2]
 
-    return(u2 * (u2 * (u2 * (u1 * (u1 * (3 * b - 3 * a) + 4 * 
-        a - 4 * b) - a + b) + u1 * (u1 * (3 * a - 3 * b) - 4 * 
-        a + 6 * b) + a - 2 * b) - 2 * b * u1 + b + 1))
+    return(v*(1 + b*(-1 + 2*u)*(-1 + v) - (a - b)*(1 - 4*u + 3*u^2)*(-1 + v)*v))
 }
 
 setMethod("dducopula", signature("asCopula"),dduASC2)
@@ -101,10 +98,10 @@ function (copula, pair)
     b <- copula@parameters[2]
     if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
 
-    u1 <- pair[, 1]
-    u2 <- pair[, 2]
+    u <- pair[, 1]
+    v <- pair[, 2]
 
-    return(u1 * (-a * (u1 - 1)^2 * u2 * (3 * u2 - 2) + b * (u1 - 1) * (3 * (u1 - 1) * u2^2 - 2 * (u1 - 2) * u2 - 1) + 1))
+    return( u + b*(-1 + u)*u*(-1 + 2*v) - (a - b)*(-1 + u)^2*u*v*(-2 + 3*v))
 }
 
 setMethod("ddvcopula", signature("asCopula"),ddvASC2)
@@ -114,46 +111,92 @@ setMethod("ddvcopula", signature("asCopula"),ddvASC2)
 
 ## inverse partial derivative 
 
-invdduASC2 <-
-function (copula, u, y) 
+invdduASC2 <- function (copula, u, y) 
 {
-    if (length(u) != length(y)) 
+    if (length(u)!=length(y)) 
         stop("Length of u and y differ!")
-    res <- NULL
-    for (i in 1:length(u)) {
-        res <- rbind(res, optimize(function(x) (dduASC2(copula, 
-            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
-            interval = c(0, 1))$minimum)
-    }
-    return(res)
+
+    a <- copula@parameters[1]
+    b <- copula@parameters[2]
+
+# solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+    usq <- u^2
+    c3 <- (a-b)*(-3*usq+4*u-1)
+    c2 <- (a-b)*(1-4*u+3*usq)+b*(- 1 + 2*u)
+    c1 <- 1+b*(1-2*u)
+    c0 <- -y
+
+v <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
+
+filter <- function(vec){
+  vec <- vec[!is.na(vec)]
+  return(vec[vec >= 0 & vec <= 1])
+}
+
+return(apply(v,1,filter))
 }
 
 setMethod("invdducopula", signature("asCopula"),invdduASC2)
 
 ## inverse partial derivative ddv
-invddvASC2 <-
-function (copula, v, y) 
+invddvASC2 <- function (copula, v, y)
 {
-    if (!is.matrix(u)) 
-        u <- matrix(u, ncol = 2)
-    res <- NULL
-    for (i in 1:nrow(u)) {
-        res <- rbind(res, optimize(function(x) (dduASC2(copula, 
-            cbind(x, rep(v[i], length(x)))) - y[i])^2, 
-            interval = c(0, 1))$minimum)
-    }
-    return(res)
+    if (length(v)!=length(y)) 
+        stop("Length of v and y differ!")
+
+    a <- copula@parameters[1]
+    b <- copula@parameters[2]
+
+# solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+    vsq <- v^2
+    c3 <- (a-b)*(2*v-3*vsq)
+    c2 <- (a-b)*(-4*v+6*vsq)+b*(-1+2*v)
+    c1 <- 1+(a-b)*(2*v - 3*vsq)+b*(1-2*v)
+    c0 <- -y
+
+u <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
+
+filter <- function(vec){
+  vec <- vec[!is.na(vec)]
+  return(vec[vec >= 0 & vec <= 1])
+}
+
+return(apply(u,1,filter))
 }
 
 setMethod("invddvcopula", signature("asCopula"),invddvASC2)
 
+## testing
+# test <- NULL
+# for(i in 1:100){
+# b <- runif(1,-1,1)
+# a <- runif(1,limA(b),1)
+# vs <- runif(1000)
+# ys <- runif(1000)
+# us <- invddvASC2(asCopula(c(a,b)),vs,ys)
+# test <- c(test,max(abs(ddvASC2(asCopula(c(a,b)),cbind(us,vs))-ys)))
+# }
+# hist(test)
+# abline(h=2,col="red")
+# 
+# test <- NULL
+# for(i in 1:100){
+# b <- runif(1,-1,1)
+# a <- runif(1,limA(b),1)
+# us <- runif(1000)
+# ys <- runif(1000)
+# vs <- invdduASC2(asCopula(c(a,b)),us,ys)
+# test <- c(test,max(abs(dduASC2(asCopula(c(a,b)),cbind(us,vs))-ys)))
+# }
+# hist(test)
+# abline(h=2,col="red")
+
 
 ## random number generator
-rASC2 <-
-function (copula, n) 
-{
-    u <- matrix(runif(2 * n, min = 0, max = 1), ncol = 2)
-    return(cbind(u[, 1], invdduASC2(copula, u)))
+rASC2 <- function (copula, n) {
+    u <- runif(n, min = 0, max = 1)
+    y <- runif(n, min = 0, max = 1)
+    return(cbind(u, invdduASC2(copula, u, y) ))
 }
 
 setMethod("rcopula", signature("asCopula"), rASC2)

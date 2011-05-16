@@ -33,8 +33,8 @@ dduNorm <- function(copula, pair){
   rho <- copula@parameters
   if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
 
-  u <- qnorm(pair[,1])
-  v <- qnorm(pair[,2])
+  u <- qnorm(pair[,1]) # u ~ N(0,1)
+  v <- qnorm(pair[,2]) # v ~ N(0,1)
 
   return(pnorm(v,mean=rho*u,sd=1-rho^2))
 }
@@ -45,11 +45,37 @@ setMethod("dducopula", signature("normalCopula"),dduNorm)
 #########################################
 
 invdduNorm <- function(copula, u, y){
+cat("This might be wrong!")
   rho <- copula@parameters
-  return(qnorm(y,mean=rho*u,sd=1-rho^2))
+  return(pnorm(qnorm(y,mean=rho*u,sd=1-rho^2))) # in doubt
 }
 
 setMethod("invdducopula", signature("normalCopula"), invdduNorm)
+
+## testing
+
+# max(abs(pnorm(qnorm(pnorm(qnorm(ys,mean=.2,sd=0.8))),mean=.2,sd=.8)-ys))
+# y <- c(.3,.9)
+# v <- c(.9,.1)
+# # us <- rep(.3,1000)
+# rho <- .6
+# u <- invdduNorm(normalCopula(rho),v,y)
+# dduNorm(normalCopula(rho),cbind(v,u))-y
+# 
+# pnorm(c(-1,1),mean=c(-1,1))
+# 
+# test <- NULL
+# for(i in 1:100){
+# b <- runif(1,-1,1)
+# # us <- runif(1000)
+# ys <- runif(1000)
+# vs <- invdduNorm(normalCopula(b),us,ys)
+# test <- c(test,max(abs(dduNorm(normalCopula(b),cbind(us,vs))-ys)))
+# }
+# hist(test)
+# abline(h=2,col="red")
+# 
+# curve(dduNorm(x))
 
 ## partial derivative d/dv
 ##########################

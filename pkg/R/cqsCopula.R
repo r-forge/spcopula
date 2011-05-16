@@ -192,17 +192,17 @@ return(apply(u,1,filter))
 }
 
 ## testing
-test <- NULL
-for(i in 1:100){
-b <- runif(1,-1,1)
-a <- runif(1,limA(b),1)
-vs <- runif(1000)
-ys <- runif(1000)
-us <- invdduCQSec(cqsCopula(c(a,b)),vs,ys)
-test <- c(test,max(abs(dduCQSec(cqsCopula(c(a,b)),cbind(vs,us))-ys)))
-}
-hist(test)
-abline(h=2,col="red")
+# test <- NULL
+# for(i in 1:100){
+# b <- runif(1,-1,1)
+# a <- runif(1,limA(b),1)
+# us <- runif(1000)
+# ys <- runif(1000)
+# vs <- invdduCQSec(cqsCopula(c(a,b)),us,ys)
+# test <- c(test,max(abs(dduCQSec(cqsCopula(c(a,b)),cbind(us,vs))-ys)))
+# }
+# hist(test)
+# abline(h=2,col="red")
 
 setMethod("invddvcopula", signature("cqsCopula"),invddvCQSec)
 
@@ -211,8 +211,9 @@ setMethod("invddvcopula", signature("cqsCopula"),invddvCQSec)
 rCQSec <-
 function (copula, n) 
 {
-    u <- matrix(runif(2 * n, min = 0, max = 1), ncol = 2)
-    return(cbind(u[, 1], invdduCQSec(copula, u)))
+    u <- runif(n, min = 0, max = 1)
+    y <- runif(n, min = 0, max = 1)
+    return(cbind(u, invdduCQSec(copula, u, y) ))
 }
 
 setMethod("rcopula", signature("cqsCopula"), rCQSec)
