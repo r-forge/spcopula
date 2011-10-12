@@ -8,12 +8,16 @@ Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
 Description: This package provides a framework to analyse spatial data provided in the format of the sp package with copulas.
 License: GPL-2
 LazyLoad: yes
-Depends: copula, sp, methods, R (>= 2.11.0)
+Depends: copula, sp, CDVine, methods, R (>= 2.11.0)
 URL: ifgi.uni-muenster.de/graeler
 Collate:
-  Classes.R 
+  Classes.R
   spcopula.R 
   cqsCopula.R
-  asCopula.R  
+  asCopula.R
   partialDerivatives.R 
   spatialPreparation.R
+  linkingCDVine.R
+  BB6copula.R
+  BB7copula.R
+  BB8copula.R
