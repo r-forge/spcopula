@@ -53,7 +53,7 @@ linkCDVine.surCDF <- function (copula, u) {
   return(res)
 }
 
-# for 90° rotated copulas: family %in% c(23, 24, 26:30)
+# for 90Â° rotated copulas: family %in% c(23, 24, 26:30)
 linkCDVine.r90CDF <- function (copula, u) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
@@ -66,7 +66,7 @@ linkCDVine.r90CDF <- function (copula, u) {
   return(res)
 }
 
-# for 270° rotated copulas: family %in% c(33, 34, 36:40)
+# for 270Â° rotated copulas: family %in% c(33, 34, 36:40)
 linkCDVine.r270CDF <- function (copula, u) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)

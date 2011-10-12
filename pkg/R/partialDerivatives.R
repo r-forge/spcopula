@@ -268,7 +268,7 @@ invdduFrank <- function(copula, u, y){
     return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*u)-y*(exp(-rho*u)-1)) +1) ) # by DL
 }
 
-setMethod("invdducopula", signature("claytonFrank"), invdduFrank)
+setMethod("invdducopula", signature("frankCopula"), invdduFrank)
 
 ## partial derivative d/dv
 ##########################

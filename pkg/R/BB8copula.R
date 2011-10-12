@@ -87,7 +87,7 @@ setMethod("rcopula", signature("surBB8Copula"), linkCDVine.r)
 # rcopula(surBB8Copula(c(5.329995,0.9201476)),500)
 
 ####################
-## BB8 copula 90° ##
+## BB8 copula 90ï¿½ ##
 ####################
 
 validRotBB8Copula = function(object) {
@@ -113,7 +113,7 @@ setClass("r90BB8Copula",
 
 # constructor
 r90BB8Copula <- function (param) {
-  val <- new("r90BB8Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=30, message = "90° rotated BB8 copula family. Number 30 in CDVine.")
+  val <- new("r90BB8Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=30, message = "90Â° rotated BB8 copula family. Number 30 in CDVine.")
   val
 }
 
@@ -136,7 +136,7 @@ setMethod("rcopula", signature("r90BB8Copula"), linkCDVine.r)
 # rcopula(r90BB8Copula(c(-5.329995,-0.1201476)),500)
 
 #####################
-## BB8 copula 270° ##
+## BB8 copula 270ï¿½ ##
 #####################
 
 setClass("r270BB8Copula",
@@ -147,7 +147,7 @@ setClass("r270BB8Copula",
 
 # constructor
 r270BB8Copula <- function (param) {
-  val <- new("r270BB8Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=40, message = "270° rotated BB8 copula family. Number 40 in CDVine.")
+  val <- new("r270BB8Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=40, message = "270Â° rotated BB8 copula family. Number 40 in CDVine.")
   val
 }
 

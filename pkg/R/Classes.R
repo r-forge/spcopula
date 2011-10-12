@@ -68,7 +68,8 @@ setGeneric("ddvcopula", function(copula, pair) standardGeneric("ddvcopula"))
 
 ## inverse partial derivatives 
 # numerical standard function
-invdduCop <- function(copula, u, y) {
+invdducopula <- function(copula, u, y) {
+    standardGeneric("invdducopula")
     if (length(u) != length(y)) 
         stop("Length of u and y differ!")
     res <- NULL
@@ -80,9 +81,10 @@ invdduCop <- function(copula, u, y) {
     return(res)
 }
 
-setGeneric("invdducopula", invdduCop)
+setGeneric("invdducopula", invdducopula)
 
-invddvCop <- function(copula, v, y) {
+invddvcopula <- function(copula, v, y) {
+  standardGeneric("invddvcopula")
     if (length(v) != length(y)) 
         stop("Length of v and y differ!")
     res <- NULL
@@ -94,7 +96,7 @@ invddvCop <- function(copula, v, y) {
     return(res)
 }
 
-setGeneric("invddvcopula", invddvCop)
+setGeneric("invddvcopula", invddvcopula)
 
 ## 
 ## the spatial copula

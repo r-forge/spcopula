@@ -83,7 +83,7 @@ setMethod("ddvcopula", signature("surBB6Copula"), linkCDVine.ddv)
 setMethod("rcopula", signature("surBB6Copula"), linkCDVine.r)
 
 ####################
-## BB6 copula 90° ##
+## BB6 copula 90Â° ##
 ####################
 
 validRotBB6Copula = function(object) {
@@ -109,7 +109,7 @@ setClass("r90BB6Copula",
 
 # constructor
 r90BB6Copula <- function (param) {
-  val <- new("r90BB6Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=28, message = "90° rotated BB6 copula family. Number 28 in CDVine.")
+  val <- new("r90BB6Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=28, message = "90Â° rotated BB6 copula family. Number 28 in CDVine.")
   val
 }
 
@@ -119,8 +119,6 @@ setMethod("dcopula", signature("r90BB6Copula"), linkCDVine.PDF)
 ## jcdf ##
 setMethod("pcopula", signature("r90BB6Copula"), linkCDVine.r90CDF)
 # persp(r90BB6Copula(c(-1.329995,-1.1201476)), pcopula)
-
-str(r90BB6Copula(c(-1.329995,-1.1201476)))
   
 ## partial derivatives ##
 # ddu
@@ -134,7 +132,7 @@ setMethod("rcopula", signature("r90BB6Copula"), linkCDVine.r)
 # rcopula(r90BB6Copula(c(-5.329995,-1.1201476)),500)
 
 #####################
-## BB6 copula 270° ##
+## BB6 copula 270ï¿½ ##
 #####################
 
 setClass("r270BB6Copula",
@@ -145,7 +143,7 @@ setClass("r270BB6Copula",
 
 # constructor
 r270BB6Copula <- function (param) {
-  val <- new("r270BB6Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=38, message = "270° rotated BB6 copula family. Number 38 in CDVine.")
+  val <- new("r270BB6Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=38, message = "270Â° rotated BB6 copula family. Number 38 in CDVine.")
   val
 }
 
