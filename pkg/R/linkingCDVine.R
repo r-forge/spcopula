@@ -8,22 +8,9 @@ linkCDVine.PDF <- function (copula, u) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   n <- nrow(u)
-  u1 <- u[,1]
-  u2 <- u[,2]
   fam <- copula@family
 
-# workaround, check updates in CDVine using
-#   family <- 27
-# simData <- BiCopSim(500, family, -1.5, -1)
-# fit <- BiCopSelect(simData[,1],simData[,2], familyset=family+c(-20,-10,0,10))
-# sum(log(BiCopPDF(simData[,1],simData[,2],family=fit$family, fit$par, fit$par2))) # 190
-# sum(log(BiCopPDF(simData[,1],simData[,2],family=fit$family+10, fit$par, fit$par2))) # 111
-  if (fam %in% c(23,24,26:30,33,34,36:40)) {
-    u1 <- u[,2]
-    u2 <- u[,1]
-  }
-
-  coplik = .C("LL_mod_seperate", as.integer(fam), as.integer(n), as.double(u1), as.double(u2), as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
+  coplik = .C("LL_mod_seperate", as.integer(fam), as.integer(n), as.double(u[,1]), as.double(u[,2]), as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
   return(exp(coplik))
 }
 
@@ -84,7 +71,7 @@ linkCDVine.r270CDF <- function (copula, u) {
 linkCDVine.ddu <- function (copula, pair) {
   param <- copula@parameters
   u <- matrix(pair, ncol = 2)
-  n <- nrow(pair)
+  n <- nrow(u)
   fam <- copula@family
   
   res <- .C("Hfunc1", as.integer(fam), as.integer(n), as.double(u[,2]), as.double(u[,1]), as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
@@ -95,7 +82,7 @@ linkCDVine.ddu <- function (copula, pair) {
 linkCDVine.ddv <- function (copula, pair) {
   param <- copula@parameters
   u <- matrix(pair, ncol = 2)
-  n <- nrow(pair)
+  n <- nrow(u)
   fam <- copula@family
   
   res <- .C("Hfunc2", as.integer(fam), as.integer(n), as.double(u[,1]), as.double(u[,2]), as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
