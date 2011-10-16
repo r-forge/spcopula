@@ -126,17 +126,19 @@ setMethod("dcopula", signature("vineCopula"), dvineCopula)
 # setReplaceMethod("forcePDF", "vineCopula", forcePDF)
 
 genEmpCop <- function(data) {
+  t_data <- t(data)
+
   empCop <- function(u) {
-    u <- matrix(u,ncol=ncol(data))
+    u <- matrix(u,ncol=nrow(t_data))
 
 # make this a C-function
     res <- NULL
     for(i in 1:nrow(u)) {
-      bool <- t(t(data) <= u[i,])
-      for (i in 2:ncol(data)) bool[,1] <- bool[,1] * bool[,i]
-      res <- c(res,sum(bool[,1]))
+      bool <- t_data <= u[i,]
+      for (i in 2:nrow(t_data)) bool[1,] <- bool[1,] * bool[i,]
+      res <- c(res,sum(bool[1,]))
     }
-    return(res/nrow(data))
+    return(res/ncol(t_data))
   }
   return(empCop)
 }
