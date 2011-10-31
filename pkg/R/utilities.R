@@ -76,9 +76,3 @@ univScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformat
 
   xyplot(formula, smpl, aspect="iso", xlim=c(0,1), ylim=c(0,1), ...)
 }
-
-smplSet <- rcopula(frankCopula(2.7),300)
-smplSet <- cbind(smplSet,runif(300))
-colnames(smplSet) <- c("u","v","z")
-dependencePlot(formula=v~u,smplSet)
-univScatter(formula=v~u,smplSet)
