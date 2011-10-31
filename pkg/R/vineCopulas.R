@@ -131,13 +131,15 @@ genEmpCop <- function(data) {
   empCop <- function(u) {
     u <- matrix(u,ncol=nrow(t_data))
 
-# make this a C-function
+# --/-- make this a C-function?
     res <- NULL
     for(i in 1:nrow(u)) {
       bool <- t_data <= u[i,]
       for (i in 2:nrow(t_data)) bool[1,] <- bool[1,] * bool[i,]
       res <- c(res,sum(bool[1,]))
     }
+# --//--
+
     return(res/ncol(t_data))
   }
   return(empCop)

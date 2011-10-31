@@ -1,6 +1,6 @@
-useDynLib(spcopula)
+# useDynLib(spcopula)
 
-import(copula, sp, CDVine)
+import(copula, sp, CDVine, lattice)
 
 # constructor
 export(asCopula, cqsCopula)
@@ -11,6 +11,7 @@ export(vineCopula)
 export(neighbourhood)
 
 # general functions
+export(rankTransform, dependencePlot, univScatter)
 export(fitCopula)
 export(dducopula,ddvcopula)
 export(invdducopula, invddvcopula)
