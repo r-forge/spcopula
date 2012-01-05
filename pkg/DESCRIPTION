@@ -18,6 +18,7 @@ Collate:
   partialDerivatives.R 
   spatialPreparation.R
   linkingCDVine.R
+  BB1copula.R
   BB6copula.R
   BB7copula.R
   BB8copula.R
