@@ -74,14 +74,16 @@ dvineCopula <- function(copula, u) {
       tmpCop <- copula@copulas[[used+i]]
       tmpU <- u[[l]][,(i*2-1):(i*2)]
       den <- den*dcopula(tmpCop, tmpU)
-      if (i == 1) {
-	newU <- cbind(newU,ddvcopula(tmpCop,tmpU))
-      } else {
-	newU <- cbind(newU,dducopula(tmpCop,tmpU))
-      }
-      if (1<i & i<(dim-1)) { 
-	newU <- cbind(newU,ddvcopula(tmpCop,tmpU))
-      }
+      if (l < dim-1) {
+        if (i == 1) {
+	  newU <- cbind(newU,ddvcopula(tmpCop,tmpU))
+        } else {
+	  newU <- cbind(newU,dducopula(tmpCop,tmpU))
+        }
+        if (1<i & i<(dim-1)) { 
+	  newU <- cbind(newU,ddvcopula(tmpCop,tmpU))
+        }
+      } 
     }
     u[[l+1]] <- newU
     used <- used + dim - l + 1
@@ -192,10 +194,19 @@ linkCDVineSim <- function(copula, n) {
   } else {
     numType <- 2
   }
+
+  getFamily <- function(copula) {
+    if("family" %in% slotNames(copula)) numFam <- copula@family
+    else {
+      numFam <- switch(class(copula)[1], normalCopula=1, tCopula=2, claytonCopula=3, gumbelCopula=4, frankCopula=5)
+    }
+  }
+
   par1 <- unlist(lapply(copula@copulas,function(x) x@parameters[1]))
   par2 <- unlist(lapply(copula@copulas,function(x) x@parameters[2]))
   par2[is.na(par2)] <- 0
-  return(CDVine::CDVineSim(n,unlist(lapply(copula@copulas,function(x) x@family)),par1,par2,numType))
+  numFam <- unlist(lapply(copula@copulas,getFamily))
+  return(CDVine::CDVineSim(n,numFam,par1,par2,numType))
 }
 
 setMethod("rcopula", signature("vineCopula"), linkCDVineSim)
