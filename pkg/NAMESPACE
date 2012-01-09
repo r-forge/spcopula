@@ -23,6 +23,7 @@ export(genEmpCop)
 
 # MRP functions
 export(genEmpKenFun, genInvKenFun)
+export(kendallRP, criticalLevel)
 
 ## classes
 exportClasses(asCopula, cqsCopula, neighbourhood)
