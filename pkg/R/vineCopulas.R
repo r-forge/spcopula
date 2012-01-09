@@ -206,6 +206,8 @@ linkCDVineSim <- function(copula, n) {
   par2 <- unlist(lapply(copula@copulas,function(x) x@parameters[2]))
   par2[is.na(par2)] <- 0
   numFam <- unlist(lapply(copula@copulas,getFamily))
+  tcops <- which(numFam==2) #? length(which(5==3))
+  if(length(tcops)>0) par2[tcops] <- unlist(lapply(copula@copulas[tcops], function(x) x@df))
   return(CDVine::CDVineSim(n,numFam,par1,par2,numType))
 }
 
@@ -224,12 +226,12 @@ qCopula_u <- function(copula,p,u,sample=NULL) {
     if (u[i] < p[i]) {
       params <- rbind(params,rep(NA,dim-1))
     } else {
-    if (dim == 2) {
-      params <- rbind(params,optimize(function(v) (empCop(cbind(u[i],v))-p[i])^2,c(p,1))$minimum)
-    } else {
-      opt <- optim(par=rep(p[i],dim-1), function(vw) (empCop(c(u[i],vw))-p[i])^2, lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
-      params <- rbind(params, opt$par)
-    }
+      if (dim == 2) {
+        params <- rbind(params,optimize(function(v) (empCop(cbind(u[i],v))-p[i])^2,c(p,1))$minimum)
+      } else {
+        opt <- optim(par=rep(p[i],dim-1), function(vw) (empCop(c(u[i],vw))-p[i])^2, lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
+        params <- rbind(params, opt$par)
+      }
     }
   }
 
