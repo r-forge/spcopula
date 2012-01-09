@@ -205,7 +205,7 @@ setMethod("rcopula", signature("asCopula"), rASC2)
 
 
 fitCopulaASC2 <- function (copula, data, method = "itau", start=c(0,0), lower=c(-3.-1), upper=c(1.1), optim.control=list(), optim.method="L-BFGS-B", 
-    estimate.variance = FALSE) 
+    estimate.variance = FALSE, hideWarnings=T) 
 {
     if (method == "ml") 
         fit <- fitASC2.ml(copula, data, start, lower, upper, optim.control, optim.method)
