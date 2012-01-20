@@ -31,7 +31,6 @@
 # distances="matrix"	a matrix providing the distances
 # sp="SpatialPoints"	SpatialPoints object providing the coordinates
 # index="matrix"	linking the obs. in data to the coordinates
-# uniform="logical"	is the data distributed on [0,1]
 
 neighbourhood <- function(data, distances, sp, index){
   varNames <- names(data[[1]])
@@ -144,3 +143,67 @@ return(neighbourhood(lData, dists, SpatialPoints(spData), index))
 # 
 # ## transformation of the sample by local neighborhoods ##
 # 
+
+#############
+## BINNING ##
+#############
+
+# calculates lag indicies for a matrix derived from and stores the respective separating distances
+# 
+# boundaries  -> are the right-side limits in the dimenssion as provided by spDists
+# data --------> a spatial object that can be handled by spDists()        
+calcSpLagInd <- function(data, boundaries) {
+  lags <- vector("list",length(boundaries))
+  
+  dists <- spDists(data)
+  nlocs <- length(data)
+  
+  for (i in 1:(nlocs-1)) {
+    for (j in (i+1):nlocs) {
+      d <- dists[i,j]
+      for ( k in 1:length(boundaries)) {
+        if (d < boundaries[k]) {
+          lags[[k]] <- rbind(lags[[k]],c(i,j,d))
+          break()
+        }
+      }
+    }
+  }
+  return(lags)
+}
+
+# the generic calcBins, calculates bins for spatiaql and spatio-temporal data
+
+setGeneric("calcBins", function(data, nbins=15, boundaries=NA, cutoff=500000, ...) standardGeneric("calcBins") )
+
+# calculating the spatial bins
+# 
+# data denotes the spatial data object
+# var denotes the only variable name used
+# cor.method is passed on to cor() (default="kendall")
+# if plot=TRUE (default), the correlation measures are plotted agaisnt the mean lag separation distance
+# 
+calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, cor.method="kendall", plot=TRUE) {
+
+  if(is.na(boundaries)) {
+    diagonal <- spDists(coordinates(t(data@bbox)))[1,2]
+    boundaries <- ((1:nbins) * min(cutoff,diagonal/3,na.rm=T) / nbins)
+  }
+  
+  lags <- calcSpLagInd(data, boundaries)
+    
+  mDists <- sapply(lags,function(x) mean(x[,3]))
+  lagData <- lapply(lags, function(x) as.matrix((cbind(data[x[,1],var]@data, data[x[,2],var]@data))))
+  
+  lagCor <- sapply(lagData,function(x) cor(x,method=cor.method)[1,2])
+  
+  if(plot) { 
+    plot(mDists, lagCor, xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
+         ylim=1.05*c(-abs(min(lagCor)),max(lagCor)), xlim=c(0,max(mDists)))
+    abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
+  }
+  
+  return(list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags))
+}
+
+setMethod(calcBins,signature("Spatial"),calcSpBins)
