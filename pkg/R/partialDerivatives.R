@@ -342,10 +342,3 @@ ddvStudent <- function(copula, pair){
 }
 
 setMethod("ddvcopula", signature("tCopula"), ddvStudent)
-
-setMethod("invdducopula", signature("copula"), invdducopula)
-invdducopula(tCopula(0.7),u=.3,y=.7)
-
-showMethods(invdducopula)
-rm(invdducopula.default)
-setMethod

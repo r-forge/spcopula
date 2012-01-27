@@ -206,7 +206,7 @@ calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, cor.method
   return(list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags))
 }
 
-setMethod(calcBins,signature("Spatial"),calcSpBins)
+setMethod(calcBins, signature("Spatial"), calcSpBins)
 
 # instances: number  -> number of randomly choosen temporal intances
 #            NA      -> all observations
@@ -253,7 +253,7 @@ calcStBins <- function(data, variable="PM10", nbins=15, boundaries=NA, cutoff=NA
   calcCor <- function(binnedData) {
     cors <- NULL
     for(i in 1:(ncol(binnedData)/2)) {
-cat(i,"\n")
+
       cors <- c(cors, cor(binnedData[,2*i-1], binnedData[,2*i], method=cor.method, use="pairwise.complete.obs"))
     }
     return(cors)
@@ -269,4 +269,4 @@ cat(i,"\n")
   return(list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices)))
 }
 
-setMethod(calcBins,signature("STFDF"),calcStBins)
+setMethod(calcBins, signature("STFDF"), calcStBins)

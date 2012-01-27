@@ -233,6 +233,7 @@ fitCopula.cqs <- function (copula, data, method = "itau", start=c(0,0), lower=c(
     fit
 }
 
+setGeneric("fitCopula")
 setMethod("fitCopula", signature("cqsCopula"), fitCopula.cqs)
 
 ## Fits the copula with cubic and quadratic sections acoording to a measure of association.
