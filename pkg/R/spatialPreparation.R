@@ -67,7 +67,7 @@ setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
 
 # returns an neighbourhood object
 # spData	spatialPointsDataFrame
-# var 		one or multiple variable names, all is the default
+# variable 		one or multiple variable names, all is the default
 # size		the size of the neighbourhood, default of 5
 # dep		denoting a subset of dependent locations (default NULL: all locations will be used)
 # indep		denoting a subset of independent locations (default NULL: all locations will be used)
@@ -148,7 +148,7 @@ return(neighbourhood(lData, dists, SpatialPoints(spData), index))
 ## BINNING ##
 #############
 
-# calculates lag indicies for a matrix derived from and stores the respective separating distances
+# calculates lag indicies for a Spatial object and stores the respective separating distances
 # 
 # boundaries  -> are the right-side limits in the dimenssion as provided by spDists
 # data --------> a spatial object that can be handled by spDists()        
@@ -207,3 +207,66 @@ calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, cor.method
 }
 
 setMethod(calcBins,signature("Spatial"),calcSpBins)
+
+# instances: number  -> number of randomly choosen temporal intances
+#            NA      -> all observations
+#            other   -> temporal indexing as in spacetime/xts, the parameter t.lags is set to 0 in this case.
+# t.lags:    numeric -> temporal shifts between obs
+calcStBins <- function(data, variable="PM10", nbins=15, boundaries=NA, cutoff=NA, instances=10, t.lags=c(0), cor.method="kendall", plot=TRUE) {
+
+  if(is.na(boundaries)) {
+    diagonal <- spDists(coordinates(t(data@sp@bbox)))[1,2]
+    boundaries <- ((1:nbins) * min(cutoff,diagonal/3,na.rm=T) / nbins)
+  }
+
+  if(is.na(instances)) instances=length(data@time)
+  
+  spIndices <- calcSpLagInd(data@sp, boundaries)
+    
+  mDists <- sapply(spIndices,function(x) mean(x[,3]))
+  
+  lengthTime <- length(data@time)
+  if (!is.numeric(instances) | !length(instances ==1)) {
+    tempIndices <- cbind(instances, instances)
+  } 
+  else {
+    tempIndices <- NULL
+    for (t.lag in rev(t.lags)) {
+      smplInd <- sample(x=max(1,1-t.lag):min(lengthTime,lengthTime-t.lag), size=min(instances,lengthTime-abs(max(t.lags))))
+      tempIndices <- cbind(smplInd+t.lag, tempIndices)
+      tempIndices <- cbind(tempIndices[,1], tempIndices)
+    }
+  }
+    
+  retrieveData <- function(spIndex, tempIndices) {
+    binnedData <- NULL
+    for (i in 1:(ncol(tempIndices)/2)) {
+      binnedData <- cbind(binnedData, 
+                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], variable]@data, 
+                                           data[spIndex[,2], tempIndices[,2*i], variable]@data))))
+    }
+    return(binnedData)
+  }
+  
+  lagData <- lapply(spIndices, retrieveData, tempIndices=tempIndices)
+  
+  calcCor <- function(binnedData) {
+    cors <- NULL
+    for(i in 1:(ncol(binnedData)/2)) {
+cat(i,"\n")
+      cors <- c(cors, cor(binnedData[,2*i-1], binnedData[,2*i], method=cor.method, use="pairwise.complete.obs"))
+    }
+    return(cors)
+  }
+  lagCor <- sapply(lagData, calcCor)
+  
+  if(plot) { 
+    plot(mDists, as.matrix(lagCor)[,1], xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
+         ylim=1.05*c(-abs(min(lagCor)),max(lagCor)), xlim=c(0,max(mDists)))
+    abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
+  }
+  
+  return(list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices)))
+}
+
+setMethod(calcBins,signature("STFDF"),calcStBins)

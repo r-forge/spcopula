@@ -6,11 +6,14 @@
 # density from BiCopPDF
 linkCDVine.PDF <- function (copula, u) {
   param <- copula@parameters
+  if(length(param)==1) param <- c(param,0)
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   n <- nrow(u)
   fam <- copula@family
 
-  coplik = .C("LL_mod_seperate", as.integer(fam), as.integer(n), as.double(u[,1]), as.double(u[,2]), as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
+  coplik = .C("LL_mod_seperate", as.integer(fam), as.integer(n), as.double(u[,1]), 
+              as.double(u[,2]), as.double(param[1]), as.double(param[2]), 
+              as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
   return(exp(coplik))
 }
 
@@ -23,7 +26,8 @@ linkCDVine.CDF <- function (copula, u) {
   n <- nrow(u)
   fam <- copula@family
   
-  res <- .C("archCDF", as.double(u[,1]), as.double(u[,2]), as.integer(n), as.double(param), as.integer(fam), as.double(rep(0, n)), PACKAGE = "CDVine")[[6]]
+  res <- .C("archCDF", as.double(u[,1]), as.double(u[,2]), as.integer(n), as.double(param),
+            as.integer(fam), as.double(rep(0, n)), PACKAGE = "CDVine")[[6]]
   return(res)
 }
 
@@ -36,11 +40,13 @@ linkCDVine.surCDF <- function (copula, u) {
   n <- nrow(u)
   fam <- copula@family
 
-  res <-  u1 + u2 - 1 + .C("archCDF", as.double(1 - u1), as.double(1 - u2), as.integer(n), as.double(param), as.integer(fam - 10), as.double(rep(0, n)), PACKAGE = "CDVine")[[6]]
+  res <-  u1 + u2 - 1 + .C("archCDF", as.double(1 - u1), as.double(1 - u2), as.integer(n),
+                           as.double(param), as.integer(fam - 10), as.double(rep(0, n)),
+                           PACKAGE = "CDVine")[[6]]
   return(res)
 }
 
-# for 90° rotated copulas: family %in% c(23, 24, 26:30)
+# for 90 deg rotated copulas: family %in% c(23, 24, 26:30)
 linkCDVine.r90CDF <- function (copula, u) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
@@ -49,11 +55,13 @@ linkCDVine.r90CDF <- function (copula, u) {
   n <- nrow(u)
   fam <- copula@family
   
-  res <-  u2 - .C("archCDF", as.double(1 - u1), as.double(u2), as.integer(n), as.double(-param), as.integer(fam - 20), as.double(rep(0, n)), PACKAGE = "CDVine")[[6]]
+  res <-  u2 - .C("archCDF", as.double(1 - u1), as.double(u2), as.integer(n), 
+                  as.double(-param), as.integer(fam - 20), as.double(rep(0, n)), 
+                  PACKAGE = "CDVine")[[6]]
   return(res)
 }
 
-# for 270° rotated copulas: family %in% c(33, 34, 36:40)
+# for 270 deg rotated copulas: family %in% c(33, 34, 36:40)
 linkCDVine.r270CDF <- function (copula, u) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
@@ -62,7 +70,9 @@ linkCDVine.r270CDF <- function (copula, u) {
   n <- nrow(u)
   fam <- copula@family
   
-  res <- u1 - .C("archCDF", as.double(u1), as.double(1 - u2), as.integer(n), as.double(-param), as.integer(fam - 30), as.double(rep(0, n)), PACKAGE = "CDVine")[[6]]
+  res <- u1 - .C("archCDF", as.double(u1), as.double(1 - u2), as.integer(n), 
+                 as.double(-param), as.integer(fam - 30), as.double(rep(0, n)), 
+                 PACKAGE = "CDVine")[[6]]
   return(res)
 }
 
@@ -74,7 +84,9 @@ linkCDVine.ddu <- function (copula, pair) {
   n <- nrow(u)
   fam <- copula@family
   
-  res <- .C("Hfunc1", as.integer(fam), as.integer(n), as.double(u[,2]), as.double(u[,1]), as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
+  res <- .C("Hfunc1", as.integer(fam), as.integer(n), as.double(u[,2]), as.double(u[,1]), 
+            as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), 
+            PACKAGE = "CDVine")[[7]]
   return(res)
 }
 
@@ -85,7 +97,9 @@ linkCDVine.ddv <- function (copula, pair) {
   n <- nrow(u)
   fam <- copula@family
   
-  res <- .C("Hfunc2", as.integer(fam), as.integer(n), as.double(u[,1]), as.double(u[,2]), as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
+  res <- .C("Hfunc2", as.integer(fam), as.integer(n), as.double(u[,1]), as.double(u[,2]), 
+            as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), 
+            PACKAGE = "CDVine")[[7]]
   return(res)
 }
 
@@ -96,8 +110,13 @@ linkCDVine.r <- function(copula, n){
   fam <- copula@family
   if(is.na(param[2])) param <- c(param,0)
   
-  tmp <- .C("pcc", as.integer(n), as.integer(2), as.integer(fam), as.integer(1), as.double(param[1]), as.double(param[2]), as.double(rep(0, n * 2)), PACKAGE = "CDVine")[[7]]
+  tmp <- .C("pcc", as.integer(n), as.integer(2), as.integer(fam), as.integer(1), 
+            as.double(param[1]), as.double(param[2]), as.double(rep(0, n * 2)), 
+            PACKAGE = "CDVine")[[7]]
   return(matrix(tmp, ncol = 2))
 }
 
-
+## get parameter from Kendall's tau
+linkCDVine.calibKendallsTau <- function(copula, tau) {
+  return(BiCopTau2Par(copula@family, tau))
+}

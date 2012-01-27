@@ -36,28 +36,32 @@
 #                             parameters
 
 
-spCopula <- function(components, distances, unit="m", depFun=NULL) {
-  if (is.null(depFun)){ depFun <- function(x) return("none")}
-  else cat("The parameters of the components will be recalculated according to 
-    the provided function.")
+spCopula <- function(components, distances, unit="m", spDepFun) {
+  if (missing(spDepFun)) calibMoa <- NULL #function(copula, x) return("none")
+  else {
+    if (is.na(match(spDepFun(NULL),c("kendall","spearman","id","none")))) stop("spDepFun(NULL) must return 'spearman', 'kendall' or 'id'.")
+    cat("The parameters of the components will be recalculated according to the provided spDepFun.")
+    calibMoa <- switch(spDepFun(NULL), 
+                       kendall=function(copula, h) calibKendallsTau(copula, spDepFun(h)),
+                       spearman=function(copula, h) calibSpearmansRho(copula, spDepFun(h)),
+                       id=function(copula, h) return(h))
+    
+    for (i in 1:length(components)) {
+      components[[i]]@parameters[1] <- calibMoa(components[[i]], distances[i]) # take care of non single parameter copulas
+    }
+  }
 
   components <- append(components,indepCopula())
-  param <- NULL
-  param.names <- NULL
-  param.low <- NULL
-  param.up<- NULL
-  for (cmpCop in components) {
-    param <- c(param, cmpCop@parameters)
-    param.names <- c(param.names,cmpCop@param.names)
-    param.low   <- c(param.low,cmpCop@param.lowbnd)
-    param.up  <- c(param.up, cmpCop@param.upbnd)
-  }
- 
+  
+  param       <- unlist(lapply(components, function(x) x@parameters))
+  param.names <- unlist(lapply(components, function(x) x@param.names))
+  param.low   <- unlist(lapply(components, function(x) x@param.lowbnd))
+  param.up    <- unlist(lapply(components, function(x) x@param.upbnd))
+     
   new("spCopula", dimension=2, parameters=param, param.names=param.names,
       param.lowbnd=param.low, param.upbnd=param.up,
-      message="Spatial Copula: distance dependent convex combination of 
-	bivariate copulas",
-      components=components, distances=distances, unit=unit, depFun=depFun)
+      message="Spatial Copula: distance dependent convex combination of bivariate copulas",
+      components=components, distances=distances, unit=unit, calibMoa=calibMoa)
 }
 
 ## show method
@@ -74,164 +78,149 @@ showCopula <- function(object) {
         cat("    ", cmpCop@param.names[i], " = ", cmpCop@parameters[i], "\n")
     }
   }
-  if(object@depFun(NULL)!="none") cat("A spatial dependence function is used.")
+  if(!is.null(object@calibMoa)) cat("A spatial dependence function is used.")
 }
 
 setMethod("show", signature("spCopula"), showCopula)
 
 ## spatial copula jcdf ##
 
+# for spatial copulas with a spatial dependece function
+spDepFunCop <- function(fun, copula, pairs, h) {
+  dists <- copula@distances
+  n.dists <- length(dists)
+  calibPar <- copula@calibMoa
+  
+  res <- numeric(0)
+  sel <- which(h < dists[1])
+  if(sum(sel)>0) {
+    tmpH <- h[sel]
+    tmpCop <- copula@components[[1]]
+    tmpPairs <- pairs[sel,,drop=FALSE]
+    for (j in 1:length(tmpH)) {
+      tmpCop@parameters[1] <- calibPar(tmpCop, tmpH[j])
+      res <- c(res, fun(tmpCop, tmpPairs[j,]))
+    }
+  }
+  
+  if (n.dists >= 2) {
+    for ( i in 2:n.dists ) {
+      low  <- dists[i-1]
+      high <- dists[i]
+      sel <- which(h >= low & h < high)
+      if (sum(sel)>0) {
+        tmpH <- h[sel]
+        tmpPairs <- pairs[sel,,drop=FALSE]
+        lowerCop <- copula@components[[i-1]]
+        upperCop <- copula@components[[i]]
+        if (class(lowerCop) != class(upperCop)) {
+          lowerVals <- numeric(0)
+          upperVals <- numeric(0)
+          for (j in 1:length(tmpH)) {
+            lowerCop@parameters[1] <- calibPar(lowerCop,  tmpH[j])
+            upperCop@parameters[1] <- calibPar(upperCop, tmpH[j])
+            lowerVals <- c(lowerVals, fun(lowerCop, tmpPairs[j,]))
+            upperVals <- c(upperVals, fun(upperCop, tmpPairs[j,]))
+          }
+          res <- c(res, (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals)
+        } else {
+          newVals <- numeric(0)
+          for (j in 1:length(tmpH)) {
+            lowerCop@parameters <- calibPar(lowerCop, tmpH[j])
+            newVals <- c(newVals, fun(lowerCop, tmpPairs[j,]))
+          }
+          res <- c(res, newVals)
+        }
+      }
+    }
+  }
+  
+  sel <- which(h >= dists[n.dists])
+  if(sum(sel)>0) {
+    res <- c(res, fun(copula@components[[n.dists]], pairs[which(h >= dists[n.dists]),]))
+  }
+
+  return(res)
+}
+
+# for static convex combinations of copulas
+spConCop <- function(copula, pairs, h) {
+  dists <- copula@distances
+  n.dists <- length(dists)
+ 
+  res <- numeric(0)
+  sel <- which(h < dists[1])
+  if(sum(sel)>0) {
+    res <- fun(copula@components[[1]], pairs[sel,,drop=FALSE])
+  }
+  
+  if (n.dists >= 2) {
+    for ( i in 2:n.dists ) {
+      low  <- dists[i-1]
+      high <- dists[i]
+      sel <- which(h >= low & h < high)
+      if (sum(sel)>0) {
+        tmpH <- h[sel]
+        tmpPairs <- pairs[sel,,drop=FALSE]
+
+        lowerVals <- fun(copula@components[[i-1]], tmpPairs[,])
+        upperVals <- fun(copula@components[[i]], tmpPairs[,])
+
+        res <- c(res, (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals)
+      }
+    }
+  }
+  
+  sel <- which(h >= dists[n.dists])
+  if(sum(sel)>0) {
+    res <- c(res, fun(copula@components[[n.dists]], pairs[which(h >= dists[n.dists]),]))
+  }
+
+  return(res)
+}
+
+
 # u 
 #   three column matrix providing the transformed pairs and their respective 
 #   separation distances
-
 pSpCopula <- function (copula, u) {
-if (!is.matrix(u)) pair <- matrix(u,ncol=3)
-if (ncol(u)!=3) stop("point pairs need to be provided with their separating 
-		  distance")
+  if (!is.matrix(u)) u <- matrix(u, ncol=3)
+  if (ncol(u)!=3) stop("Point pairs need to be provided with their separating distance in column 3.")
 
-# ascending sorted pairs allow for easy evaluation
-pairs <- u[order(u[,3]),1:2,drop=FALSE] 
-depFun <- copula@depFun
-method <- depFun(NULL)
+  ordering <- order(u[,3])
+  # ascending sorted pairs allow for easy evaluation
+  pairs <- u[ordering,1:2,drop=FALSE] 
+  h <- sort(u[,3])
 
-h <- sort(u[,3])
-n.dists <- length(distances)
-res <- numeric(0)
-if (method != "none"){
-  calibMoa <- switch(method, kendall=calibKendallsTau,
-                 spearmann=calibSpearmansRho, 
-                 id=function(copula, tau) return(tau))
-}
-
-sel <- which(h < distances[1])
-if(sum(sel)>0) {
-  tmpH <- h[sel]
-  tmpCop <- copula@components[[1]]
-  tmpPairs <- pairs[sel,,drop=FALSE]
-  if (method != "none"){
-    for (j in 1:length(tmpH)) {
-      tmpCop@parameters <- calibMoa(tmpCop,depFun(tmpH[j]))
-      res <- c(res, pcopula(tmpCop,tmpPairs[j,]))
-    }
-  } else res <- pcopula(tmpCop,tmpPairs)
-}
-
-if (n.dists > 2) {
-for ( i in 2:n.dists ) {
-  low <- distances[i-1]
-  high<- distances[i]
-  sel <- which(h >= low & h < high)
-  if (sum(sel)>0) {
-    tmpH <- h[sel]
-    tmpPairs <- pairs[sel,,drop=FALSE]
-    lowerCop <- copula@components[[i-1]]
-    upperCop <- copula@components[[i]]
-    if (method != "none") {
-      lowerVals <- numeric(0)
-      upperVals <- numeric(0)
-      for (j in 1:length(tmpH)) {
-        lowerCop@parameters <- calibMoa(lowerCop,depFun(tmpH[j]))
-        upperCop@parameters <- calibMoa(upperCop,depFun(tmpH[j]))
-        lowerVals <- c(lowerVals, pcopula(lowerCop,tmpPairs[j,]))
-        upperVals <- c(upperVals, pcopula(upperCop,tmpPairs[j,]))
-      }
-      res <- c( res,
-        (high-tmpH)/(high-low) * lowerVals
-        +(tmpH-low)/(high-low) * upperVals)
-    } else {
-      res <- c( res,
-        (high-tmpH)/(high-low) * pcopula(lowerCop,tmpPairs)
-        +(tmpH-low)/(high-low) * pcopula(upperCop,tmpPairs))
-    }
-  }
-}}
-
-sel <- which(h >= distances[n.dists])
-if(sum(sel)>0) {
-  res <- c(res,pcopula(copula@components[[n.dists]],
-	       pairs[which(h >= distances[n.dists]),]))
-}
+  if(is.null(copula@calibMoa)) res <- spConCop(pcopula, copula, pairs, h)
+  else res <- spDepFunCop(pcopula, copula, pairs, h)
 
 # reordering the values
-return(res[order(u[,3])])
+return(res[ordering])
 }
 
 setMethod("pcopula", signature("spCopula"), pSpCopula)
 
+
 ## spatial Copula density ##
-# the non dynamic version: without depFun
+
+# u 
+#   three column matrix providing the transformed pairs and their respective 
+#   separation distances
 dSpCopula <- function (copula, u) {
-if (!is.matrix(u)) pair <- matrix(u,ncol=3)
-if (ncol(u)!=3) stop("point pairs need to be provided with their separating 
-		  distance")
+  if (!is.matrix(u)) u <- matrix(u, ncol=3)
+  if (ncol(u)!=3) stop("Point pairs need to be provided with their separating distance in column 3.")
 
-# ascending sorted pairs allow for easy evaluation
-pairs <- u[order(u[,3]),1:2,drop=FALSE] 
-depFun <- copula@depFun
-method <- depFun(NULL)
+  ordering <- order(u[,3])
+  # ascending sorted pairs allow for easy evaluation
+  pairs <- u[ordering,1:2,drop=FALSE] 
+  h <- sort(u[,3])
 
-if (method != "none"){
-  calibMoa <- switch(method, kendall=calibKendallsTau,
-                 spearmann=calibSpearmansRho, 
-                 id=function(copula, tau) return(tau))
-}
-
-h <- sort(u[,3])
-n.dists <- length(distances)
-res <- numeric(0)
-
-sel <- which(h < distances[1])
-if(sum(sel)>0) {
-  tmpH <- h[sel]
-  tmpCop <- copula@components[[1]]
-  tmpPairs <- pairs[sel,,drop=FALSE]
-  if (method != "none"){
-    for (j in 1:length(tmpH)) {
-      tmpCop@parameters <- calibMoa(tmpCop,depFun(tmpH[j]))
-      res <- c(res, dcopula(tmpCop,tmpPairs[j,]))
-    }
-  } else res <- dcopula(tmpCop,tmpPairs)
-}
-
-if (n.dists > 2) {
-for ( i in 2:n.dists ) {
-  low <- distances[i-1]
-  high<- distances[i]
-  sel <- which(h >= low & h < high)
-  if (sum(sel)>0) {
-    tmpH <- h[sel]
-    tmpPairs <- pairs[sel,,drop=FALSE]
-    lowerCop <- copula@components[[i-1]]
-    upperCop <- copula@components[[i]]
-    if (method != "none") {
-      lowerVals <- numeric(0)
-      upperVals <- numeric(0)
-      for (j in 1:length(tmpH)) {
-        lowerCop@parameters <- calibMoa(lowerCop,depFun(tmpH[j]))
-        upperCop@parameters <- calibMoa(upperCop,depFun(tmpH[j]))
-        lowerVals <- c(lowerVals, dcopula(lowerCop,tmpPairs[j,]))
-        upperVals <- c(upperVals, dcopula(upperCop,tmpPairs[j,]))
-      }
-      res <- c( res,
-        (high-tmpH)/(high-low) * lowerVals
-        +(tmpH-low)/(high-low) * upperVals)
-    } else {
-      res <- c( res,
-        (high-tmpH)/(high-low) * dcopula(lowerCop,tmpPairs)
-        +(tmpH-low)/(high-low) * dcopula(upperCop,tmpPairs))
-    }
-  }
-}}
-
-sel <- which(h >= distances[n.dists])
-if(sum(sel)>0) {
-  res <- c(res,dcopula(copula@components[[n.dists]],
-	       pairs[which(h >= distances[n.dists]),]))
-}
+  if(is.null(copula@calibMoa)) res <- spConCop(dcopula, copula, pairs, h)
+  else res <- spDepFunCop(dcopula, copula, pairs, h)
 
 # reordering the values
-return(res[order(u[,3])])
+return(res[ordering])
 }
 
 setMethod("dcopula", signature("spCopula"), dSpCopula)
@@ -242,76 +231,19 @@ setMethod("dcopula", signature("spCopula"), dSpCopula)
 ###############
 
 dduSpCopula <- function (copula, pair) {
-if (!is.matrix(pair)) pair <- matrix(pair,ncol=3)
-if (ncol(pair)!=3) stop("point pairs need top be provided with their separating 
-		  distance")
+  if (!is.matrix(pair)) pair <- matrix(pair, ncol=3)
+  if (ncol(pair)!=3) stop("Point pairs need to be provided with their separating distance in column 3.")
 
-# ascending sorted pairs allow for easy evaluation
-pairs <- pair[order(pair[,3]),1:2,drop=FALSE] 
-depFun <- copula@depFun
-method <- depFun(NULL)
+  ordering <- order(pair[,3])
+  # ascending sorted pairs allow for easy evaluation
+  pairs <- pair[ordering,1:2,drop=FALSE] 
+  h <- sort(pair[,3])
 
-if (method != "none"){
-  calibMoa <- switch(method, kendall=calibKendallsTau,
-                 spearmann=calibSpearmansRho, 
-                 id=function(copula, tau) return(tau))
-}
-
-h <- sort(pair[,3])
-n.dists <- length(distances)
-res <- numeric(0)
-
-sel <- which(h < distances[1])
-if(sum(sel)>0) {
-  tmpH <- h[sel]
-  tmpCop <- copula@components[[1]]
-  tmpPairs <- pairs[sel,,drop=FALSE]
-  if (method != "none"){
-    for (j in 1:length(tmpH)) {
-      tmpCop@parameters <- calibMoa(tmpCop,depFun(tmpH[j]))
-      res <- c(res, dducopula(tmpCop,tmpPairs[j,]))
-    }
-  } else res <- dducopula(tmpCop,tmpPairs)
-}
-
-if (n.dists > 2) {
-for ( i in 2:n.dists ) {
-  low <- distances[i-1]
-  high<- distances[i]
-  sel <- which(h >= low & h < high)
-  if (sum(sel)>0) {
-    tmpH <- h[sel]
-    tmpPairs <- pairs[sel,,drop=FALSE]
-    lowerCop <- copula@components[[i-1]]
-    upperCop <- copula@components[[i]]
-    if (method != "none") {
-      lowerVals <- numeric(0)
-      upperVals <- numeric(0)
-      for (j in 1:length(tmpH)) {
-        lowerCop@parameters <- calibMoa(lowerCop,depFun(tmpH[j]))
-        upperCop@parameters <- calibMoa(upperCop,depFun(tmpH[j]))
-        lowerVals <- c(lowerVals, dducopula(lowerCop,tmpPairs[j,]))
-        upperVals <- c(upperVals, dducopula(upperCop,tmpPairs[j,]))
-      }
-      res <- c( res,
-        (high-tmpH)/(high-low) * lowerVals
-        +(tmpH-low)/(high-low) * upperVals)
-    } else {
-      res <- c( res,
-        (high-tmpH)/(high-low) * dducopula(lowerCop,tmpPairs)
-        +(tmpH-low)/(high-low) * dducopula(upperCop,tmpPairs))
-    }
-  }
-}}
-
-sel <- which(h >= distances[n.dists])
-if(sum(sel)>0) {
-  res <- c(res,dducopula(copula@components[[n.dists]],
-	       pairs[which(h >= distances[n.dists]),]))
-}
+  if(is.null(copula@calibMoa)) res <- spConCop(dducopula, copula, pairs, h)
+  else res <- spDepFunCop(dducopula, copula, pairs, h)
 
 # reordering the values
-return(res[order(pair[,3])])
+return(res[ordering])
 }
 
 setMethod("dducopula", signature("spCopula"), dduSpCopula)
@@ -320,100 +252,134 @@ setMethod("dducopula", signature("spCopula"), dduSpCopula)
 ###############
 
 ddvSpCopula <- function (copula, pair) {
-if (!is.matrix(pair)) pair <- matrix(pair,ncol=3)
-if (ncol(pair)!=3) stop("point pairs need to be provided with their separating 
-		  distance")
+  if (!is.matrix(pair)) pair <- matrix(pair, ncol=3)
+  if (ncol(pair)!=3) stop("Point pairs need to be provided with their separating distance in column 3.")
 
-# ascending sorted pairs allow for easy evaluation
-pairs <- pair[order(pair[,3]),1:2,drop=FALSE] 
-depFun <- copula@depFun
-method <- depFun(NULL)
+  ordering <- order(pair[,3])
+  # ascending sorted pairs allow for easy evaluation
+  pairs <- pair[ordering,1:2,drop=FALSE] 
+  h <- sort(pair[,3])
 
-if (method != "none"){
-  calibMoa <- switch(method, kendall=calibKendallsTau,
-                 spearmann=calibSpearmansRho, 
-                 id=function(copula, tau) return(tau))
-}
-
-h <- sort(pair[,3])
-n.dists <- length(distances)
-res <- numeric(0)
-
-sel <- which(h < distances[1])
-if(sum(sel)>0) {
-  tmpH <- h[sel]
-  tmpCop <- copula@components[[1]]
-  tmpPairs <- pairs[sel,,drop=FALSE]
-  if (method != "none"){
-    for (j in 1:length(tmpH)) {
-      tmpCop@parameters <- calibMoa(tmpCop,depFun(tmpH[j]))
-      res <- c(res, ddvcopula(tmpCop,tmpPairs[j,]))
-    }
-  } else res <- ddvcopula(tmpCop,tmpPairs)
-}
-
-if (n.dists > 2) {
-for ( i in 2:n.dists ) {
-  low <- distances[i-1]
-  high<- distances[i]
-  sel <- which(h >= low & h < high)
-  if (sum(sel)>0) {
-    tmpH <- h[sel]
-    tmpPairs <- pairs[sel,,drop=FALSE]
-    lowerCop <- copula@components[[i-1]]
-    upperCop <- copula@components[[i]]
-    if (method != "none") {
-      lowerVals <- numeric(0)
-      upperVals <- numeric(0)
-      for (j in 1:length(tmpH)) {
-        lowerCop@parameters <- calibMoa(lowerCop,depFun(tmpH[j]))
-        upperCop@parameters <- calibMoa(upperCop,depFun(tmpH[j]))
-        lowerVals <- c(lowerVals, ddvcopula(lowerCop,tmpPairs[j,]))
-        upperVals <- c(upperVals, ddvcopula(upperCop,tmpPairs[j,]))
-      }
-      res <- c( res,
-        (high-tmpH)/(high-low) * lowerVals
-        +(tmpH-low)/(high-low) * upperVals)
-    } else {
-      res <- c( res,
-        (high-tmpH)/(high-low) * ddvcopula(lowerCop,tmpPairs)
-        +(tmpH-low)/(high-low) * ddvcopula(upperCop,tmpPairs))
-    }
-  }
-}}
-
-sel <- which(h >= distances[n.dists])
-if(sum(sel)>0) {
-  res <- c(res,ddvcopula(copula@components[[n.dists]],
-	       pairs[which(h >= distances[n.dists]),]))
-}
+  if(is.null(copula@calibMoa)) res <- spConCop(ddvcopula, copula, pairs, h)
+  else res <- spDepFunCop(ddvcopula, copula, pairs, h)
 
 # reordering the values
-return(res[order(pair[,3])])
+return(res[ordering])
 }
 
 setMethod("ddvcopula", signature("spCopula"), ddvSpCopula)
 
-##
-## 
+#############
+##         ##
+## FITTING ##
+##         ##
+#############
 
-## testing ##
+# two models: 
+# 1) Kendall's tau driven:
+#    fit curve through emp. Kendall's tau values, identify validity ranges for
+#    copula families deriving parameters from the fit, fade from one family to 
+#    another at borders
+# 2) convex-linear combination of copulas: 
+#    fit one per lag, fade from one to another
 
-# spCop <- spCopula(
-# 	   list(normalCopula(runif(1,min=-1,max=1)),
-# 	     normalCopula(runif(1,min=-1,max=1)),
-# 	     normalCopula(runif(1,min=-1,max=1)),
-# 	     normalCopula(runif(1,min=-1,max=1)) ),
-# 	   distances=c(200,300,500,750,1000),depFun= function(x) {if(is.null(x))return("id");return(.4)}) # NULL)#  function(x) {if(is.null(x))return("kendall");return(.4)})
-# 
-# pcopula(spCop,matrix(c(.03, 1, 1000, 1, .4, 600, 0, 0, 400, 1, 1, 200),ncol=3,byrow=T))
-# dcopula(spCop,matrix(c(.03, .04, 100, .03, .04, 400, .03, .4, 250, .03, .4, 600),ncol=3,byrow=T))
-# dducopula(spCop,matrix(c(.03, .04, 100, .03, .04, 400, .03, .4, 250, .03, .4, 600),ncol=3,byrow=T))
-# ddvcopula(spCop,matrix(c(.03, .04, 100, .03, .04, 400, .03, .4, 250, .03, .4, 600),ncol=3,byrow=T))
-# 
-# foo <- normalCopula(.5)
-# foo@parameters <- .3
-# 
-# system.time(
-# sum(dcopula(spCop,cbind(lrgUnitSq,rep(120,10000))))/10000
-# )
+# towards the first model:
+
+# INPUT: the stBinning
+# steps
+# a) fit a curve
+# b) estimate bivariate copulas per lag (limited to those with some 1-1-relation 
+#    to Kendall's tau')
+# INTERMEDIATE RESULT
+# c) select best fits based on ... e.g. log-likelihood, visual inspection
+# d) compose bivariate copulas to one spatial copula
+# OUTPUT: a spatial copula parametrixued by distance through Kendall's tau
+
+# towards a)
+# bins   -> typically output from calcBins
+# type   -> the type of curve (by now only polynominals are supported)
+# degree -> the degree of the polynominal
+# cutoff -> maximal distance that should be considered for fitting
+# bounds -> the bounds of the correlation function (typically c(0,1))
+# method -> the measure of association, either "kendall" or "spearman"
+fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), method="kendall") {
+  bins <- as.data.frame(bins[1:2])
+  if(!is.na(cutoff)) bins <- bins[which(bins$meanDists <= cutoff),]
+  fitCor <- lm(lagCor ~ poly(meanDists, degree), data = bins)
+  print(fitCor)
+  cat("Sum of squared residuals:",sum(fitCor$residuals^2),"\n")
+  function(x) {
+    if (is.null(x)) return(method)
+    return(pmin(bounds[2], pmax(bounds[1],predict(fitCor, data.frame(meanDists=x)))))
+  }
+}
+
+# towards b)
+# bins     -> typically output from calcBins
+# calcTau  -> a function on distance providing Kendall's tau estimates, 
+# families -> a vector of dummy copula objects of each family to be considered
+#             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
+loglikByCopulasLags <- function(bins, calcTau, families=c(normalCopula(0), tCopula(0,dispstr="un"),
+                                                          claytonCopula(0), frankCopula(1), gumbelCopula(1))) {
+  loglik <- NULL
+  for (cop in families) {
+    print(cop)
+    tmploglik <- NULL
+    for(i in 1:length(bins$meanDists)) {
+      cop@parameters[1] <- calibKendallsTau(cop,tau=calcTau(bins$meanDists[i]))
+      tmploglik <- c(tmploglik, sum(log(dcopula(cop,bins$lagData[[i]]))))
+    }
+    loglik <- cbind(loglik, tmploglik)
+  }
+
+  colnames(loglik) <- sapply(families, function(x) class(x)[1])
+
+  return(loglik)
+}
+
+# towards d)
+composeSpCop <- function(bestFit, families, bins, calcCor) {
+  nfits <- length(bestFit)
+  gaps <- which(diff(bestFit)!=0)
+
+  if(missing(calcCor)) noCor <- nfits
+  else noCor <- min(which(calcCor(bins$meanDists)<=0), nfits)
+  
+  breaks <- sort(c(gaps, gaps+1, noCor))
+  breaks <- breaks[breaks<noCor]
+  
+  cops <- as.list(families[bestFit[breaks]])
+  
+  breaks <- unique(c(breaks, min(nfits,rev(breaks)[1]+1)))
+  distances <- bins$meanDists[breaks]
+  
+  if(length(breaks)==length(cops)) {
+    warning("Lags do not cover the entire range with positive correlation. ", 
+             "An artifical one fading towards the indepCopula has been added.")
+    distances <- c(distances, rev(distances)[1]+diff(bins$meanDists[nfits+c(-1,0)]))
+  }
+
+  if(missing(calcCor)) return(spCopula(components=cops, distances=distances, unit="m"))
+  else return(spCopula(components=cops, distances=distances, unit="m", spDepFun=calcCor))
+}
+
+# in once
+
+# bins   -> typically output from calcBins
+# cutoff -> maximal distance that should be considered for fitting
+# families -> a vector of dummy copula objects of each family to be considered
+#             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
+# ...
+# type   -> the type of curve (by now only polynominals are supported)
+# degree -> the degree of the polynominal
+# bounds -> the bounds of the correlation function (typically c(0,1))
+# method -> the measure of association, either "kendall" or "spearman"
+fitSpCopula <- function(bins, cutoff=NA, families=c(normalCopula(0), tCopula(0,dispstr="un"),
+                                                    claytonCopula(0), frankCopula(1), gumbelCopula(1)), ...) {
+  calcTau <- fitCorFun(bins, cutoff=cutoff, ...)
+  loglik <- loglikByCopulasLags(bins, calcTau=calcTau, families=families)
+  
+  bestFit <- apply(apply(loglik, 1, rank),2,function(x) which(x==length(families)))
+  
+  return(composeSpCop(bestFit, families, bins, calcTau))
+}

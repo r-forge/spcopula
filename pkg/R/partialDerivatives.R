@@ -22,6 +22,40 @@
 # partial derivatives and their inverse of some copulas from the copula package
 # new defined copulas store their partial derivative separately
 
+setGeneric("dducopula", function(copula, pair) standardGeneric("dducopula"))
+setGeneric("ddvcopula", function(copula, pair) standardGeneric("ddvcopula"))
+
+## inverse partial derivatives 
+# numerical standard function
+invdducopula <- function(copula, u, y) {
+    if (length(u) != length(y)) 
+        stop("Length of u and y differ!")
+    res <- NULL
+    for (i in 1:length(u)) {
+        res <- rbind(res, optimize(function(x) (dducopula(copula, 
+            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
+            interval = c(0, 1))$minimum)
+    }
+    return(res)
+}
+
+setGeneric("invdducopula")
+
+invddvcopula <- function(copula, v, y) {
+  standardGeneric("invddvcopula")
+    if (length(v) != length(y)) 
+        stop("Length of v and y differ!")
+    res <- NULL
+    for (i in 1:length(v)) {
+        res <- rbind(res, optimize(function(x) (ddvcopula(copula, 
+            cbind(x, rep(v[i], length(x)))) - y[i])^2, 
+            interval = c(0, 1))$minimum)
+    }
+    return(res)
+}
+
+setGeneric("invddvcopula")
+
 ###################
 ## Normal Copula ##
 ###################
@@ -52,30 +86,6 @@ cat("This might be wrong!")
 
 setMethod("invdducopula", signature("normalCopula"), invdduNorm)
 
-## testing
-
-# max(abs(pnorm(qnorm(pnorm(qnorm(ys,mean=.2,sd=0.8))),mean=.2,sd=.8)-ys))
-# y <- c(.3,.9)
-# v <- c(.9,.1)
-# # us <- rep(.3,1000)
-# rho <- .6
-# u <- invdduNorm(normalCopula(rho),v,y)
-# dduNorm(normalCopula(rho),cbind(v,u))-y
-# 
-# pnorm(c(-1,1),mean=c(-1,1))
-# 
-# test <- NULL
-# for(i in 1:100){
-# b <- runif(1,-1,1)
-# # us <- runif(1000)
-# ys <- runif(1000)
-# vs <- invdduNorm(normalCopula(b),us,ys)
-# test <- c(test,max(abs(dduNorm(normalCopula(b),cbind(us,vs))-ys)))
-# }
-# hist(test)
-# abline(h=2,col="red")
-# 
-# curve(dduNorm(x))
 
 ## partial derivative d/dv
 ##########################
@@ -296,3 +306,46 @@ invddvFrank <- function(copula, v, y){
 }
 
 setMethod("invddvcopula", signature("frankCopula"), invddvFrank)
+
+##################
+## student Copula ##
+##################
+
+## partial derivative d/du
+##########################
+
+dduStudent <- function(copula, pair){
+  if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
+  
+  df <- copula@df
+  v <- qt(pair,df=df)
+  
+  rho <- copula@parameters[1]
+  
+  return(pt(sqrt((df+1)/(df+v[,1]^2)) / sqrt(1 - rho^2) * (v[,2] - rho * v[,1]), df=df+1))
+}
+
+setMethod("dducopula", signature("tCopula"), dduStudent)
+
+## partial derivative d/dv
+##########################
+
+ddvStudent <- function(copula, pair){
+  if (!is.matrix(pair)) pair <- matrix(pair,ncol=2)
+  
+  df <- copula@df
+  v <- qt(pair,df=df)
+  
+  rho <- copula@parameters[1]
+  
+  return(pt(sqrt((df+1)/(df+v[,2]^2)) / sqrt(1 - rho^2) * (v[,1] - rho * v[,2]), df=df+1))
+}
+
+setMethod("ddvcopula", signature("tCopula"), ddvStudent)
+
+setMethod("invdducopula", signature("copula"), invdducopula)
+invdducopula(tCopula(0.7),u=.3,y=.7)
+
+showMethods(invdducopula)
+rm(invdducopula.default)
+setMethod

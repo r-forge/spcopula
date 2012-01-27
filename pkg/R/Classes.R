@@ -60,44 +60,6 @@ setClass("cqsCopula",
   contains = list("copula")
 )
 
-####
-## partial derivatives
-
-setGeneric("dducopula", function(copula, pair) standardGeneric("dducopula"))
-setGeneric("ddvcopula", function(copula, pair) standardGeneric("ddvcopula"))
-
-## inverse partial derivatives 
-# numerical standard function
-invdducopula <- function(copula, u, y) {
-    standardGeneric("invdducopula")
-    if (length(u) != length(y)) 
-        stop("Length of u and y differ!")
-    res <- NULL
-    for (i in 1:length(u)) {
-        res <- rbind(res, optimize(function(x) (dducopula(copula, 
-            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
-            interval = c(0, 1))$minimum)
-    }
-    return(res)
-}
-
-setGeneric("invdducopula", invdducopula)
-
-invddvcopula <- function(copula, v, y) {
-  standardGeneric("invddvcopula")
-    if (length(v) != length(y)) 
-        stop("Length of v and y differ!")
-    res <- NULL
-    for (i in 1:length(v)) {
-        res <- rbind(res, optimize(function(x) (ddvcopula(copula, 
-            cbind(x, rep(v[i], length(x)))) - y[i])^2, 
-            interval = c(0, 1))$minimum)
-    }
-    return(res)
-}
-
-setGeneric("invddvcopula", invddvcopula)
-
 ## 
 ## the spatial copula
 ##
@@ -118,13 +80,27 @@ setGeneric("invddvcopula", invddvcopula)
 #                             assings valid parameters to the copulas involved
 
 validSpCopula <- function(object) {
-  if (length(object@components) != length(object@distances)) return("Length of components + 1 does not equal length of distances. \n Note: The last distance must give the range and its automatically associated with the indepenence copula.")
-  if (is.na(match(object@depFun(NULL),c("kendall","spearman","id","none")))) return("depFun(NULL) must return 'spearman', 'kendall' or 'id'.")
+  if (length(object@components) != length(object@distances)) return("Length of components + 1 does not equal length of distances. \n Note: The last distance must give the range and it is automatically associated with the indepenence copula.")
+  check.upper <- NULL
+  check.lower <- NULL
+  if(!is.null(object@calibMoa)) {
+    for (i in 1:length(object@components)) {
+      check.upper <- c(check.upper, is.na(object@calibMoa(object@components[[i]], object@distances[i+1])))
+      check.lower <- c(check.lower, is.na(object@calibMoa(object@components[[i]], c(0,object@distances)[i])))
+    }
+    if(sum(check.upper>0)) return(paste("Reconsider the upper boundary conditions of the following copula(s): \n",
+                                        paste(sapply(object@components[check.upper], function(x) x@message), 
+                                              "at", object@distances[check.upper],collapse="\n")))
+    if(sum(check.lower>0)) return(paste("Reconsider the lower boundary conditions of the following copula(s): \n",
+                                        paste(sapply(object@components[check.lower], function(x) x@message), 
+                                              "at", object@distances[check.lower],collapse="\n")))
+  }
+  
   else return(TRUE)
 }
 
 setClass("spCopula",
-  representation = representation("copula", components="list", distances="numeric", unit="character", depFun="function"),
+  representation = representation("copula", components="list", distances="numeric", unit="character", calibMoa="function"),
   validity = validSpCopula,
   contains = list("copula")
 )
