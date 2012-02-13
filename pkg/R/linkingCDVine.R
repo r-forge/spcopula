@@ -120,3 +120,30 @@ linkCDVine.r <- function(copula, n){
 linkCDVine.calibKendallsTau <- function(copula, tau) {
   return(BiCopTau2Par(copula@family, tau))
 }
+
+CDVine:::BiCopCDF
+
+## Kendall distribution
+# linkCDVine.Kendall <- function(copula, u) {
+#   param <- copula@parameters
+#   fam <- copula@family
+#   if(is.na(param[2])) param <- c(param,0)
+#   
+#   if (!(family %in% c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 16, 17, 18, 19,
+#                       20, 23, 24, 26, 27, 28, 29, 30, 33, 34, 36, 37, 38, 39, 40)))
+#     stop("Copula family not implemented.")
+#   if (family %in% c(13, 14, 16, 17, 18, 19, 20)) {
+#       u1 = 1 - u1
+#       u2 = 1 - u2
+#       family = family - 10
+#   }
+#   if (family %in% c(23, 24, 26, 27, 28, 29, 30)) {
+#     u1 = 1 - u1
+#     family = family - 20
+#   }
+#   if (family %in% c(33, 34, 36, 37, 38, 39, 40)) {
+#     u2 = 1 - u2
+#     family = family - 30
+#   }
+#   CDVine:::obs.stat(u1, u2, family) 
+# }

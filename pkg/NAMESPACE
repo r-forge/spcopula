@@ -1,6 +1,3 @@
-
-
-
 # useDynLib(spcopula)
 
 import(copula, sp, spacetime, CDVine, lattice)
@@ -36,7 +33,7 @@ export(spCopula)
 
 # MRP functions
 export(genEmpKenFun, genInvKenFun)
-export(kendallRP, criticalLevel)
+export(kendallRP, criticalLevel, kendallDistribution)
 
 ## classes
 exportClasses(asCopula, cqsCopula, neighbourhood)

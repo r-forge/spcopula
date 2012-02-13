@@ -49,6 +49,21 @@ setMethod("ddvcopula", signature("BB7Copula"), linkCDVine.ddv)
 ## random number generator
 setMethod("rcopula", signature("BB7Copula"), linkCDVine.r)
 
+## kendall distribution/measure
+kendall.BB7 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + 1/(theta * delta) * ((1 - (1 - t)^theta)^(-delta) -  1)/
+    ((1 - t)^(theta - 1) * (1 - (1 - t)^theta)^(-delta - 1))
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setGeneric("kendallDistribution", function(copula, t) standardGeneric("kendallDistribution"))
+setMethod("kendallDistribution", signature("BB7Copula"), kendall.BB7)
 
 #########################
 ## BB7 survival copula ##
@@ -164,3 +179,4 @@ setMethod("ddvcopula", signature("r270BB7Copula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rcopula", signature("r270BB7Copula"), linkCDVine.r)
+
