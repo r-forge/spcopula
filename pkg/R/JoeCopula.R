@@ -52,6 +52,22 @@ setMethod("rcopula", signature("JoeCopula"), linkCDVine.r)
 ## Kendalls tau to parameter conversion
 setMethod("calibKendallsTau", signature("JoeCopula"), linkCDVine.calibKendallsTau)
 
+## kendall distribution/measure, taken from CDVine:::obs.stat
+kendall.Joe <- function(copula, t){
+  par = copula@parameters[1]
+  
+  kt <- rep(NA,length(t))
+  kt <- t - (log(1 - (1 - t)^par) * (1 - (1 - t))^par)/(par * (1 - t)^(par - 1))
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("JoeCopula"), kendall.Joe)
+
+setMethod("getKendallDistr", signature("JoeCopula"), 
+          function(copula) return(function(t) kendall.Joe(copula, t)))
+
 #########################
 ## Joe survival copula ##
 #########################

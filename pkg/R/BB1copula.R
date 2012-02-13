@@ -46,8 +46,24 @@ setMethod("dducopula", signature("BB1Copula"), linkCDVine.ddu)
 # ddv
 setMethod("ddvcopula", signature("BB1Copula"), linkCDVine.ddv)
 
-## random number generater ??
+## random number generator
 setMethod("rcopula", signature("BB1Copula"), linkCDVine.r)
+
+## kendall distribution/measure
+kendall.BB1 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + 1/(theta * delta) * (t^(-theta) - 1)/(t^(-1 - theta))
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("BB1Copula"), kendall.BB1)
+
+setMethod("getKendallDistr", signature("BB1Copula"), function(copula) return(function(t) kendall.BB1(copula, t)) )
 
 #########################
 ## BB1 survival copula ##

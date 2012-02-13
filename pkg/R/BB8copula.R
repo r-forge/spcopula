@@ -52,6 +52,23 @@ setMethod("ddvcopula", signature("BB8Copula"),linkCDVine.ddv)
 setMethod("rcopula", signature("BB8Copula"),linkCDVine.r)
 # rcopula(BB8Copula(c(5.329995,0.1201476)),500)
 
+## kendall distribution/measure, taken from CDVine:::obs.stat
+kendall.BB8 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + log(((1 - t * delta)^theta - 1)/((1 - delta)^theta - 1)) * (1 - t * delta - (1 - t * delta)^(-theta) + (1 - t * delta)^(-theta) * t * delta)/ (theta * delta)
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("BB8Copula"), kendall.BB8)
+
+setMethod("getKendallDistr", signature("BB8Copula"), 
+          function(copula) return(function(t) kendall.BB8(copula, t)))
+
 #########################
 ## BB8 survival copula ##
 #########################

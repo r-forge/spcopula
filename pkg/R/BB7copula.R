@@ -49,7 +49,7 @@ setMethod("ddvcopula", signature("BB7Copula"), linkCDVine.ddv)
 ## random number generator
 setMethod("rcopula", signature("BB7Copula"), linkCDVine.r)
 
-## kendall distribution/measure
+## kendall distribution/measure, taken from CDVine:::obs.stat
 kendall.BB7 <- function(copula, t){
   theta = copula@parameters[1]
   delta = copula@parameters[2]
@@ -62,8 +62,10 @@ kendall.BB7 <- function(copula, t){
   return(kt)  
 }
 
-setGeneric("kendallDistribution", function(copula, t) standardGeneric("kendallDistribution"))
 setMethod("kendallDistribution", signature("BB7Copula"), kendall.BB7)
+
+setMethod("getKendallDistr", signature("BB7Copula"), 
+          function(copula) return(function(t) kendall.BB7(copula, t)))
 
 #########################
 ## BB7 survival copula ##

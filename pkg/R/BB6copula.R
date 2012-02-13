@@ -49,6 +49,23 @@ setMethod("ddvcopula", signature("BB6Copula"), linkCDVine.ddv)
 ## random number generater ??
 setMethod("rcopula", signature("BB6Copula"), linkCDVine.r)
 
+## kendall distribution/measure, taken from CDVine:::obs.stat
+kendall.BB6 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + log(-(1 - t)^theta + 1) * (1 - t - (1 - t)^(-theta) + (1 - t)^(-theta) * t)/(delta * theta)
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("BB6Copula"), kendall.BB6)
+
+setMethod("getKendallDistr", signature("BB6Copula"), 
+          function(copula) return(function(t) kendall.BB6(copula, t)))
+
 #########################
 ## BB6 survival copula ##
 #########################
@@ -79,12 +96,12 @@ setMethod("dducopula", signature("surBB6Copula"), linkCDVine.ddu)
 # ddv
 setMethod("ddvcopula", signature("surBB6Copula"), linkCDVine.ddv)
 
-## random number generater ??
+## random number generator
 setMethod("rcopula", signature("surBB6Copula"), linkCDVine.r)
 
-####################
-## BB6 copula 90° ##
-####################
+#######################
+## BB6 copula 90 deg ##
+#######################
 
 validRotBB6Copula = function(object) {
   if (object@dimension != 2)
