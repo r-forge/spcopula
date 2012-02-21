@@ -145,7 +145,7 @@ spDepFunCop <- function(fun, copula, pairs, h) {
 }
 
 # for static convex combinations of copulas
-spConCop <- function(copula, pairs, h) {
+spConCop <- function(fun, copula, pairs, h) {
   dists <- copula@distances
   n.dists <- length(dists)
  
