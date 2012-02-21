@@ -4,8 +4,8 @@
 ##
 ##   This file is part of the R package spcopula.
 ##
-##   The R package spcopula is free software: you can redistribute it and/or modify
-##   it under the terms of the GNU General Public License as published by
+##   The R package spcopula is free software: you can redistribute it and/or 
+##   modify it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 3 of the License, or
 ##   (at your option) any later version.
 ##
@@ -84,6 +84,7 @@ showCopula <- function(object) {
 setMethod("show", signature("spCopula"), showCopula)
 
 ## spatial copula jcdf ##
+
 
 # for spatial copulas with a spatial dependece function
 spDepFunCop <- function(fun, copula, pairs, h) {
@@ -190,13 +191,13 @@ pSpCopula <- function (copula, u) {
   ordering <- order(u[,3])
   # ascending sorted pairs allow for easy evaluation
   pairs <- u[ordering,1:2,drop=FALSE] 
-  h <- sort(u[,3])
+  h <- u[ordering,3]
 
   if(is.null(copula@calibMoa)) res <- spConCop(pcopula, copula, pairs, h)
   else res <- spDepFunCop(pcopula, copula, pairs, h)
 
 # reordering the values
-return(res[ordering])
+return(res[order(ordering)])
 }
 
 setMethod("pcopula", signature("spCopula"), pSpCopula)
@@ -214,16 +215,17 @@ dSpCopula <- function (copula, u) {
   ordering <- order(u[,3])
   # ascending sorted pairs allow for easy evaluation
   pairs <- u[ordering,1:2,drop=FALSE] 
-  h <- sort(u[,3])
+  h <- u[ordering,3]
 
   if(is.null(copula@calibMoa)) res <- spConCop(dcopula, copula, pairs, h)
   else res <- spDepFunCop(dcopula, copula, pairs, h)
 
 # reordering the values
-return(res[ordering])
+return(res[order(ordering)])
 }
 
 setMethod("dcopula", signature("spCopula"), dSpCopula)
+
 
 ## partial derivatives ##
 
@@ -237,13 +239,13 @@ dduSpCopula <- function (copula, pair) {
   ordering <- order(pair[,3])
   # ascending sorted pairs allow for easy evaluation
   pairs <- pair[ordering,1:2,drop=FALSE] 
-  h <- sort(pair[,3])
+  h <- pair[ordering,3]
 
   if(is.null(copula@calibMoa)) res <- spConCop(dducopula, copula, pairs, h)
   else res <- spDepFunCop(dducopula, copula, pairs, h)
 
 # reordering the values
-return(res[ordering])
+return(res[order(ordering)])
 }
 
 setMethod("dducopula", signature("spCopula"), dduSpCopula)
@@ -258,13 +260,13 @@ ddvSpCopula <- function (copula, pair) {
   ordering <- order(pair[,3])
   # ascending sorted pairs allow for easy evaluation
   pairs <- pair[ordering,1:2,drop=FALSE] 
-  h <- sort(pair[,3])
+  h <- pair[order,3]
 
   if(is.null(copula@calibMoa)) res <- spConCop(ddvcopula, copula, pairs, h)
   else res <- spDepFunCop(ddvcopula, copula, pairs, h)
 
 # reordering the values
-return(res[ordering])
+return(res[order(ordering)])
 }
 
 setMethod("ddvcopula", signature("spCopula"), ddvSpCopula)

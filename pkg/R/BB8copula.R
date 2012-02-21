@@ -39,8 +39,6 @@ setMethod("dcopula", signature("BB8Copula"), linkCDVine.PDF)
 ## jcdf ##
 setMethod("pcopula", signature("BB8Copula"), linkCDVine.CDF)
 
-# persp(BB8Copula(c(5.329995,0.1201476)),dcopula)
-
 ## partial derivatives ##
 ## ddu
 setMethod("dducopula", signature("BB8Copula"),linkCDVine.ddu)
@@ -50,7 +48,6 @@ setMethod("ddvcopula", signature("BB8Copula"),linkCDVine.ddv)
 
 ## random number generator
 setMethod("rcopula", signature("BB8Copula"),linkCDVine.r)
-# rcopula(BB8Copula(c(5.329995,0.1201476)),500)
 
 ## kendall distribution/measure, taken from CDVine:::obs.stat
 kendall.BB8 <- function(copula, t){
@@ -103,9 +100,9 @@ setMethod("ddvcopula", signature("surBB8Copula"), linkCDVine.ddv)
 setMethod("rcopula", signature("surBB8Copula"), linkCDVine.r)
 # rcopula(surBB8Copula(c(5.329995,0.9201476)),500)
 
-####################
-## BB8 copula 90� ##
-####################
+#######################
+## BB8 copula 90 deg ##
+#######################
 
 validRotBB8Copula = function(object) {
   if (object@dimension != 2)

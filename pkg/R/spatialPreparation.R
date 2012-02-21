@@ -250,14 +250,24 @@ calcStBins <- function(data, variable="PM10", nbins=15, boundaries=NA, cutoff=NA
   
   lagData <- lapply(spIndices, retrieveData, tempIndices=tempIndices)
   
-  calcCor <- function(binnedData) {
+  calcStats <- function(binnedData) {
     cors <- NULL
     for(i in 1:(ncol(binnedData)/2)) {
-
       cors <- c(cors, cor(binnedData[,2*i-1], binnedData[,2*i], method=cor.method, use="pairwise.complete.obs"))
     }
     return(cors)
   }
+  
+  calcTau <- function(binnedData) {
+    cors <- NULL
+    for(i in 1:(ncol(binnedData)/2)) {
+      cors <- c(cors, CDVine:::fasttau(binnedData[,2*i-1], binnedData[,2*i]))
+    }
+    return(cors)
+  }
+  
+  calcCor <- switch(cor.method, fasttau=calcTau, calcStats)
+  
   lagCor <- sapply(lagData, calcCor)
   
   if(plot) { 

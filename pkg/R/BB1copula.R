@@ -97,9 +97,9 @@ setMethod("ddvcopula", signature("surBB1Copula"), linkCDVine.ddv)
 ## random number generater ??
 setMethod("rcopula", signature("surBB1Copula"), linkCDVine.r)
 
-####################
-## BB1 copula 90� ##
-####################
+#######################
+## BB1 copula 90 deg ##
+#######################
 
 validRotBB1Copula = function(object) {
   if (object@dimension != 2)
@@ -144,9 +144,9 @@ setMethod("ddvcopula", signature("r90BB1Copula"), linkCDVine.ddv)
 ## random number generator
 setMethod("rcopula", signature("r90BB1Copula"), linkCDVine.r)
 
-#####################
-## BB1 copula 270� ##
-#####################
+########################
+## BB1 copula 270 deg ##
+########################
 
 setClass("r270BB1Copula",
   representation = representation("copula", family="numeric"),

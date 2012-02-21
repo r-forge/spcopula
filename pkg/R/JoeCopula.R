@@ -50,7 +50,11 @@ setMethod("ddvcopula", signature("JoeCopula"), linkCDVine.ddv)
 setMethod("rcopula", signature("JoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("JoeCopula"), linkCDVine.calibKendallsTau)
+setMethod("calibKendallsTau", signature("JoeCopula"), 
+          function(copula, tau) {
+            if(tau <= 0) warning("The Joe copula can only represent positive dependence!")
+            linkCDVine.calibKendallsTau(copula, max(1e-6,abs(tau)))
+          })
 
 ## kendall distribution/measure, taken from CDVine:::obs.stat
 kendall.Joe <- function(copula, t){
@@ -102,7 +106,11 @@ setMethod("ddvcopula", signature("surJoeCopula"), linkCDVine.ddv)
 setMethod("rcopula", signature("surJoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("surJoeCopula"), linkCDVine.calibKendallsTau)
+setMethod("calibKendallsTau", signature("surJoeCopula"), 
+          function(copula, tau) {
+            if(tau <= 0) warning("The survival Joe copula can only represent positive dependence!")
+            linkCDVine.calibKendallsTau(copula, max(1e-6,abs(tau)))
+          })
 
 ###################
 ## Joe copula 90 ##
@@ -153,11 +161,15 @@ setMethod("ddvcopula", signature("r90JoeCopula"), linkCDVine.ddv)
 setMethod("rcopula", signature("r90JoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("r90JoeCopula"), linkCDVine.calibKendallsTau)
+setMethod("calibKendallsTau", signature("r90JoeCopula"),
+          function(copula, tau) {
+            if(tau >= 0) warning("The rotated Joe copula can only represent negative dependence!")
+            linkCDVine.calibKendallsTau(copula, min(-1e-6,-abs(tau)))
+          })
 
-#####################
-## Joe copula 270� ##
-#####################
+####################
+## Joe copula 270 ##
+####################
 
 setClass("r270JoeCopula",
   representation = representation("copula", family="numeric"),
@@ -189,4 +201,8 @@ setMethod("ddvcopula", signature("r270JoeCopula"), linkCDVine.ddv)
 setMethod("rcopula", signature("r270JoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("r270JoeCopula"), linkCDVine.calibKendallsTau)
+setMethod("calibKendallsTau", signature("r270JoeCopula"), 
+          function(copula, tau) {
+            if(tau >= 0) warning("The rotated Joe copula can only represent negative dependence!")
+            linkCDVine.calibKendallsTau(copula, min(-1e-6,-abs(tau)))
+          })

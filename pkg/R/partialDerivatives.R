@@ -30,6 +30,7 @@ setGeneric("ddvcopula", function(copula, pair) standardGeneric("ddvcopula"))
 invdducopula <- function(copula, u, y) {
     if (length(u) != length(y)) 
         stop("Length of u and y differ!")
+    warning("Numerical evaluation of invddu takes place.")
     res <- NULL
     for (i in 1:length(u)) {
         res <- rbind(res, optimize(function(x) (dducopula(copula, 
@@ -42,9 +43,10 @@ invdducopula <- function(copula, u, y) {
 setGeneric("invdducopula")
 
 invddvcopula <- function(copula, v, y) {
-  standardGeneric("invddvcopula")
+#  standardGeneric("invddvcopula")
     if (length(v) != length(y)) 
         stop("Length of v and y differ!")
+  warning("Numerical evaluation of invddv takes place.")
     res <- NULL
     for (i in 1:length(v)) {
         res <- rbind(res, optimize(function(x) (ddvcopula(copula, 
@@ -70,7 +72,7 @@ dduNorm <- function(copula, pair){
   u <- qnorm(pair[,1]) # u ~ N(0,1)
   v <- qnorm(pair[,2]) # v ~ N(0,1)
 
-  return(pnorm(v,mean=rho*u,sd=1-rho^2))
+  return(pnorm(v,mean=rho*u,sd=sqrt(1-rho^2)))
 }
 
 setMethod("dducopula", signature("normalCopula"),dduNorm)
@@ -79,9 +81,8 @@ setMethod("dducopula", signature("normalCopula"),dduNorm)
 #########################################
 
 invdduNorm <- function(copula, u, y){
-cat("This might be wrong!")
   rho <- copula@parameters
-  return(pnorm(qnorm(y,mean=rho*u,sd=1-rho^2))) # in doubt
+  return(pnorm(qnorm(y,mean=rho*qnorm(u),sd=sqrt(1-rho^2))))
 }
 
 setMethod("invdducopula", signature("normalCopula"), invdduNorm)
@@ -97,7 +98,7 @@ ddvNorm <- function(copula, pair){
   u <- qnorm(pair[,1])
   v <- qnorm(pair[,2])
 
-  return(pnorm(u,mean=rho*v,sd=1-rho^2))
+  return(pnorm(u,mean=rho*v,sd=sqrt(1-rho^2)))
 }
 
 setMethod("ddvcopula", signature("normalCopula"),ddvNorm)
@@ -107,7 +108,7 @@ setMethod("ddvcopula", signature("normalCopula"),ddvNorm)
 
 invddvNorm <- function(copula, v, y){
   rho <- copula@parameters
-  return(qnorm(y,mean=rho*v,sd=1-rho^2))
+  return(pnorm(qnorm(y,mean=rho*qnorm(v),sd=sqrt(1-rho^2))))
 }
 
 setMethod("invddvcopula", signature("normalCopula"), invddvNorm)
@@ -307,9 +308,9 @@ invddvFrank <- function(copula, v, y){
 
 setMethod("invddvcopula", signature("frankCopula"), invddvFrank)
 
-##################
+####################
 ## student Copula ##
-##################
+####################
 
 ## partial derivative d/du
 ##########################
