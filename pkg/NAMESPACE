@@ -1,6 +1,6 @@
 # useDynLib(spcopula)
 
-import(copula, sp, spacetime, CDVine, lattice)
+import(copula, spacetime, CDVine, lattice)
 # importClassesFrom(spacetime, STFDF)
 
 # constructor
