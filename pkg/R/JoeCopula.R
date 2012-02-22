@@ -15,7 +15,7 @@ validJoeCopula = function(object) {
     return("Parameter and upper bound have non-equal length")
   if (length(param) != length(lower))
     return("Parameter and lower bound have non-equal length")
-  if (any(is.na(param) | param >= upper | param < lower ))
+  if (any(is.na(param) | param >= upper | param <= lower ))
     return("Parameter value out of bound.")
   else return (TRUE)
 }
@@ -127,7 +127,7 @@ validRotJoeCopula = function(object) {
   if (length(param) != length(lower))
     return("Parameter and lower bound have non-equal length")
   if (any(is.na(param) | param >= upper | param <= lower))
-    return("Parameter value out of bound")
+    return("Parameter value out of bound.")
   else return (TRUE)
 }
 

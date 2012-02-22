@@ -1,8 +1,8 @@
 Package: spcopula
 Type: Package
 Title: copula driven spatial analysis
-Version: 1.0.47
-Date: 2012-02-21
+Version: 1.0.48
+Date: 2012-02-22
 Author: Benedikt Graeler
 Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
 Description: This package provides a framework to analyse spatial data provided in the format of the sp package with copulas. Additionally, support for calculating multivariate return periods is implemented.
@@ -23,6 +23,7 @@ Collate:
   BB7copula.R
   BB8copula.R
   JoeCopula.R
+  ClaytonGumbelCopula.R
   vineCopulas.R
   utilities.R
   returnPeriods.R

@@ -15,7 +15,7 @@ LazyLoad: \tab yes\cr
 }
 
 }
-\author{Benedikt Gräler \email{ben.graeler@uni-muenster.de}}
+\author{Benedikt Gr{\"a}ler \email{ben.graeler@uni-muenster.de}}
 \references{Some information can be found on my personal homepage \url{http:\\ifgi.uni-muenster.de\graeler} and in the source code. (Will be extended)
 }
 \keyword{ package }
