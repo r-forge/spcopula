@@ -150,11 +150,10 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h) {
   n.dists <- length(dists)
   calibPar <- copula@calibMoa
 
-  res <- numeric(0)
   if(h < dists[1]) {
     tmpCop <- copula@components[[1]]
     tmpCop@parameters[1] <- calibPar(tmpCop, h)
-    res <- c(res, fun(tmpCop, pairs))
+    res <- fun(tmpCop, pairs)
   }
   
   if (n.dists >= 2) {
@@ -168,20 +167,20 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h) {
           lowerCop@parameters[1] <- calibPar(lowerCop, h)
           upperCop@parameters[1] <- calibPar(upperCop, h)
 
-          lowerVals <- c(lowerVals, fun(lowerCop, pairs))
-          upperVals <- c(upperVals, fun(upperCop, pairs))
+          lowerVals <- fun(lowerCop, pairs)
+          upperVals <- fun(upperCop, pairs)
 
           res <- c(res, (high-h)/(high-low)*lowerVals + (h-low)/(high-low)*upperVals)
         } else {
           lowerCop@parameters <- calibPar(lowerCop, h)
-          res <- c(res, fun(lowerCop, pairs))
+          res <- fun(lowerCop, pairs)
         }
       }
     }
   }
   
   if(h >= dists[n.dists]) {
-    res <- c(res, fun(copula@components[[n.dists]], pairs))
+    res <- fun(copula@components[[n.dists]], pairs)
   }
   
   return(res)
