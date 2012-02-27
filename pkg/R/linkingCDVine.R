@@ -120,3 +120,25 @@ linkCDVine.r <- function(copula, n){
 linkCDVine.calibKendallsTau <- function(copula, tau) {
   return(CDVine::BiCopTau2Par(copula@family, tau))
 }
+
+## transform a fit from CDVine to a list of copula objects
+castCDvine <- function(cdvEst) {
+  copulas <- NULL
+  for(i in 1: length(cdvEst$family)) {
+    par1 <- cdvEst$par[i]
+    par2 <- cdvEst$par2[i]
+    cop <- switch(paste("fam",cdvEst$family[i],sep=""), fam0=indepCopula(dim=2), fam1=normalCopula(par1), fam2=tCopula(par1,df=par2), 
+                  fam3=claytonCopula(par1),         fam4=gumbelCopula(par1),          fam5=frankCopula(par1),           fam6=JoeCopula(par1), 
+                  fam7=BB1Copula(c(par1,par2)),     fam8=BB6Copula(c(par1,par2)),     fam9=BB7Copula(c(par1,par2)),    fam10=BB8Copula(c(par1,par2)),
+                  fam13=surClaytonCopula(par1),     fam14=surGumbelCopula(par1),      fam16=surJoeCopula(par1),
+                  fam17=surBB1Copula(c(par1,par2)), fam18=surBB6Copula(c(par1,par2)), fam19=surBB7Copula(c(par1,par2)), fam20=surBB8Copula(c(par1,par2)),
+                  fam23=r90ClaytonCopula(par1),     fam24=r90GumbelCopula(par1),      fam26=r90JoeCopula(par1),
+                  fam27=r90BB1Copula(c(par1,par2)), fam28=r90BB6Copula(c(par1,par2)), fam29=r90BB7Copula(c(par1,par2)), fam30=r90BB8Copula(c(par1,par2)),
+                  fam33=r270ClaytonCopula(par1),    fam34=r270GumbelCopula(par1),     fam36=r270JoeCopula(par1),
+                  fam37=r270BB1Copula(c(par1,par2)),fam38=r270BB6Copula(c(par1,par2)),fam39=r270BB7Copula(c(par1,par2)),fam40=r270BB8Copula(c(par1,par2)))
+    
+    copulas <- append(copulas, cop)
+  }
+  if(length(copulas) ==1) copulas <- copulas[[1]]
+  return(copulas)
+}
