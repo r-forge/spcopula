@@ -226,15 +226,15 @@ calcStBins <- function(data, variable="PM10", nbins=15, boundaries=NA, cutoff=NA
   mDists <- sapply(spIndices,function(x) mean(x[,3]))
   
   lengthTime <- length(data@time)
-  if (!is.numeric(instances) | !length(instances ==1)) {
+  if (!is.numeric(instances) | !length(instances)==1) {
     tempIndices <- cbind(instances, instances)
   } 
   else {
     tempIndices <- NULL
     for (t.lag in rev(t.lags)) {
-      smplInd <- sample(x=max(1,1-t.lag):min(lengthTime,lengthTime-t.lag), size=min(instances,lengthTime-abs(max(t.lags))))
+      smplInd <- sample(x=max(1,1-t.lag):min(lengthTime,lengthTime-t.lag), size=min(instances,lengthTime-max(abs(t.lags))))
       tempIndices <- cbind(smplInd+t.lag, tempIndices)
-      tempIndices <- cbind(tempIndices[,1], tempIndices)
+      tempIndices <- cbind(tempIndices[,1]-t.lag, tempIndices)
     }
   }
     

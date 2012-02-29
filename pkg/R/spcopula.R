@@ -210,7 +210,7 @@ spConCop <- function(fun, copula, pairs, h) {
         lowerVals <- fun(copula@components[[i-1]], tmpPairs[,])
         upperVals <- fun(copula@components[[i]], tmpPairs[,])
 
-        res <- c(res, (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals)
+        res <- (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals
       }
     }
   }
@@ -405,15 +405,19 @@ setMethod("ddvcopula", signature("spCopula"), ddvSpCopula)
 # method -> the measure of association, either "kendall" or "spearman"
 fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), method="kendall") {
   bins <- as.data.frame(bins[1:2])
-  if(!is.na(cutoff)) bins <- bins[which(bins$meanDists <= cutoff),]
+  if(!is.na(cutoff)) bins <- bins[which(bins[[1]] <= cutoff),]
+  
   fitCor <- lm(lagCor ~ poly(meanDists, degree), data = bins)
+  
   print(fitCor)
   cat("Sum of squared residuals:",sum(fitCor$residuals^2),"\n")
+  
   function(x) {
     if (is.null(x)) return(method)
-    return(pmin(bounds[2], pmax(bounds[1],predict(fitCor, data.frame(meanDists=x)))))
+    return(pmin(bounds[2], pmax(bounds[1], eval(predict(fitCor, data.frame(meanDists=x))))))
   }
 }
+
 
 # towards b)
 # bins     -> typically output from calcBins
