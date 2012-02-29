@@ -170,7 +170,7 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h) {
           lowerVals <- fun(lowerCop, pairs)
           upperVals <- fun(upperCop, pairs)
 
-          res <- c(res, (high-h)/(high-low)*lowerVals + (h-low)/(high-low)*upperVals)
+          res <- (high-h)/(high-low)*lowerVals + (h-low)/(high-low)*upperVals
         } else {
           lowerCop@parameters <- calibPar(lowerCop, h)
           res <- fun(lowerCop, pairs)
