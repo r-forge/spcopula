@@ -99,11 +99,29 @@ validSpCopula <- function(object) {
   else return(TRUE)
 }
 
-setClass("spCopula",
-  representation = representation("copula", components="list", distances="numeric", unit="character", calibMoa="function"),
-  validity = validSpCopula,
-  contains = list("copula")
-)
+setClass("spCopula", representation = representation("copula", 
+                                                     components="list",
+                                                     distances="numeric", 
+                                                     calibMoa="function", 
+                                                     unit="character"),
+         validity = validSpCopula, contains = list("copula"))
+
+############################
+## Spatio-Temporal Copula ##
+############################
+
+validStCopula <- function(object) {
+  if(length(object@t.lags) != length(object@spCopList)) return("The length of the temporal distance vector must equal the number of spatial copulas.")
+  return(TRUE) # validity of any spCopula in spCopList is tested by the constructor, I believe
+}
+
+setClass("stCopula", representation = representation("copula", 
+                                                     spCopList="list", 
+                                                     t.lags="numeric",
+                                                     t.res="character"),
+         validity = validStCopula, contains = list("copula"))
+
+
 
 ########################################
 ## spatial classes providing the data ##

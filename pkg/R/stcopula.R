@@ -35,230 +35,79 @@
 #                             Kendalls tau or Spearman's rho to calib* or exact 
 #                             parameters
 
-
-spCopula <- function(components, distances, spDepFun, unit="m") {
-  if (missing(spDepFun)) calibMoa <- NULL
-  else {
-    if (is.na(match(spDepFun(NULL),c("kendall","spearman","id","none")))) stop("spDepFun(NULL) must return 'spearman', 'kendall' or 'id'.")
-    cat("The parameters of the components will be recalculated according to the provided spDepFun. \n")
-    calibMoa <- switch(spDepFun(NULL), 
-                       kendall=function(copula, h) calibKendallsTau(copula, spDepFun(h)),
-                       spearman=function(copula, h) calibSpearmansRho(copula, spDepFun(h)),
-                       id=function(copula, h) return(h))
-    
-    for (i in 1:length(components)) {
-      components[[i]]@parameters[1] <- calibMoa(components[[i]], distances[i]) # take care of non single parameter copulas
-    }
+stCopula <- function(components, distances, t.lags, stDepFun, unit="m", t.res="day") {
+  spCopList <- list()
+  getSpCop <- function(comp,dist,time) spCopula(comp, dist, 
+                                                spDepFun=function(h) stDepFun(h,time), unit)
+  for(i in 1:length(t.lags)){
+    spCopList <- append(spCopList, getSpCop(components[[i]], distances[[i]], i))
   }
-
-  components <- append(components,indepCopula())
   
-  param       <- unlist(lapply(components, function(x) x@parameters))
-  param.names <- unlist(lapply(components, function(x) x@param.names))
-  param.low   <- unlist(lapply(components, function(x) x@param.lowbnd))
-  param.up    <- unlist(lapply(components, function(x) x@param.upbnd))
-     
-  new("spCopula", dimension=2, parameters=param, param.names=param.names,
+  param       <- unlist(lapply(spCopList, function(x) x@parameters))
+  param.names <- unlist(lapply(spCopList, function(x) x@param.names))
+  param.low   <- unlist(lapply(spCopList, function(x) x@param.lowbnd))
+  param.up    <- unlist(lapply(spCopList, function(x) x@param.upbnd))
+  
+  new("stCopula", dimension=2, parameters=param, param.names=param.names,
       param.lowbnd=param.low, param.upbnd=param.up,
-      message="Spatial Copula: distance dependent convex combination of bivariate copulas",
-      components=components, distances=distances, calibMoa=calibMoa, unit=unit)
+      message="Spatio-Temporal Copula: distance and time dependent convex combination of bivariate copulas",
+      spCopList=spCopList, t.lags=t.lags, t.res=t.res)
 }
 
 ## show method
-showCopula <- function(object) {
+showStCopula <- function(object) {
   cat(object@message, "\n")
   cat("Dimension: ", object@dimension, "\n")
   cat("Copulas:\n")
-  for (i in 1:length(object@components)) {
-    cmpCop <- object@components[[i]]
-    cat("  ", cmpCop@message, "at", object@distances[i], 
-      paste("[",object@unit,"]",sep=""), "\n")
-    if (length(cmpCop@parameters) > 0) {
-      for (i in (1:length(cmpCop@parameters))) 
-        cat("    ", cmpCop@param.names[i], " = ", cmpCop@parameters[i], "\n")
-    }
+  for (i in 1:length(object@spCopList)) {
+    cmpCop <- object@spCopList[[i]]
+    cat("  ", cmpCop@message, "at", object@t.lags[i], 
+      paste("[",object@t.res,"]",sep=""), "\n")
+    show(cmpCop)
+    
   }
-  if(!is.null(object@calibMoa)) cat("A spatial dependence function is used. \n")
 }
 
-setMethod("show", signature("spCopula"), showCopula)
+setMethod("show", signature("stCopula"), showStCopula)
 
 ## spatial copula jcdf ##
 
-
-# for spatial copulas with a spatial dependece function
-spDepFunCop <- function(fun, copula, pairs, h) {
-  dists <- copula@distances
-  n.dists <- length(dists)
-  calibPar <- copula@calibMoa
-  
-  res <- numeric(0)
-  sel <- which(h < dists[1])
-  if(sum(sel)>0) {
-    tmpH <- h[sel]
-    tmpCop <- copula@components[[1]]
-    tmpPairs <- pairs[sel,,drop=FALSE]
-    for (j in 1:length(tmpH)) {
-      tmpCop@parameters[1] <- calibPar(tmpCop, tmpH[j])
-      res <- c(res, fun(tmpCop, tmpPairs[j,]))
-    }
-  }
-  
-  if (n.dists >= 2) {
-    for ( i in 2:n.dists ) {
-      low  <- dists[i-1]
-      high <- dists[i]
-      sel <- which(h >= low & h < high)
-      if (sum(sel)>0) {
-        tmpH <- h[sel]
-        tmpPairs <- pairs[sel,,drop=FALSE]
-        lowerCop <- copula@components[[i-1]]
-        upperCop <- copula@components[[i]]
-        if (class(lowerCop) != class(upperCop)) {
-          lowerVals <- numeric(0)
-          upperVals <- numeric(0)
-          for (j in 1:length(tmpH)) {
-            lowerCop@parameters[1] <- calibPar(lowerCop,  tmpH[j])
-            upperCop@parameters[1] <- calibPar(upperCop, tmpH[j])
-            lowerVals <- c(lowerVals, fun(lowerCop, tmpPairs[j,]))
-            upperVals <- c(upperVals, fun(upperCop, tmpPairs[j,]))
-          }
-          res <- c(res, (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals)
-        } else {
-          newVals <- numeric(0)
-          for (j in 1:length(tmpH)) {
-            lowerCop@parameters <- calibPar(lowerCop, tmpH[j])
-            newVals <- c(newVals, fun(lowerCop, tmpPairs[j,]))
-          }
-          res <- c(res, newVals)
-        }
-      }
-    }
-  }
-  
-  sel <- which(h >= dists[n.dists])
-  if(sum(sel)>0) {
-    res <- c(res, fun(copula@components[[n.dists]], pairs[which(h >= dists[n.dists]),]))
-  }
-
-  return(res)
-}
-
-# for spatial copulas with a spatial dependece function and a single distance but many pairs
-spDepFunCopSnglDist <- function(fun, copula, pairs, h) {
-  dists <- copula@distances
-  n.dists <- length(dists)
-  calibPar <- copula@calibMoa
-cat(h,"\n")
-  cat(dists[1],"\n")
-  if(h < dists[1]) {
-    tmpCop <- copula@components[[1]]
-    tmpCop@parameters[1] <- calibPar(tmpCop, h)
-    res <- fun(tmpCop, pairs)
-  }
-  
-  if (n.dists >= 2) {
-    for ( i in 2:n.dists ) {
-      low  <- dists[i-1]
-      high <- dists[i]
-      if (h >= low & h < high) {
-        lowerCop <- copula@components[[i-1]]
-        upperCop <- copula@components[[i]]
-        if (class(lowerCop) != class(upperCop)) {
-          lowerCop@parameters[1] <- calibPar(lowerCop, h)
-          upperCop@parameters[1] <- calibPar(upperCop, h)
-
-          lowerVals <- fun(lowerCop, pairs)
-          upperVals <- fun(upperCop, pairs)
-
-          res <- (high-h)/(high-low)*lowerVals + (h-low)/(high-low)*upperVals
-        } else {
-          lowerCop@parameters <- calibPar(lowerCop, h)
-          res <- fun(lowerCop, pairs)
-        }
-      }
-    }
-  }
-  
-  if(h >= dists[n.dists]) {
-    res <- fun(copula@components[[n.dists]], pairs)
-  }
-  
-  return(res)
-}
-
-
-# for static convex combinations of copulas
-spConCop <- function(fun, copula, pairs, h) {
-  dists <- copula@distances
-  n.dists <- length(dists)
- 
-  res <- numeric(0)
-  sel <- which(h < dists[1])
-  if(sum(sel)>0) {
-    res <- fun(copula@components[[1]], pairs[sel,,drop=FALSE])
-  }
-  
-  if (n.dists >= 2) {
-    for ( i in 2:n.dists ) {
-      low  <- dists[i-1]
-      high <- dists[i]
-      sel <- which(h >= low & h < high)
-      if (sum(sel)>0) {
-        tmpH <- h[sel]
-        tmpPairs <- pairs[sel,,drop=FALSE]
-
-        lowerVals <- fun(copula@components[[i-1]], tmpPairs[,])
-        upperVals <- fun(copula@components[[i]], tmpPairs[,])
-
-        res <- (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals
-      }
-    }
-  }
-  
-  sel <- which(h >= dists[n.dists])
-  if(sum(sel)>0) {
-    res <- c(res, fun(copula@components[[n.dists]], pairs[which(h >= dists[n.dists]),]))
-  }
-
-  return(res)
-}
-
-
 # u 
-#   three column matrix providing the transformed pairs and their respective 
-#   separation distances
-pSpCopula <- function (copula, u) {
-  if (!is.list(u) || !length(u)==2) stop("Point pairs need to be provided with their separating distance as a list.")
+#   list containing two column matrix providing the transformed pairs,  their respective 
+#   separation distances and time steps
+pStCopula <- function (copula, u) {
+  if (!is.list(u) || !length(u)==3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
+  if(!is.matrix(u[[1]])) u[[1]] <- matrix(u[[1]],ncol=2)
+  n <- nrow(u[[1]])
   h <- u[[2]]
-  if(length(h)>1) {
-    if(length(h)!=nrow(u[[1]])) stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
-    ordering <- order(h)
-    
-    # ascending sorted pairs allow for easy evaluation
-    pairs <- u[[1]][ordering,,drop=FALSE] 
-    h <- h[ordering]
+  t.dist <- u[[3]]
+
+  if(any(is.na(match(t.dist,copula@t.lags)))) 
+    stop("Prediction time(s) do(es) not math the modelled time slices.")
+  if(length(h)>1 & length(h)!=n) 
+    stop("The spatial distance vector must either be of same length as rows in the data pairs or a single value.")
+  if(length(t.dist)>1 & length(t.dist)!=n) 
+    stop("The temporal distances vector must either be of same length as rows in the data pairs or a single value.")
+
+  if (length(t.dist)==1) {
+    res <- spcopula:::pSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]], 
+                                list(u[[1]], u[[2]]))
   } else {
-    pairs <- u[[1]]
-  }
-  
-  if(is.null(copula@calibMoa)) res <- spConCop(dcopula, copula, pairs, h)
-  else {
-    if(length(h)>1) {
-      res <- spDepFunCop(pcopula, copula, pairs, h)
-      
-      # reordering the values
-      res <- res[order(ordering)]
-    } else {
-      res <- spDepFunCopSnglDist(pcopula, copula, pairs, h)
+    if(length(h)==1) h <- rep(h,n)
+    res <- NULL
+    for(i in 1:n) {
+      cat("fooFoo",match(t.dist[i],copula@t.lags),"\n")
+      res <- rbind(res, spDepFunCopSnglDist(pcopula,
+                                            copula@spCopList[[match(t.dist[i],copula@t.lags)]], 
+                                            u[[1]][i,], h[i]))
     }
   }
   
   return(res)
 }
 
-setMethod("pcopula", signature("spCopula"), pSpCopula)
+setMethod("pcopula", signature("stCopula"), pStCopula)
 
 
 ## spatial Copula density ##
