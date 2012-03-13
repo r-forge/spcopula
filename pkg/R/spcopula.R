@@ -412,7 +412,7 @@ ddvSpCopula <- function (copula, pair) {
   
   
   if(is.null(copula@calibMoa())) res <- spConCop(ddvcopula, copula, pairs, 
-                                                 rep(h,length.out=nrow(pairs))
+                                                 rep(h,length.out=nrow(pairs)))
   else {
     if(length(h)>1) {
       if (block == 1){
