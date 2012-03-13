@@ -1,24 +1,40 @@
-\name{spCopula-package}
-\alias{spCopula-package}
-\alias{spCopula}
+\name{spcopula-package}
+\alias{spcopula-package}
+\alias{spcopula}
 \docType{package}
-\title{spatial copula}
-\description{This package connects the functionality of copulas with the spatial (and sptaio-temporal) domain. It heavily relies on the packages \code{copula} and \code{sp}.}
+\title{
+copula driven spatial analysis
+}
+\description{
+This package provides a framework to analyse spatial data provided in the format of the sp package with copulas. Additionally, support for calculating multivariate return periods is implemented.
+}
 \details{
 \tabular{ll}{
-Package: \tab spCopula\cr
+Package: \tab spcopula\cr
 Type: \tab Package\cr
-Version: \tab 0.1-1\cr
-Date: \tab 2011-03-22\cr
-License: \tab GPL\cr
+Version: \tab 1.0.55\cr
+Date: \tab 2012-03-13\cr
+License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
+Depends: \tab copula, spacetime, CDVine, methods, lattice, R (>= 2.13.2)\cr
+URL: \tab http://r-forge.r-project.org/projects/spcopula/\cr
+Collate: \tab Classes.R partialDerivatives.R cqsCopula.R asCopula.R\cr
+\tab spcopula.R stcopula.R spatialPreparation.R linkingCDVine.R\cr
+\tab BB1copula.R BB6copula.R BB7copula.R BB8copula.R JoeCopula.R\cr
+\tab ClaytonGumbelCopula.R vineCopulas.R utilities.R returnPeriods.R\cr
+Packaged: \tab 2012-03-13 12:23:06 UTC; b_grae02\cr
+Built: \tab R 2.14.2; ; 2012-03-13 12:26:39 UTC; windows\cr
+}
+
+Index:
+\preformatted{
+spCopula-package        spatial copula
 }
 
 }
-\author{Benedikt Gr{\"a}ler \email{ben.graeler@uni-muenster.de}}
-\references{Some information can be found on my personal homepage \url{http:\\ifgi.uni-muenster.de\graeler} and in the source code. (Will be extended)
+\author{
+Benedikt Graeler
+
+Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
 }
 \keyword{ package }
-\usage{Currently there are two new copula classes (asCopula, cqsCopula) that are in many ways compatible with the classes provided in the copula package. A set of partial derivatives accesable through dducopual or ddvcopula with syntax similair to dcopula. Leading to the vine-copula approach, classes and functions on neighbourhoods are present.}
-\seealso{ }
-\examples{ }

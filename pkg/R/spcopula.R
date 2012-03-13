@@ -1,21 +1,21 @@
 #################################################################################
 ##
-##   R package spcopula by Benedikt Gräler Copyright (C) 2011
+##  R package spcopula by Benedikt Gräler Copyright (C) 2011
 ##
-##   This file is part of the R package spcopula.
+##  This file is part of the R package spcopula.
 ##
-##   The R package spcopula is free software: you can redistribute it and/or 
-##   modify it under the terms of the GNU General Public License as published by
-##   the Free Software Foundation, either version 3 of the License, or
-##   (at your option) any later version.
+##  The R package spcopula is free software: you can redistribute it and/or 
+##  modify it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
 ##
-##   The R package spcopula is distributed in the hope that it will be useful,
-##   but WITHOUT ANY WARRANTY; without even the implied warranty of
-##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##   GNU General Public License for more details.
+##  The R package spcopula is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
 ##
-##   You should have received a copy of the GNU General Public License
-##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
+##  You should have received a copy of the GNU General Public License
+##  along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>
 ##
 #################################################################################
 
@@ -124,7 +124,7 @@ spDepFunCop <- function(fun, copula, pairs, h) {
             lowerVals <- c(lowerVals, fun(lowerCop, tmpPairs[j,]))
             upperVals <- c(upperVals, fun(upperCop, tmpPairs[j,]))
           }
-          res <- c(res, (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals)
+          res <- c(res,(high-tmpH)/(high-low)*lowerVals+(tmpH-low)/(high-low)*upperVals)
         } else {
           newVals <- numeric(0)
           for (j in 1:length(tmpH)) {
@@ -139,7 +139,8 @@ spDepFunCop <- function(fun, copula, pairs, h) {
   
   sel <- which(h >= dists[n.dists])
   if(sum(sel)>0) {
-    res <- c(res, fun(copula@components[[n.dists]], pairs[which(h >= dists[n.dists]),]))
+    res <- c(res, fun(copula@components[[n.dists]], 
+                      pairs[which(h >= dists[n.dists]),]))
   }
 
   return(res)
@@ -211,14 +212,15 @@ spConCop <- function(fun, copula, pairs, h) {
         lowerVals <- fun(copula@components[[i-1]], tmpPairs[,])
         upperVals <- fun(copula@components[[i]], tmpPairs[,])
 
-        res[sel] <- (high-tmpH)/(high-low)*lowerVals + (tmpH-low)/(high-low)*upperVals
+        res[sel] <- (high-tmpH)/(high-low)*lowerVals+(tmpH-low)/(high-low)*upperVals
       }
     }
   }
   
   sel <- which(h >= dists[n.dists])
   if(sum(sel)>0) {
-    res[sel] <- fun(copula@components[[n.dists]], pairs[which(h >= dists[n.dists]),])
+    res[sel] <- fun(copula@components[[n.dists]], 
+                    pairs[which(h >= dists[n.dists]),])
   }
 
   return(res)
@@ -264,7 +266,9 @@ pSpCopula <- function (copula, u) {
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(pcopula, copula, pairs[((i-1)*block+1):(i*block),], h[i*block]))
+          res <- c(res, spDepFunCopSnglDist(pcopula, copula, 
+                                            pairs[((i-1)*block+1):(i*block),], 
+                                            h[i*block]))
         }
       }
     } else {
@@ -299,7 +303,6 @@ dSpCopula <- function (copula, u) {
   }
   
   if(is.null(copula@calibMoa())){
-    cat(dim(pairs))
     res <- spConCop(dcopula, copula, pairs, rep(h, length.out=nrow(pairs)))
   }
   else {
@@ -318,7 +321,9 @@ dSpCopula <- function (copula, u) {
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(dcopula, copula, pairs[((i-1)*block+1):(i*block),], h[i*block]))
+          res <- c(res, spDepFunCopSnglDist(dcopula, copula, 
+                                            pairs[((i-1)*block+1):(i*block),], 
+                                            h[i*block]))
         }
       }
     } else {
@@ -353,8 +358,8 @@ dduSpCopula <- function (copula, pair) {
     stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
   }
 
-  
-  if(is.null(copula@calibMoa())) res <- spConCop(dducopula, copula, pairs, h)
+  if(is.null(copula@calibMoa())) res <- spConCop(dducopula, copula, pairs, 
+                                                 rep(h,length.out=nrow(pairs)))
   else {
     if(length(h)>1) {
       if (block == 1){
@@ -371,7 +376,9 @@ dduSpCopula <- function (copula, pair) {
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(dducopula, copula, pairs[((i-1)*block+1):(i*block),], h[i*block]))
+          res <- c(res, spDepFunCopSnglDist(dducopula, copula, 
+                                            pairs[((i-1)*block+1):(i*block),],
+                                            h[i*block]))
         }
       }
     } else {
@@ -404,7 +411,8 @@ ddvSpCopula <- function (copula, pair) {
   }
   
   
-  if(is.null(copula@calibMoa())) res <- spConCop(ddvcopula, copula, pairs, h)
+  if(is.null(copula@calibMoa())) res <- spConCop(ddvcopula, copula, pairs, 
+                                                 rep(h,length.out=nrow(pairs))
   else {
     if(length(h)>1) {
       if (block == 1){
@@ -421,7 +429,9 @@ ddvSpCopula <- function (copula, pair) {
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(ddvcopula, copula, pairs[((i-1)*block+1):(i*block),], h[i*block]))
+          res <- c(res, spDepFunCopSnglDist(ddvcopula, copula, 
+                                            pairs[((i-1)*block+1):(i*block),],
+                                            h[i*block]))
         }
       }
     } else {
@@ -468,7 +478,8 @@ setMethod("ddvcopula", signature("spCopula"), ddvSpCopula)
 # cutoff -> maximal distance that should be considered for fitting
 # bounds -> the bounds of the correlation function (typically c(0,1))
 # method -> the measure of association, either "kendall" or "spearman"
-fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), method="kendall") {
+fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), 
+                      method="kendall") {
   bins <- as.data.frame(bins[1:2])
   if(!is.na(cutoff)) bins <- bins[which(bins[[1]] <= cutoff),]
   
@@ -479,7 +490,9 @@ fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), met
   
   function(x) {
     if (is.null(x)) return(method)
-    return(pmin(bounds[2], pmax(bounds[1], eval(predict(fitCor, data.frame(meanDists=x))))))
+    return(pmin(bounds[2], pmax(bounds[1], 
+                                eval(predict(fitCor, 
+                                             data.frame(meanDists=x))))))
   }
 }
 
@@ -489,8 +502,11 @@ fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), met
 # calcTau  -> a function on distance providing Kendall's tau estimates, 
 # families -> a vector of dummy copula objects of each family to be considered
 #             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
-loglikByCopulasLags <- function(bins, calcTau, families=c(normalCopula(0), tCopula(0,dispstr="un"),
-                                                          claytonCopula(0), frankCopula(1), gumbelCopula(1))) {
+loglikByCopulasLags <- function(bins, calcTau, 
+                                families=c(normalCopula(0), 
+                                           tCopula(0,dispstr="un"),
+                                           claytonCopula(0), frankCopula(1), 
+                                           gumbelCopula(1))) {
   loglik <- NULL
   for (cop in families) {
     print(cop)
@@ -526,11 +542,14 @@ composeSpCop <- function(bestFit, families, bins, calcCor) {
   if(length(breaks)==length(cops)) {
     warning("Lags do not cover the entire range with positive correlation. ", 
              "An artifical one fading towards the indepCopula has been added.")
-    distances <- c(distances, rev(distances)[1]+diff(bins$meanDists[nfits+c(-1,0)]))
+    distances <- c(distances, 
+                   rev(distances)[1]+diff(bins$meanDists[nfits+c(-1,0)]))
   }
 
-  if(missing(calcCor)) return(spCopula(components=cops, distances=distances, unit="m"))
-  else return(spCopula(components=cops, distances=distances, unit="m", spDepFun=calcCor))
+  if(missing(calcCor)) return(spCopula(components=cops, distances=distances, 
+                                       unit="m"))
+  else return(spCopula(components=cops, distances=distances, unit="m", 
+                       spDepFun=calcCor))
 }
 
 # in once
@@ -544,12 +563,15 @@ composeSpCop <- function(bestFit, families, bins, calcCor) {
 # degree -> the degree of the polynominal
 # bounds -> the bounds of the correlation function (typically c(0,1))
 # method -> the measure of association, either "kendall" or "spearman"
-fitSpCopula <- function(bins, cutoff=NA, families=c(normalCopula(0), tCopula(0,dispstr="un"),
-                                                    claytonCopula(0), frankCopula(1), gumbelCopula(1)), ...) {
+fitSpCopula <- function(bins, cutoff=NA, 
+                        families=c(normalCopula(0), 
+                                   tCopula(0,dispstr="un"), claytonCopula(0), 
+                                   frankCopula(1), gumbelCopula(1)), ...) {
   calcTau <- fitCorFun(bins, cutoff=cutoff, ...)
   loglik <- loglikByCopulasLags(bins, calcTau=calcTau, families=families)
   
-  bestFit <- apply(apply(loglik, 1, rank),2,function(x) which(x==length(families)))
+  bestFit <- apply(apply(loglik, 1, rank),2, 
+                   function(x) which(x==length(families)))
   
   return(composeSpCop(bestFit, families, bins, calcTau))
 }
