@@ -37,10 +37,17 @@
 
 stCopula <- function(components, distances, t.lags, stDepFun, unit="m", t.res="day") {
   spCopList <- list()
-  getSpCop <- function(comp,dist,time) spCopula(comp, dist, 
-                                                spDepFun=function(h) stDepFun(h,time), unit)
-  for(i in 1:length(t.lags)){
-    spCopList <- append(spCopList, getSpCop(components[[i]], distances[[i]], i))
+  
+  if(!missing(stDepFun)) {
+    getSpCop <- function(comp,dist,time) spCopula(comp, dist,
+                                                  spDepFun=function(h) stDepFun(h,time), unit)
+    for(i in 1:length(t.lags)){
+      spCopList <- append(spCopList, getSpCop(components[[i]], distances[[i]], i))
+    }
+  } else {
+    for(i in 1:length(t.lags)){
+      spCopList <- append(spCopList, spCopula(components[[i]], distances[[i]], unit=unit))
+    }
   }
   
   param       <- unlist(lapply(spCopList, function(x) x@parameters))
@@ -64,7 +71,6 @@ showStCopula <- function(object) {
     cat("  ", cmpCop@message, "at", object@t.lags[i], 
       paste("[",object@t.res,"]",sep=""), "\n")
     show(cmpCop)
-    
   }
 }
 
@@ -72,16 +78,22 @@ setMethod("show", signature("stCopula"), showStCopula)
 
 ## spatial copula jcdf ##
 
+# TODO: add again block support to the spatio-temporal copula
 # u 
 #   list containing two column matrix providing the transformed pairs,  their respective 
 #   separation distances and time steps
 pStCopula <- function (copula, u) {
-  if (!is.list(u) || !length(u)==3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
+  if (!is.list(u) || !length(u)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
   if(!is.matrix(u[[1]])) u[[1]] <- matrix(u[[1]],ncol=2)
   n <- nrow(u[[1]])
   h <- u[[2]]
   t.dist <- u[[3]]
+  
+  if(length(u)==4) {
+    block <- u[[4]]
+    if (n%%block != 0) stop("The block size is not a multiple of the data length:",n)
+  } else block <- 1
 
   if(any(is.na(match(t.dist,copula@t.lags)))) 
     stop("Prediction time(s) do(es) not math the modelled time slices.")
@@ -91,16 +103,14 @@ pStCopula <- function (copula, u) {
     stop("The temporal distances vector must either be of same length as rows in the data pairs or a single value.")
 
   if (length(t.dist)==1) {
-    res <- spcopula:::pSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]], 
-                                list(u[[1]], u[[2]]))
+    res <- pSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]], 
+                     list(u[[1]], h))
   } else {
     if(length(h)==1) h <- rep(h,n)
     res <- NULL
-    for(i in 1:n) {
-      cat("fooFoo",match(t.dist[i],copula@t.lags),"\n")
-      res <- rbind(res, spDepFunCopSnglDist(pcopula,
-                                            copula@spCopList[[match(t.dist[i],copula@t.lags)]], 
-                                            u[[1]][i,], h[i]))
+    for(i in 1:(n%/%block)) {
+      res <- rbind(res, pSpCopula(copula@spCopList[[match(t.dist[i],copula@t.lags)]],
+                                  list(u[[1]][((i-1)*block+1):(i*block),], h[i*block])))
     }
   }
   
@@ -115,37 +125,42 @@ setMethod("pcopula", signature("stCopula"), pStCopula)
 # u 
 #   three column matrix providing the transformed pairs and their respective 
 #   separation distances
-dSpCopula <- function (copula, u) {
-  if (!is.list(u) || !length(u)==2) stop("Point pairs need to be provided with their separating distance as a list.")
-
+dStCopula <- function (copula, u) {
+  if (!is.list(u) || !length(u)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
+  
+  if(!is.matrix(u[[1]])) u[[1]] <- matrix(u[[1]],ncol=2)
+  n <- nrow(u[[1]])
   h <- u[[2]]
-  if(length(h)>1) {
-    if(length(h)!=nrow(u[[1]])) stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
-    ordering <- order(h)
-    
-    # ascending sorted pairs allow for easy evaluation
-    pairs <- u[[1]][ordering,,drop=FALSE] 
-    h <- h[ordering]
+  t.dist <- u[[3]]
+  
+  if(length(u)==4) {
+    block <- u[[4]]
+    if (n%%block != 0) stop("The block size is not a multiple of the data length:",n)
+  } else block <- 1
+  
+  if(any(is.na(match(t.dist,copula@t.lags)))) 
+    stop("Prediction time(s) do(es) not math the modelled time slices.")
+  if(length(h)>1 & length(h)!=n) 
+    stop("The spatial distance vector must either be of same length as rows in the data pairs or a single value.")
+  if(length(t.dist)>1 & length(t.dist)!=n) 
+    stop("The temporal distances vector must either be of same length as rows in the data pairs or a single value.")
+  
+  if (length(t.dist)==1) {
+    res <- dSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]], 
+                     list(u[[1]], h))
   } else {
-    pairs <- u[[1]]
-  }
-
-  if(is.null(copula@calibMoa)) res <- spConCop(dcopula, copula, pairs, h)
-  else {
-    if(length(h)>1) {
-      res <- spDepFunCop(dcopula, copula, pairs, h)
-      
-      # reordering the values
-      res <- res[order(ordering)]
-    } else {
-      res <- spDepFunCopSnglDist(dcopula, copula, pairs, h)
+    if(length(h)==1) h <- rep(h,n)
+    res <- NULL
+    for(i in 1:(n%/%block)) {
+      res <- rbind(res, dSpCopula(copula@spCopList[[match(t.dist[i],copula@t.lags)]],
+                                  list(u[[1]][((i-1)*block+1):(i*block),], h[i*block])))
     }
   }
-
-return(res)
+  
+  return(res)
 }
 
-setMethod("dcopula", signature("spCopula"), dSpCopula)
+setMethod("dcopula", signature("stCopula"), dStCopula)
 
 
 ## partial derivatives ##
@@ -153,72 +168,84 @@ setMethod("dcopula", signature("spCopula"), dSpCopula)
 ## dduSpCopula
 ###############
 
-dduSpCopula <- function (copula, pair) {
-  if (!is.list(pair) || !length(pair)==2) stop("Point pairs need to be provided with their separating distance as a list.")
+dduStCopula <- function (copula, pair) {
+  if (!is.list(pair) || !length(pair)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
+  if(!is.matrix(pair[[1]])) pair[[1]] <- matrix(pair[[1]],ncol=2)
+  n <- nrow(pair[[1]])
   h <- pair[[2]]
-  if(length(h)>1) {
-    if(length(h)!=nrow(pair[[1]])) stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
-    ordering <- order(h)
-    
-    # ascending sorted pairs allow for easy evaluation
-    pairs <- pair[[1]][ordering,,drop=FALSE] 
-    h <- h[ordering]
-  } else {
-    pairs <- pair[[1]]
-  }
+  t.dist <- pair[[3]]
   
-  if(is.null(copula@calibMoa)) res <- spConCop(dducopula, copula, pairs, h)
-  else {
-    if(length(h)>1) {
-      res <- spDepFunCop(dducopula, copula, pairs, h)
-      
-      # reordering the values
-      res <- res[order(ordering)]
-    } else {
-      res <- spDepFunCopSnglDist(dducopula, copula, pairs, h)
+  if(length(pair)==4) {
+    t.block <- pair[[4]]
+    if (n%%t.block != 0) stop("The block size is not a multiple of the data length:",n)
+  } else t.block <- 1
+  
+  if(any(is.na(match(t.dist,copula@t.lags)))) 
+    stop("Prediction time(s) do(es) not math the modelled time slices.")
+  if(length(h)>1 & length(h)!=n) 
+    stop("The spatial distance vector must either be of same length as rows in the data pairs or a single value.")
+  if(length(t.dist)>1 & length(t.dist)!=n) 
+    stop("The temporal distances vector must either be of same length as rows in the data pairs or a single value.")
+  
+  if (length(t.dist)==1) {
+    res <- dduSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]],
+                       list(pair[[1]], h, block=t.block))
+  } else {
+    if(length(h)==1) h <- rep(h,n)
+    res <- NULL
+    for(i in 1:(n%/%t.block)) {
+      cop <- copula@spCopList[[match(t.dist[i*t.block],copula@t.lags)]]
+      tmpPair <- pair[[1]][((i-1)*t.block+1):(i*t.block),]
+      res <- rbind(res, dduSpCopula(cop, list(tmpPair,h[i*t.block])))
     }
   }
   
   return(res)
 }
 
-setMethod("dducopula", signature("spCopula"), dduSpCopula)
+setMethod("dducopula", signature("stCopula"), dduStCopula)
+
 
 ## ddvSpCopula
 ###############
-
-ddvSpCopula <- function (copula, pair) {
-  if (!is.list(pair) || !length(pair)==2) stop("Point pairs need to be provided with their separating distance as a list.")
+ddvStCopula <- function (copula, pair) {
+  if (!is.list(pair) || !length(pair)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
+  if(!is.matrix(pair[[1]])) pair[[1]] <- matrix(pair[[1]],ncol=2)
+  n <- nrow(pair[[1]])
   h <- pair[[2]]
-  if(length(h)>1) {
-    if(length(h)!=nrow(pair[[1]])) stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
-    ordering <- order(h) 
-    
-    # ascending sorted pairs allow for easy evaluation
-    pairs <- pair[[1]][ordering,,drop=FALSE] 
-    h <- h[ordering]
-  } else {
-    pairs <- pair[[1]]
-  }
+  t.dist <- pair[[3]]
   
-  if(is.null(copula@calibMoa)) res <- spConCop(ddvcopula, copula, pairs, h)
-  else {
-    if(length(h)>1) {
-      res <- spDepFunCop(ddvcopula, copula, pairs, h)
-      
-      # reordering the values
-      res <- res[order(ordering)]
-    } else {
-      res <- spDepFunCopSnglDist(ddvcopula, copula, pairs, h)
+  if(length(pair)==4) {
+    t.block <- pair[[4]]
+    if (n%%t.block != 0) stop("The block size is not a multiple of the data length:",n)
+  } else t.block <- 1
+  
+  if(any(is.na(match(t.dist,copula@t.lags)))) 
+    stop("Prediction time(s) do(es) not math the modelled time slices.")
+  if(length(h)>1 & length(h)!=n) 
+    stop("The spatial distance vector must either be of same length as rows in the data pairs or a single value.")
+  if(length(t.dist)>1 & length(t.dist)!=n) 
+    stop("The temporal distances vector must either be of same length as rows in the data pairs or a single value.")
+  
+  if (length(t.dist)==1) {
+    res <- ddvSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]],
+                       list(pair[[1]], h, block=t.block))
+  } else {
+    if(length(h)==1) h <- rep(h,n)
+    res <- NULL
+    for(i in 1:(n%/%t.block)) {
+      cop <- copula@spCopList[[match(t.dist[i*t.block],copula@t.lags)]]
+      tmpPair <- pair[[1]][((i-1)*t.block+1):(i*t.block),]
+      res <- rbind(res, ddvSpCopula(cop, list(tmpPair,h[i*t.block])))
     }
   }
   
   return(res)
 }
 
-setMethod("ddvcopula", signature("spCopula"), ddvSpCopula)
+setMethod("ddvcopula", signature("stCopula"), ddvStCopula)
 
 #############
 ##         ##

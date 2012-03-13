@@ -27,30 +27,25 @@
 # (see Example 3.16 in: Nelsen, Roger B. (2006): An Introduction to Copulas, second edition, Springer)
 
 # constructor
-asCopula <-
-function (param)
-{
-    val <- new("asCopula", dimension = 2, parameters = param, 
-        param.names = c("a", "b"), param.lowbnd = c(limA(param[2]), 
-            -1), param.upbnd = c(1, 1), message = "asymmetric copula family with cubic and quadratic sections")
-    val
+asCopula <- function (param) {
+  val <- new("asCopula", dimension = 2, parameters = param, 
+             param.names = c("a", "b"), param.lowbnd = c(limA(param[2]), -1),
+             param.upbnd = c(1, 1), message = "asymmetric copula family with cubic and quadratic sections")
+  return(val)
 }
 
 ## density ##
 
-dASC2 <-
-function (copula, u) 
-{
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(u)) 
-        u <- matrix(u, ncol = 2)
-    u1 <- u[, 1]
-    u2 <- u[, 2]
-    return(pmax(a * u2 * (((12 - 9 * u1) * u1 - 3) * u2 + u1 * 
-        (6 * u1 - 8) + 2) + b * (u2 * ((u1 * (9 * u1 - 12) + 
-        3) * u2 + (12 - 6 * u1) * u1 - 4) - 2 * u1 + 1) + 1, 
-        0))
+dASC2 <- function (copula, u) {
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
+  
+  if (!is.matrix(u)) u <- matrix(u, ncol = 2)
+  
+  u1 <- u[, 1]
+  u2 <- u[, 2]
+  
+  return(pmax(a * u2 * (((12 - 9 * u1) * u1 - 3) * u2 + u1 * (6 * u1 - 8) + 2) + b * (u2 * ((u1 * (9 * u1 - 12) + 3) * u2 + (12 - 6 * u1) * u1 - 4) - 2 * u1 + 1) + 1,0))
 }
 
 setMethod("dcopula", signature("asCopula"), dASC2)
@@ -166,32 +161,6 @@ return(apply(u,1,filter))
 
 setMethod("invddvcopula", signature("asCopula"),invddvASC2)
 
-## testing
-# test <- NULL
-# for(i in 1:100){
-# b <- runif(1,-1,1)
-# a <- runif(1,limA(b),1)
-# vs <- runif(1000)
-# ys <- runif(1000)
-# us <- invddvASC2(asCopula(c(a,b)),vs,ys)
-# test <- c(test,max(abs(ddvASC2(asCopula(c(a,b)),cbind(us,vs))-ys)))
-# }
-# hist(test)
-# abline(h=2,col="red")
-# 
-# test <- NULL
-# for(i in 1:100){
-# b <- runif(1,-1,1)
-# a <- runif(1,limA(b),1)
-# us <- runif(1000)
-# ys <- runif(1000)
-# vs <- invdduASC2(asCopula(c(a,b)),us,ys)
-# test <- c(test,max(abs(dduASC2(asCopula(c(a,b)),cbind(us,vs))-ys)))
-# }
-# hist(test)
-# abline(h=2,col="red")
-
-
 ## random number generator
 rASC2 <- function (copula, n) {
     u <- runif(n, min = 0, max = 1)
@@ -203,22 +172,19 @@ setMethod("rcopula", signature("asCopula"), rASC2)
 
 ## fitment
 
-
-fitCopulaASC2 <- function (copula, data, method = "itau", start=c(0,0), lower=c(-3.-1), upper=c(1.1), optim.control=list(), optim.method="L-BFGS-B", 
-    estimate.variance = FALSE) 
-{
-    if (method == "ml") 
-        fit <- fitASC2.ml(copula, data, start, lower, upper, optim.control, optim.method)
-    else if (method == "itau") 
-        fit <- fitASC2.itau(copula, data, estimate.variance)
-    else if (method == "irho") 
-        fit <- fitASC2.irho(copula, data, estimate.variance)
-    else stop("Implemented methods for copulas in the spCopula package are: ml, itau, and irho.")
-    fit
+fitCopulaASC2 <- function (copula, data, method = "ml", start=c(0,0),
+                           lower=c(-3,-1), upper=c(1,1), 
+                           optim.control=list(), optim.method="L-BFGS-B", 
+                           estimate.variance = FALSE) {
+  fit <- switch(method, 
+                ml=fitASC2.ml(copula, data, start, lower, upper, optim.control, optim.method),
+                itau=fitASC2.itau(copula, data, estimate.variance),
+                irho=fitASC2.irho(copula, data, estimate.variance),
+                stop("Implemented methods for copulas in the spcopula package are: ml, itau, and irho."))
+  return(fit)
 }
 
 setMethod("fitCopula", signature("asCopula"), fitCopulaASC2)
-
 
 ## Fits the type 2 asymmetric copula acoording to a measure of association.
 ## It performs a maximum likelihood evaluation over all possible pairs of 
@@ -293,27 +259,20 @@ return(param)
 # maximum log-likelihood estimation of a and b using optim
 
 fitASC2.ml <- function(copula, data, start, lower, upper, optim.control, optim.method) { 
+  if(length(start)!=2) stop("Start values need to have same length as parameters:")
+  
+  optFun <- function(param=c(0,0)) {
+    if(any(param > 1) | param[2] < -1 | param[1] < limA(param[2])) return(1)
+    return(-sum(log( dASC2(asCopula(param),u=data))))
+  }
+  
+  optimized <- optim(par=start, fn=optFun, method = optim.method, 
+                     lower=lower, upper=upper, control = optim.control)
 
-if(length(start)!=2) stop(paste("Start values need to have same length as parameters:",copula@dimension))
-
-optFun <- function(param=c(0,0)) {
-      b <- max(min(param[2],1),-1)
-      a <- max(min(param[1],1),limA(b))
-      return(-sum(log( dASC2(asCopula(c(a,b)),u=data) )))
-    }
-
-optimized <- optim(par=start, fn=optFun, method = optim.method, lower=lower, upper=upper,
-       control = list())
-
-return(new("fitCopula",
-  estimate = optimized$par, 
-  var.est = matrix(NA), 
-  method = "Numerical MLE over the full range.",
-  loglik = -optimized$value,
-  convergence = as.integer(NA),
-  nsample = nrow(data),
-  copula=asCopula(optimized$par)
-))
+  return(new("fitCopula", estimate = optimized$par, var.est = matrix(NA), 
+             method = "Numerical MLE over the full range.", 
+             loglik = -optimized$value, convergence = optimized$convergence,
+             nsample = nrow(data), copula=asCopula(optimized$par)))
 }
 
 ####
@@ -325,24 +284,29 @@ return(min(max(limA(b),(450*tau-75*b+b^2)/(25-b)),1))
 ####
 
 tauASC2 <- function(copula){
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    return((75*b-b^2+a*(25-b))/450)
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
+  
+  return((75*b-b^2+a*(25-b))/450)
 }
 
 setMethod("kendallsTau",signature("asCopula"),tauASC2)
+
 ####
+# find parameter "a" for parameter "b" under a given measure of association "rho" 
+# it may return a value exceeding the limit of "a" which may result in an invalid copula.
 
 iRhoASC2 <- function(b,rho=0) {
-return(min(max(limA(b),12*rho-3*b),1))
+  return(min(max(limA(b),12*rho-3*b),1))
 }
 
 ####
 
 rhoASC2 <- function(copula){
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    return((a+3*b)/12)
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
+  
+  return((a+3*b)/12)
 }
 
 setMethod("spearmansRho",signature("asCopula"),tauASC2)

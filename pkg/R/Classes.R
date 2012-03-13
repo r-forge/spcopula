@@ -83,7 +83,8 @@ validSpCopula <- function(object) {
   if (length(object@components) != length(object@distances)) return("Length of components + 1 does not equal length of distances. \n Note: The last distance must give the range and it is automatically associated with the indepenence copula.")
   check.upper <- NULL
   check.lower <- NULL
-  if(!is.null(object@calibMoa)) {
+  
+  if(!is.null(object@calibMoa())) {
     for (i in 1:length(object@components)) {
       check.upper <- c(check.upper, is.na(object@calibMoa(object@components[[i]], object@distances[i+1])))
       check.lower <- c(check.lower, is.na(object@calibMoa(object@components[[i]], c(0,object@distances)[i])))

@@ -1,21 +1,21 @@
 #################################################################################
 ##
-##   R package spcopula by Benedikt Gräler Copyright (C) 2011
+##  R package spcopula by Benedikt Gräler Copyright (C) 2011
 ##
-##   This file is part of the R package spcopula.
+##  This file is part of the R package spcopula.
 ##
-##   The R package spcopula is free software: you can redistribute it and/or modify
-##   it under the terms of the GNU General Public License as published by
-##   the Free Software Foundation, either version 3 of the License, or
-##   (at your option) any later version.
+##  The R package spcopula is free software: you can redistribute it and/or 
+##  modify it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
 ##
-##   The R package spcopula is distributed in the hope that it will be useful,
-##   but WITHOUT ANY WARRANTY; without even the implied warranty of
-##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##   GNU General Public License for more details.
+##  The R package spcopula is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
 ##
-##   You should have received a copy of the GNU General Public License
-##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
+##  You should have received a copy of the GNU General Public License
+##  along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>
 ##
 #################################################################################
 
@@ -72,9 +72,10 @@ setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
 # dep		denoting a subset of dependent locations (default NULL: all locations will be used)
 # indep		denoting a subset of independent locations (default NULL: all locations will be used)
 #		no location will be paired with itself
-getNeighbours <- function(spData,var=names(spData),size=4,dep=NULL,indep=NULL){
+getNeighbours <- function(spData,var=names(spData),size=4,dep=NULL,indep=NULL,min.dist=10){
 nLocs <- length(spData)
 distMat <- spDists(spData)
+if(min.dist>0) distMat[distMat<min.dist] <- Inf
 if ( any(is.na( match(var,names(spData)) )) ) 
   stop("At least one of the variables is unkown is not part of the data.")
 if(is.null(dep) & !is.null(indep))   dep <- 1:nLocs[-indep]
