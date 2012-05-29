@@ -18,7 +18,7 @@ validVineCopula = function(object) {
 }
 
 setClass("vineCopula",
-  representation = representation(copulas="list", dimension="numeric", type="character", pdf="numeric"),
+  representation = representation(copulas="list", dimension="integer", type="character", pdf="numeric"),
   validity = validVineCopula,
   contains = list("copula")
 )
