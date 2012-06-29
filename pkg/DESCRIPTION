@@ -1,14 +1,14 @@
 Package: spcopula
 Type: Package
 Title: copula driven spatial analysis
-Version: 1.0.59
+Version: 1.0.60
 Date: 2012-06-29
 Author: Benedikt Graeler
 Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
 Description: This package provides a framework to analyse spatial data provided in the format of the spacetime package with copulas. Additionally, support for calculating multivariate return periods is implemented.
 License: GPL-2
 LazyLoad: yes
-Depends: copula (>= 0.99-1), spacetime, CDVine, methods, lattice, R (>= 2.13.2)
+Depends: copula (>= 0.99-2), spacetime, CDVine, methods, lattice, R (>= 2.13.2)
 URL: http://r-forge.r-project.org/projects/spcopula/
 Collate:
   Classes.R
