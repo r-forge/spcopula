@@ -222,7 +222,7 @@ setMethod("rcopula", signature("cqsCopula"), rCQSec)
 
 fitCopula.cqs <- function (copula, data, method = "ml", start=c(0,0), 
                            lower=c(-3,-1), upper=c(1,1), 
-                           optim.control=list(), optim.method="L-BFGS-B", 
+                           optim.method="L-BFGS-B", optim.control=list(),
                            estimate.variance = FALSE) {
   fit <- switch(method,
                 ml=fitCQSec.ml(copula, data, start, lower, upper, optim.control, optim.method),
