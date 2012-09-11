@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##  R package spcopula by Benedikt Gräler Copyright (C) 2011
+##  R package spcopula by Benedikt Graeler Copyright (C) 2011
 ##
 ##  This file is part of the R package spcopula.
 ##

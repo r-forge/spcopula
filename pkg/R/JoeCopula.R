@@ -28,7 +28,7 @@ setClass("JoeCopula",
 
 # constructor
 JoeCopula <- function (param) {
-  new("JoeCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"),
+  new("JoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = 1, param.upbnd = Inf, family=6, 
       message = "Joe copula family. Number 6 in CDVine.")
 }
@@ -84,7 +84,7 @@ setClass("surJoeCopula",
 
 # constructor
 surJoeCopula <- function (param) {
-  new("surJoeCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"),
+  new("surJoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = 1, param.upbnd = Inf, family=16, 
       message = "Survival Joe copula family. Number 16 in CDVine.")
 }
@@ -139,7 +139,7 @@ setClass("r90JoeCopula",
 
 # constructor
 r90JoeCopula <- function (param) {
-  new("r90JoeCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"),
+  new("r90JoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = -1, family=26, 
       message = "90 deg rotated Joe copula family. Number 26 in CDVine.")
 }
@@ -179,7 +179,7 @@ setClass("r270JoeCopula",
 
 # constructor
 r270JoeCopula <- function (param) {
-  new("r270JoeCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"), 
+  new("r270JoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = -1, family=36, 
       message = "270 deg rotated Joe copula family. Number 36 in CDVine.")
 }

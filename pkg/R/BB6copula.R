@@ -28,7 +28,7 @@ setClass("BB6Copula",
 
 # constructor
 BB6Copula <- function (param) {
-    val <- new("BB6Copula", dimension = 2, parameters = param, 
+    val <- new("BB6Copula", dimension = as.integer(2), parameters = param, 
         param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=8, message = "BB6 copula family. Number 8 in CDVine.")
     val
 }
@@ -78,7 +78,7 @@ setClass("surBB6Copula",
 
 # constructor
 surBB6Copula <- function (param) {
-  val <- new("surBB6Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=18, message = "Survival BB6 copula family. Number 18 in CDVine.")
+  val <- new("surBB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=18, message = "Survival BB6 copula family. Number 18 in CDVine.")
   val
 }
 
@@ -126,7 +126,7 @@ setClass("r90BB6Copula",
 
 # constructor
 r90BB6Copula <- function (param) {
-  val <- new("r90BB6Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=28, message = "90 deg rotated BB6 copula family. Number 28 in CDVine.")
+  val <- new("r90BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=28, message = "90 deg rotated BB6 copula family. Number 28 in CDVine.")
   val
 }
 
@@ -160,7 +160,7 @@ setClass("r270BB6Copula",
 
 # constructor
 r270BB6Copula <- function (param) {
-  val <- new("r270BB6Copula", dimension = 2, parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=38, message = "270 deg rotated BB6 copula family. Number 38 in CDVine.")
+  val <- new("r270BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=38, message = "270 deg rotated BB6 copula family. Number 38 in CDVine.")
   val
 }
 

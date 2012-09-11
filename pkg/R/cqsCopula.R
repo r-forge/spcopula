@@ -28,9 +28,9 @@
 cqsCopula <-
 function (param)
 {
-    val <- new("cqsCopula", dimension = 2, parameters = param, 
+    val <- new("cqsCopula", dimension = as.integer(2), parameters = param, 
       param.names = c("a", "b"), param.lowbnd = c(limA(param[2]),-1),
-      param.upbnd = c(1, 1), message = "copula family with cubic quadratic sections")
+      param.upbnd = c(1, 1), fullname = "copula family with cubic quadratic sections")
     val
 }
 

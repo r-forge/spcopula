@@ -31,7 +31,7 @@ setClass("surClaytonCopula",
 
 # constructor
 surClaytonCopula <- function (param) {
-  new("surClaytonCopula", dimension = 2, parameters = param, param.names = c("theta"),
+  new("surClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
       param.lowbnd = 0, param.upbnd = Inf, family=13, 
       message = "Survival Clayton copula family. Number 13 in CDVine.")
 }
@@ -86,7 +86,7 @@ setClass("r90ClaytonCopula",
 
 # constructor
 r90ClaytonCopula <- function (param) {
-  new("r90ClaytonCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"),
+  new("r90ClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = 0, family=23, 
       message = "90 deg rotated Clayton copula family. Number 23 in CDVine.")
 }
@@ -126,7 +126,7 @@ setClass("r270ClaytonCopula",
 
 # constructor
 r270ClaytonCopula <- function (param) {
-  new("r270ClaytonCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"), 
+  new("r270ClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = 0, family=33, 
       message = "270 deg rotated Clayton copula family. Number 33 in CDVine.")
 }
@@ -187,7 +187,7 @@ setClass("surGumbelCopula",
 
 # constructor
 surGumbelCopula <- function (param) {
-  new("surGumbelCopula", dimension = 2, parameters = param, param.names = c("theta"),
+  new("surGumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
       param.lowbnd = 1, param.upbnd = Inf, family=14, 
       message = "Survival Gumbel copula family. Number 14 in CDVine.")
 }
@@ -242,7 +242,7 @@ setClass("r90GumbelCopula",
 
 # constructor
 r90GumbelCopula <- function (param) {
-  new("r90GumbelCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"),
+  new("r90GumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = -1, family=24, 
       message = "90 deg rotated Gumbel copula family. Number 24 in CDVine.")
 }
@@ -282,7 +282,7 @@ setClass("r270GumbelCopula",
 
 # constructor
 r270GumbelCopula <- function (param) {
-  new("r270GumbelCopula", dimension = 2, parameters = param, param.names = c("theta", "delta"), 
+  new("r270GumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = -1, family=34, 
       message = "270 deg rotated Gumbel copula family. Number 34 in CDVine.")
 }
