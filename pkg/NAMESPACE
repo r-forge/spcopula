@@ -18,12 +18,12 @@ export(neighbourhood)
 # general functions
 export(rankTransform, dependencePlot, univScatter)
 export(fitCopula)
-export(dducopula,ddvcopula)
-export(invdducopula, invddvcopula)
-export(qcopula_u)
+export(dduCopula,ddvCopula)
+export(invdduCopula, invddvCopula)
+export(qCopula_u)
 export(genEmpCop)
 
-# tewaks
+# tweaks
 export(setSizeLim)
 
 # spatial

@@ -30,24 +30,24 @@ setClass("JoeCopula",
 JoeCopula <- function (param) {
   new("JoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = 1, param.upbnd = Inf, family=6, 
-      message = "Joe copula family. Number 6 in CDVine.")
+      fullname = "Joe copula family. Number 6 in CDVine.")
 }
 
 ## density ##
-setMethod("dcopula", signature("JoeCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","JoeCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("JoeCopula"), linkCDVine.CDF)
+setMethod("pCopula", signature("numeric","JoeCopula"), linkCDVine.CDF)
 
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("JoeCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","JoeCopula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvcopula", signature("JoeCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","JoeCopula"), linkCDVine.ddv)
 
 ## random number generater ??
-setMethod("rcopula", signature("JoeCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","JoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("calibKendallsTau", signature("JoeCopula"), 
@@ -86,24 +86,24 @@ setClass("surJoeCopula",
 surJoeCopula <- function (param) {
   new("surJoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = 1, param.upbnd = Inf, family=16, 
-      message = "Survival Joe copula family. Number 16 in CDVine.")
+      fullname = "Survival Joe copula family. Number 16 in CDVine.")
 }
 
 ## density ##
-setMethod("dcopula", signature("surJoeCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","surJoeCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("surJoeCopula"), linkCDVine.surCDF)
+setMethod("pCopula", signature("numeric","surJoeCopula"), linkCDVine.surCDF)
   
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("surJoeCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","surJoeCopula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvcopula", signature("surJoeCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","surJoeCopula"), linkCDVine.ddv)
 
 ## random number generater ??
-setMethod("rcopula", signature("surJoeCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","surJoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("calibKendallsTau", signature("surJoeCopula"), 
@@ -141,24 +141,24 @@ setClass("r90JoeCopula",
 r90JoeCopula <- function (param) {
   new("r90JoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = -1, family=26, 
-      message = "90 deg rotated Joe copula family. Number 26 in CDVine.")
+      fullname = "90 deg rotated Joe copula family. Number 26 in CDVine.")
 }
 
 ## density ##
-setMethod("dcopula", signature("r90JoeCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r90JoeCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("r90JoeCopula"), linkCDVine.r90CDF)
+setMethod("pCopula", signature("numeric","r90JoeCopula"), linkCDVine.r90CDF)
 
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("r90JoeCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r90JoeCopula"), linkCDVine.ddu)
 
 ## ddv
-setMethod("ddvcopula", signature("r90JoeCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","r90JoeCopula"), linkCDVine.ddv)
 
 ## random number generator
-setMethod("rcopula", signature("r90JoeCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r90JoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("calibKendallsTau", signature("r90JoeCopula"),
@@ -181,24 +181,24 @@ setClass("r270JoeCopula",
 r270JoeCopula <- function (param) {
   new("r270JoeCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = -1, family=36, 
-      message = "270 deg rotated Joe copula family. Number 36 in CDVine.")
+      fullname = "270 deg rotated Joe copula family. Number 36 in CDVine.")
 }
 
 ## density ##
-setMethod("dcopula", signature("r270JoeCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r270JoeCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("r270JoeCopula"), linkCDVine.r270CDF)
+setMethod("pCopula", signature("numeric","r270JoeCopula"), linkCDVine.r270CDF)
   
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("r270JoeCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r270JoeCopula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvcopula", signature("r270JoeCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","r270JoeCopula"), linkCDVine.ddv)
 
 ## random number generator
-setMethod("rcopula", signature("r270JoeCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r270JoeCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("calibKendallsTau", signature("r270JoeCopula"), 

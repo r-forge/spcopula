@@ -1,21 +1,21 @@
 #################################################################################
 ##
-##   R package spcopula by Benedikt Gräler Copyright (C) 2011
+##   R package spCopula by Benedikt Gräler Copyright (C) 2011
 ##
-##   This file is part of the R package spcopula.
+##   This file is part of the R package spCopula.
 ##
-##   The R package spcopula is free software: you can redistribute it and/or 
+##   The R package spCopula is free software: you can redistribute it and/or 
 ##   modify it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 3 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package spcopula is distributed in the hope that it will be useful,
+##   The R package spCopula is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 ##
 ##   You should have received a copy of the GNU General Public License
-##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
+##   along with the R package spCopula. If not, see <http://www.gnu.org/licenses/>.
 ##
 #################################################################################
 
@@ -25,7 +25,7 @@
 # param.names = "character" appropriate names
 # param.lowbnd = "numeric"  appropriate lower bounds
 # param.upbnd = "numeric"   appropriate upper bounds
-# message = "character"     messgae printed with "show"
+# fullname = "character"     messgae printed with "show"
 # components="list"         list of copulas (will be automatically supplemented 
 #			      by the independent copula)
 # distances="numeric"       the linking distances + the range (will be assigned
@@ -57,18 +57,18 @@ stCopula <- function(components, distances, t.lags, stDepFun, unit="m", t.res="d
   
   new("stCopula", dimension=2, parameters=param, param.names=param.names,
       param.lowbnd=param.low, param.upbnd=param.up,
-      message="Spatio-Temporal Copula: distance and time dependent convex combination of bivariate copulas",
+      fullname="Spatio-Temporal Copula: distance and time dependent convex combination of bivariate copulas",
       spCopList=spCopList, t.lags=t.lags, t.res=t.res)
 }
 
 ## show method
 showStCopula <- function(object) {
-  cat(object@message, "\n")
+  cat(object@fullname, "\n")
   cat("Dimension: ", object@dimension, "\n")
   cat("Copulas:\n")
   for (i in 1:length(object@spCopList)) {
     cmpCop <- object@spCopList[[i]]
-    cat("  ", cmpCop@message, "at", object@t.lags[i], 
+    cat("  ", cmpCop@fullname, "at", object@t.lags[i], 
       paste("[",object@t.res,"]",sep=""), "\n")
     show(cmpCop)
   }
@@ -82,7 +82,7 @@ setMethod("show", signature("stCopula"), showStCopula)
 # u 
 #   list containing two column matrix providing the transformed pairs,  their respective 
 #   separation distances and time steps
-pStCopula <- function (copula, u) {
+pStCopula <- function (u, copula) {
   if (!is.list(u) || !length(u)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
   if(!is.matrix(u[[1]])) u[[1]] <- matrix(u[[1]],ncol=2)
@@ -117,7 +117,7 @@ pStCopula <- function (copula, u) {
   return(res)
 }
 
-setMethod("pcopula", signature("stCopula"), pStCopula)
+setMethod("pCopula", signature("numeric","stCopula"), pStCopula)
 
 
 ## spatial Copula density ##
@@ -125,7 +125,7 @@ setMethod("pcopula", signature("stCopula"), pStCopula)
 # u 
 #   three column matrix providing the transformed pairs and their respective 
 #   separation distances
-dStCopula <- function (copula, u) {
+dStCopula <- function (u, copula) {
   if (!is.list(u) || !length(u)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
   if(!is.matrix(u[[1]])) u[[1]] <- matrix(u[[1]],ncol=2)
@@ -160,7 +160,7 @@ dStCopula <- function (copula, u) {
   return(res)
 }
 
-setMethod("dcopula", signature("stCopula"), dStCopula)
+setMethod("dCopula", signature("numeric","stCopula"), dStCopula)
 
 
 ## partial derivatives ##
@@ -168,16 +168,16 @@ setMethod("dcopula", signature("stCopula"), dStCopula)
 ## dduSpCopula
 ###############
 
-dduStCopula <- function (copula, pair) {
-  if (!is.list(pair) || !length(pair)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
+dduStCopula <- function (u, copula) {
+  if (!is.list(u) || !length(u)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
-  if(!is.matrix(pair[[1]])) pair[[1]] <- matrix(pair[[1]],ncol=2)
-  n <- nrow(pair[[1]])
-  h <- pair[[2]]
-  t.dist <- pair[[3]]
+  if(!is.matrix(u[[1]])) u[[1]] <- matrix(u[[1]],ncol=2)
+  n <- nrow(u[[1]])
+  h <- u[[2]]
+  t.dist <- u[[3]]
   
-  if(length(pair)==4) {
-    t.block <- pair[[4]]
+  if(length(u)==4) {
+    t.block <- u[[4]]
     if (n%%t.block != 0) stop("The block size is not a multiple of the data length:",n)
   } else t.block <- 1
   
@@ -190,13 +190,13 @@ dduStCopula <- function (copula, pair) {
   
   if (length(t.dist)==1) {
     res <- dduSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]],
-                       list(pair[[1]], h, block=t.block))
+                       list(u[[1]], h, block=t.block))
   } else {
     if(length(h)==1) h <- rep(h,n)
     res <- NULL
     for(i in 1:(n%/%t.block)) {
       cop <- copula@spCopList[[match(t.dist[i*t.block],copula@t.lags)]]
-      tmpPair <- pair[[1]][((i-1)*t.block+1):(i*t.block),]
+      tmpPair <- u[[1]][((i-1)*t.block+1):(i*t.block),]
       res <- rbind(res, dduSpCopula(cop, list(tmpPair,h[i*t.block])))
     }
   }
@@ -204,21 +204,21 @@ dduStCopula <- function (copula, pair) {
   return(res)
 }
 
-setMethod("dducopula", signature("stCopula"), dduStCopula)
+setMethod("dduCopula", signature("numeric","stCopula"), dduStCopula)
 
 
 ## ddvSpCopula
 ###############
-ddvStCopula <- function (copula, pair) {
-  if (!is.list(pair) || !length(pair)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
+ddvStCopula <- function (u, copula) {
+  if (!is.list(u) || !length(u)>=3) stop("Point pairs need to be provided with their separating spatial and temproal distances as a list.")
   
-  if(!is.matrix(pair[[1]])) pair[[1]] <- matrix(pair[[1]],ncol=2)
-  n <- nrow(pair[[1]])
-  h <- pair[[2]]
-  t.dist <- pair[[3]]
+  if(!is.matrix(u[[1]])) u[[1]] <- matrix(u[[1]],ncol=2)
+  n <- nrow(u[[1]])
+  h <- u[[2]]
+  t.dist <- u[[3]]
   
-  if(length(pair)==4) {
-    t.block <- pair[[4]]
+  if(length(u)==4) {
+    t.block <- u[[4]]
     if (n%%t.block != 0) stop("The block size is not a multiple of the data length:",n)
   } else t.block <- 1
   
@@ -231,13 +231,13 @@ ddvStCopula <- function (copula, pair) {
   
   if (length(t.dist)==1) {
     res <- ddvSpCopula(copula@spCopList[[match(t.dist,copula@t.lags)]],
-                       list(pair[[1]], h, block=t.block))
+                       list(u[[1]], h, block=t.block))
   } else {
     if(length(h)==1) h <- rep(h,n)
     res <- NULL
     for(i in 1:(n%/%t.block)) {
       cop <- copula@spCopList[[match(t.dist[i*t.block],copula@t.lags)]]
-      tmpPair <- pair[[1]][((i-1)*t.block+1):(i*t.block),]
+      tmpPair <- u[[1]][((i-1)*t.block+1):(i*t.block),]
       res <- rbind(res, ddvSpCopula(cop, list(tmpPair,h[i*t.block])))
     }
   }
@@ -245,7 +245,7 @@ ddvStCopula <- function (copula, pair) {
   return(res)
 }
 
-setMethod("ddvcopula", signature("stCopula"), ddvStCopula)
+setMethod("ddvCopula", signature("numeric","stCopula"), ddvStCopula)
 
 #############
 ##         ##
@@ -309,7 +309,7 @@ loglikByCopulasLags <- function(bins, calcTau, families=c(normalCopula(0), tCopu
     tmploglik <- NULL
     for(i in 1:length(bins$meanDists)) {
       cop@parameters[1] <- calibKendallsTau(cop,tau=calcTau(bins$meanDists[i]))
-      tmploglik <- c(tmploglik, sum(log(dcopula(cop,bins$lagData[[i]]))))
+      tmploglik <- c(tmploglik, sum(log(dCopula(cop,bins$lagData[[i]]))))
     }
     loglik <- cbind(loglik, tmploglik)
   }

@@ -26,12 +26,12 @@ setClass("vineCopula",
 # constructor
 vineCopula <- function (copulas, dim, type) {
     val <- new("vineCopula", copulas=copulas, dimension = dim, parameters = numeric(), 
-        param.names = character(), param.lowbnd = numeric(), param.upbnd = numeric(), type=type, pdf=numeric(), message = paste(type, "copula family."))
+        param.names = character(), param.lowbnd = numeric(), param.upbnd = numeric(), type=type, pdf=numeric(), fullname = paste(type, "copula family."))
     val
 }
 
 showVineCopula <- function(object) {
-  cat(object@message, "\n")
+  cat(object@fullname, "\n")
   cat("Dimension: ", object@dimension, "\n")
   cat("Copulas:\n")
   for (i in (1:length(object@copulas))) cat("  ", class(object@copulas[[i]]), "with parameter(s)", object@copulas[[i]]@parameters, "\n")
@@ -194,31 +194,3 @@ linkCDVineSim <- function(copula, n) {
 }
 
 setMethod("rcopula", signature("vineCopula"), linkCDVineSim)
-
-setGeneric("qcopula_u",function(copula,p,u,...) {standardGeneric("qcopula_u")})
-
-qCopula_u <- function(copula,p,u,sample=NULL) {
-  dim <- copula@dimension
-  if(length(p) != length(u)) stop("Length of p and u differ!")
-  if(is.null(sample)) sample <- rcopula(copula,1e6)
-  empCop <- genEmpCop(sample)
-  params <- NULL
-  
-  for(i in 1:length(p)) {
-    if (u[i] < p[i]) {
-      params <- rbind(params,rep(NA,dim-1))
-    } else {
-      if (dim == 2) {
-        params <- rbind(params,optimize(function(v) (empCop(cbind(u[i],v))-p[i])^2,c(p,1))$minimum)
-      } else {
-        opt <- optim(par=rep(p[i],dim-1), function(vw) (empCop(c(u[i],vw))-p[i])^2, lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
-        params <- rbind(params, opt$par)
-      }
-    }
-  }
-
-  return(cbind(u,params))
-}
-
-setMethod("qcopula_u",signature("copula"),qCopula_u)
-

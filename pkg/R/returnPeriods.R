@@ -76,3 +76,31 @@ criticalTriple <- function(empCop, cl, u, ind, eps=10e-6) {
                })
   return(res)
 }
+
+
+setGeneric("qCopula_u",function(copula,p,u,...) {standardGeneric("qcopula_u")})
+
+qCopula_u.def <- function(copula,p,u,sample=NULL) {
+  dim <- copula@dimension
+  if(length(p) != length(u)) stop("Length of p and u differ!")
+  if(is.null(sample)) sample <- rcopula(copula,1e6)
+  empCop <- genEmpCop(sample)
+  params <- NULL
+  
+  for(i in 1:length(p)) {
+    if (u[i] < p[i]) {
+      params <- rbind(params,rep(NA,dim-1))
+    } else {
+      if (dim == 2) {
+        params <- rbind(params,optimize(function(v) (empCop(cbind(u[i],v))-p[i])^2,c(p,1))$minimum)
+      } else {
+        opt <- optim(par=rep(p[i],dim-1), function(vw) (empCop(c(u[i],vw))-p[i])^2, lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
+        params <- rbind(params, opt$par)
+      }
+    }
+  }
+  
+  return(cbind(u,params))
+}
+
+setMethod("qCopula_u",signature("copula"),qCopula_u.def)

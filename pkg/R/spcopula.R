@@ -1,21 +1,21 @@
 #################################################################################
 ##
-##  R package spcopula by Benedikt Gräler Copyright (C) 2011
+##  R package spCopula by Benedikt Gräler Copyright (C) 2011
 ##
-##  This file is part of the R package spcopula.
+##  This file is part of the R package spCopula.
 ##
-##  The R package spcopula is free software: you can redistribute it and/or 
+##  The R package spCopula is free software: you can redistribute it and/or 
 ##  modify it under the terms of the GNU General Public License as published by
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
 ##
-##  The R package spcopula is distributed in the hope that it will be useful,
+##  The R package spCopula is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##  GNU General Public License for more details.
 ##
 ##  You should have received a copy of the GNU General Public License
-##  along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>
+##  along with the R package spCopula. If not, see <http://www.gnu.org/licenses/>
 ##
 #################################################################################
 
@@ -25,7 +25,7 @@
 # param.names = "character" appropriate names
 # param.lowbnd = "numeric"  appropriate lower bounds
 # param.upbnd = "numeric"   appropriate upper bounds
-# message = "character"     messgae printed with "show"
+# fullname = "character"     messgae printed with "show"
 # components="list"         list of copulas (will be automatically supplemented 
 #			      by the independent copula)
 # distances="numeric"       the linking distances + the range (will be assigned
@@ -61,18 +61,18 @@ spCopula <- function(components, distances, spDepFun, unit="m") {
      
   new("spCopula", dimension=2, parameters=param, param.names=param.names,
       param.lowbnd=param.low, param.upbnd=param.up,
-      message="Spatial Copula: distance dependent convex combination of bivariate copulas",
+      fullname="Spatial Copula: distance dependent convex combination of bivariate copulas",
       components=components, distances=distances, calibMoa=calibMoa, unit=unit)
 }
 
 ## show method
 showCopula <- function(object) {
-  cat(object@message, "\n")
+  cat(object@fullname, "\n")
   cat("Dimension: ", object@dimension, "\n")
   cat("Copulas:\n")
   for (i in 1:length(object@components)) {
     cmpCop <- object@components[[i]]
-    cat("  ", cmpCop@message, "at", object@distances[i], 
+    cat("  ", cmpCop@fullname, "at", object@distances[i], 
       paste("[",object@unit,"]",sep=""), "\n")
     if (length(cmpCop@parameters) > 0) {
       for (i in (1:length(cmpCop@parameters))) 
@@ -230,7 +230,7 @@ spConCop <- function(fun, copula, pairs, h) {
 # u 
 #   three column matrix providing the transformed pairs and their respective 
 #   separation distances
-pSpCopula <- function (copula, u) {
+pSpCopula <- function (u, copula) {
   if (!is.list(u) || !length(u)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
   
   pairs <- u[[1]]
@@ -249,7 +249,7 @@ pSpCopula <- function (copula, u) {
   
   
   if(is.null(copula@calibMoa())) {
-    res <- spConCop(pcopula, copula, pairs, rep(h,length.out=nrow(pairs)))
+    res <- spConCop(pCopula, copula, pairs, rep(h,length.out=nrow(pairs)))
   } else {
     if(length(h)>1) {
       if (block == 1){
@@ -259,34 +259,34 @@ pSpCopula <- function (copula, u) {
         pairs <- pairs[ordering,,drop=FALSE] 
         h <- h[ordering]
         
-        res <- spDepFunCop(pcopula, copula, pairs, h)
+        res <- spDepFunCop(pCopula, copula, pairs, h)
         
         # reordering the values
         res <- res[order(ordering)]
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(pcopula, copula, 
+          res <- c(res, spDepFunCopSnglDist(pCopula, copula, 
                                             pairs[((i-1)*block+1):(i*block),], 
                                             h[i*block]))
         }
       }
     } else {
-      res <- spDepFunCopSnglDist(pcopula, copula, pairs, h)
+      res <- spDepFunCopSnglDist(pCopula, copula, pairs, h)
     }
   }
   
   return(res)
 }
 
-setMethod("pcopula", signature("spCopula"), pSpCopula)
+setMethod("pCopula", signature("numeric","spCopula"), pSpCopula)
 
 ## spatial Copula density ##
 
 # u 
 #   three column matrix providing the transformed pairs and their respective 
 #   separation distances
-dSpCopula <- function (copula, u) {
+dSpCopula <- function (u, copula) {
   if (!is.list(u) || !length(u)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
   
   pairs <- u[[1]]
@@ -303,7 +303,7 @@ dSpCopula <- function (copula, u) {
   }
   
   if(is.null(copula@calibMoa())){
-    res <- spConCop(dcopula, copula, pairs, rep(h, length.out=nrow(pairs)))
+    res <- spConCop(dCopula, copula, pairs, rep(h, length.out=nrow(pairs)))
   }
   else {
     if(length(h)>1) {
@@ -314,27 +314,27 @@ dSpCopula <- function (copula, u) {
         pairs <- pairs[ordering,,drop=FALSE] 
         h <- h[ordering]
         
-        res <- spDepFunCop(dcopula, copula, pairs, h)
+        res <- spDepFunCop(dCopula, copula, pairs, h)
         
         # reordering the values
         res <- res[order(ordering)]
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(dcopula, copula, 
+          res <- c(res, spDepFunCopSnglDist(dCopula, copula, 
                                             pairs[((i-1)*block+1):(i*block),], 
                                             h[i*block]))
         }
       }
     } else {
-      res <- spDepFunCopSnglDist(dcopula, copula, pairs, h)
+      res <- spDepFunCopSnglDist(dCopula, copula, pairs, h)
     }
   }
   
   return(res)
 }
 
-setMethod("dcopula", signature("spCopula"), dSpCopula)
+setMethod("dCopula", signature("numeric","spCopula"), dSpCopula)
 
 
 ## partial derivatives ##
@@ -342,23 +342,23 @@ setMethod("dcopula", signature("spCopula"), dSpCopula)
 ## dduSpCopula
 ###############
 
-dduSpCopula <- function (copula, pair) {
-  if (!is.list(pair) || !length(pair)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
+dduSpCopula <- function (u, copula) {
+  if (!is.list(u) || !length(u)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
   
-  pairs <- pair[[1]]
+  pairs <- u[[1]]
   n <- nrow(pairs)
   
-  if(length(pair)==3) {
-    block <- pair[[3]]
+  if(length(u)==3) {
+    block <- u[[3]]
     if (n%%block != 0) stop("The block size is not a multiple of the data length:",n)
   } else block <- 1
   
-  h <- pair[[2]]
-  if(length(h)>1 && length(h)!=nrow(pair[[1]])) {
+  h <- u[[2]]
+  if(length(h)>1 && length(h)!=nrow(u[[1]])) {
     stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
   }
 
-  if(is.null(copula@calibMoa())) res <- spConCop(dducopula, copula, pairs, 
+  if(is.null(copula@calibMoa())) res <- spConCop(dduCopula, copula, pairs, 
                                                  rep(h,length.out=nrow(pairs)))
   else {
     if(length(h)>1) {
@@ -369,49 +369,49 @@ dduSpCopula <- function (copula, pair) {
         pairs <- pairs[ordering,,drop=FALSE] 
         h <- h[ordering]
         
-        res <- spDepFunCop(dducopula, copula, pairs, h)
+        res <- spDepFunCop(dduCopula, copula, pairs, h)
         
         # reordering the values
         res <- res[order(ordering)]
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(dducopula, copula, 
+          res <- c(res, spDepFunCopSnglDist(dduCopula, copula, 
                                             pairs[((i-1)*block+1):(i*block),],
                                             h[i*block]))
         }
       }
     } else {
-      res <- spDepFunCopSnglDist(dducopula, copula, pairs, h)
+      res <- spDepFunCopSnglDist(dduCopula, copula, pairs, h)
     }
   }
   
   return(res)
 }
 
-setMethod("dducopula", signature("spCopula"), dduSpCopula)
+setMethod("dduCopula", signature("numeric","spCopula"), dduSpCopula)
 
 ## ddvSpCopula
 ###############
 
-ddvSpCopula <- function (copula, pair) {
-  if (!is.list(pair) || !length(pair)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
+ddvSpCopula <- function (u, copula) {
+  if (!is.list(u) || !length(u)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
   
-  pairs <- pair[[1]]
+  pairs <- u[[1]]
   n <- nrow(pairs)
   
-  if(length(pair)==3) {
-    block <- pair[[3]]
+  if(length(u)==3) {
+    block <- u[[3]]
     if (n%%block != 0) stop("The block size is not a multiple of the data length:",n)
   } else block <- 1
   
-  h <- pair[[2]]
-  if(length(h)>1 && length(h)!=nrow(pair[[1]])) {
+  h <- u[[2]]
+  if(length(h)>1 && length(h)!=nrow(u[[1]])) {
     stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
   }
   
   
-  if(is.null(copula@calibMoa())) res <- spConCop(ddvcopula, copula, pairs, 
+  if(is.null(copula@calibMoa())) res <- spConCop(ddvCopula, copula, pairs, 
                                                  rep(h,length.out=nrow(pairs)))
   else {
     if(length(h)>1) {
@@ -422,27 +422,27 @@ ddvSpCopula <- function (copula, pair) {
         pairs <- pairs[ordering,,drop=FALSE] 
         h <- h[ordering]
         
-        res <- spDepFunCop(ddvcopula, copula, pairs, h)
+        res <- spDepFunCop(ddvCopula, copula, pairs, h)
         
         # reordering the values
         res <- res[order(ordering)]
       } else {
         res <- NULL
         for(i in 1:(n%/%block)) {
-          res <- c(res, spDepFunCopSnglDist(ddvcopula, copula, 
+          res <- c(res, spDepFunCopSnglDist(ddvCopula, copula, 
                                             pairs[((i-1)*block+1):(i*block),],
                                             h[i*block]))
         }
       }
     } else {
-      res <- spDepFunCopSnglDist(ddvcopula, copula, pairs, h)
+      res <- spDepFunCopSnglDist(ddvCopula, copula, pairs, h)
     }
   }
   
   return(res)
 }
 
-setMethod("ddvcopula", signature("spCopula"), ddvSpCopula)
+setMethod("ddvCopula", signature("numeric","spCopula"), ddvSpCopula)
 
 
 #############
@@ -513,7 +513,7 @@ loglikByCopulasLags <- function(bins, calcTau,
     tmploglik <- NULL
     for(i in 1:length(bins$meanDists)) {
       cop@parameters[1] <- calibKendallsTau(cop,tau=calcTau(bins$meanDists[i]))
-      tmploglik <- c(tmploglik, sum(log(dcopula(cop,bins$lagData[[i]]))))
+      tmploglik <- c(tmploglik, sum(log(dCopula(cop,bins$lagData[[i]]))))
     }
     loglik <- cbind(loglik, tmploglik)
   }

@@ -1,21 +1,21 @@
 #################################################################################
 ##
-##   R package spcopula by Benedikt Gräler Copyright (C) 2011
+##   R package sdCopula by Benedikt Gräler Copyright (C) 2011
 ##
-##   This file is part of the R package spcopula.
+##   This file is part of the R package sdCopula.
 ##
-##   The R package spcopula is free software: you can redistribute it and/or modify
+##   The R package sdCopula is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 3 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package spcopula is distributed in the hope that it will be useful,
+##   The R package sdCopula is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 ##
 ##   You should have received a copy of the GNU General Public License
-##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
+##   along with the R package sdCopula. If not, see <http://www.gnu.org/licenses/>.
 ##
 #################################################################################
 
@@ -25,9 +25,7 @@
 ##                                                  ##
 ######################################################
 
-cqsCopula <-
-function (param)
-{
+cqsCopula <- function (param) {
     val <- new("cqsCopula", dimension = as.integer(2), parameters = param, 
       param.names = c("a", "b"), param.lowbnd = c(limA(param[2]),-1),
       param.upbnd = c(1, 1), fullname = "copula family with cubic quadratic sections")
@@ -36,7 +34,7 @@ function (param)
 
 ## density ##
 
-dCQSec <- function (copula, u) {
+dCQSec <- function (u, copula) {
   a <- copula@parameters[1]
   b <- copula@parameters[2]
   
@@ -48,11 +46,11 @@ dCQSec <- function (copula, u) {
   return(pmax(1-b*(1-2*u2)*(1-2*u1)+(b-a)*(1-u2)*(1-3*u2)*(1-u1)*(1-3*u1),0))
 }
 
-setMethod("dcopula", signature("cqsCopula"), dCQSec)
+setMethod("dCopula", signature("numeric", "cqsCopula"), dCQSec)
 
 ## jcdf ##
 
-pCQSec <- function (copula, u) {
+pCQSec <- function (u, copula) {
     a <- copula@parameters[1]
     b <- copula@parameters[2]
     if (!is.matrix(u)) 
@@ -62,7 +60,7 @@ pCQSec <- function (copula, u) {
 return(u1*u2*(1- b*(1-u1)*(1-u2) + (b-a)*(1-u2)^2*(1-u1)^2))
 }
 
-setMethod("pcopula", signature("cqsCopula"), pCQSec)
+setMethod("dCopula", signature("numeric","cqsCopula"), pCQSec)
 
 ## partial derivatives ##
 
@@ -107,25 +105,25 @@ return((z-b)/(3*a))
 
 ## partial derivative ddu pCQSec
 
-dduCQSec <- function (copula, pair) 
+dduCQSec <- function (u, copula) 
 {
     a <- copula@parameters[1]
     b <- copula@parameters[2]
-    if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
+    if (!is.matrix(u)) u <- matrix(u, ncol = 2)
 
-    u <- pair[, 1]
-    v <- pair[, 2]
+    u1 <- u[, 1]
+    u2 <- u[, 2]
 
-return(v-b*(v-v^2-2*u*v+2*u*v^2)+(b-a)*(v-4*u*v+3*u^2*v-2*v^2+8*u*v^2-6*u^2*v^2+v^3-4*u*v^3+3*u^2*v^3))
+return(u2-b*(u2-u2^2-2*u1*u2+2*u1*u2^2)+(b-a)*(u2-4*u1*u2+3*u1^2*u2-2*u2^2+8*u1*u2^2-6*u1^2*u2^2+u2^3-4*u1*u2^3+3*u1^2*u2^3))
 }
 
-setMethod("dducopula", signature("cqsCopula"),dduCQSec)
+setMethod("dduCopula", signature("numeric","cqsCopula"), dduCQSec)
 
 ## inverse partial derivative ddu
 
 ## inverse partial derivative ddu
 # seems to be accurate (1.4e-05 is the max out of 1000 random CQSec-copulas for 1000 random pairs (u,v) each.)
-invdduCQSec <- function (copula, u, y) {
+invdduCQSec <- function (u, copula, y) {
     if (length(u)!=length(y)) 
         stop("Length of u and y differ!")
 
@@ -149,26 +147,26 @@ filter <- function(vec){
 return(apply(v,1,filter))
 }
 
-setMethod("invdducopula", signature("cqsCopula"),invdduCQSec)
+setMethod("invdduCopula", signature("numeric","cqsCopula"), invdduCQSec)
 
 ## partial derivative ddv
 
-ddvCQSec <- function (copula, pair) {
+ddvCQSec <- function (u, copula) {
     a <- copula@parameters[1]
     b <- copula@parameters[2]
-    if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
+    if (!is.matrix(u)) u <- matrix(u, ncol = 2)
 
-    u <- pair[, 1]
-    v <- pair[, 2]
+    u1 <- u[, 1]
+    u2 <- u[, 2]
 
-return(u-b*(u-2*u*v-u^2+2*u^2*v)+(b-a)*(u-2*u^2+u^3-4*u*v+8*u^2*v-4*u^3*v+3*u*v^2-6*u^2*v^2+3*u^3*v^2))
+return(u1-b*(u1-2*u1*u2-u1^2+2*u1^2*u2)+(b-a)*(u1-2*u1^2+u1^3-4*u1*u2+8*u1^2*u2-4*u1^3*u2+3*u1*u2^2-6*u1^2*u2^2+3*u1^3*u2^2))
 }
 
-setMethod("ddvcopula", signature("cqsCopula"),ddvCQSec)
+setMethod("ddvCopula", signature("numeric","cqsCopula"), ddvCQSec)
 
 ## inverse partial derivative ddv
 # seems to be accurate (1e-05 is the max out of 5000 random CQSec-copulas for 1000 random pairs (u,v) each. Very most are below 10*.Machine$double.eps)
-invddvCQSec <- function (copula, v, y) {
+invddvCQSec <- function (v, copula, y) {
     if (length(v)!=length(y)) 
         stop("Length of v and y differ!")
 
@@ -192,32 +190,17 @@ filter <- function(vec){
 return(apply(u,1,filter))
 }
 
-## testing
-# test <- NULL
-# for(i in 1:100){
-# b <- runif(1,-1,1)
-# a <- runif(1,limA(b),1)
-# us <- runif(1000)
-# ys <- runif(1000)
-# vs <- invdduCQSec(cqsCopula(c(a,b)),us,ys)
-# test <- c(test,max(abs(dduCQSec(cqsCopula(c(a,b)),cbind(us,vs))-ys)))
-# }
-# hist(test)
-# abline(h=2,col="red")
-
-setMethod("invddvcopula", signature("cqsCopula"),invddvCQSec)
+setMethod("invddvCopula", signature("numeric","cqsCopula"), invddvCQSec)
 
 ## random number generator
 
-rCQSec <-
-function (copula, n) 
-{
+rCQSec <- function (n, copula) {
     u <- runif(n, min = 0, max = 1)
     y <- runif(n, min = 0, max = 1)
-    return(cbind(u, invdduCQSec(copula, u, y) ))
+    return(cbind(u, invdduCQSec(u, copula, y) ))
 }
 
-setMethod("rcopula", signature("cqsCopula"), rCQSec)
+setMethod("rCopula", signature("numeric","cqsCopula"), rCQSec)
 ## fitment
 
 fitCopula.cqs <- function (copula, data, method = "ml", start=c(0,0), 
@@ -228,7 +211,7 @@ fitCopula.cqs <- function (copula, data, method = "ml", start=c(0,0),
                 ml=fitCQSec.ml(copula, data, start, lower, upper, optim.control, optim.method),
                 itau=fitCQSec.itau(copula, data, estimate.variance),
                 irho=fitCQSec.irho(copula, data, estimate.variance),
-                stop("Implemented methods for copulas in the spcopula package are: ml, itau, and irho."))
+                stop("Implemented methods for copulas in the spCopula package are: ml, itau, and irho."))
   return(fit)
 }
 
@@ -254,7 +237,7 @@ return(new("fitCopula",
   estimate = esti, 
   var.est = matrix(NA), 
   method = "Inversion of Kendall's tau and MLE",
-  loglik = sum(log(dcopula(copula,data))),
+  loglik = sum(log(dCopula(data, copula))),
   convergence = as.integer(NA),
   nsample = nrow(data),
   copula=copula
@@ -269,7 +252,7 @@ return(new("fitCopula",
   estimate = esti, 
   var.est = matrix(NA), 
   method = "Inversion of Spearman's rho and MLE",
-  loglik = sum(log(dcopula(copula,data))),
+  loglik = sum(log(dCopula(data, copula))),
   convergence = as.integer(NA),
   nsample = nrow(data),
   copula=copula
@@ -292,7 +275,7 @@ iFun <- switch(method, itau=iTau, irho=iRho)
 sec <- function (parameters) {
 res <- NULL
 for(param in parameters) {
-  res <- rbind(res, -sum(log( dCQSec(cqsCopula(c(iFun(param),param)),u=smpl) )))
+  res <- rbind(res, -sum(log( dCQSec(smpl, cqsCopula(c(iFun(param),param))) )))
 }
 return(res)
 }
@@ -311,7 +294,7 @@ fitCQSec.ml <- function(copula, data, start, lower, upper, optim.control, optim.
   
   optFun <- function(param=c(0,0)) {
     if(any(param > 1) | param[2] < -1 | param[1] < limA(param[2])) return(1)
-    return(-sum(log( dCQSec(cqsCopula(param),u=data) )))
+    return(-sum(log( dCQSec(data, cqsCopula(param)) )))
   }
   
   optimized <- optim(par=start, fn=optFun, method = optim.method, 
@@ -344,7 +327,7 @@ setMethod("kendallsTau",signature("cqsCopula"),tauCQSec)
 # find parameter "a" for parameter "b" under a given measure of association "rho" 
 # it may return a value exceeding the limit of "a" which may result in an invalid copula.
 
-iRhoCQSec <- function(b,rho=0) {
+iRhoCQSec <- function(b, rho=0) {
   return(min(max(limA(b),-3*b - 12*rho),1))
 }
 

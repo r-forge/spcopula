@@ -4,7 +4,7 @@
 
 
 # density from BiCopPDF
-linkCDVine.PDF <- function (copula, u) {
+linkCDVine.PDF <- function (u, copula) {
   param <- copula@parameters
   if(length(param)==1) param <- c(param,0)
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
@@ -20,7 +20,7 @@ linkCDVine.PDF <- function (copula, u) {
 # cdf from BiCopCDF
 
 # for "standard" copulas: family %in% c(3:10)
-linkCDVine.CDF <- function (copula, u) {
+linkCDVine.CDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   n <- nrow(u)
@@ -32,7 +32,7 @@ linkCDVine.CDF <- function (copula, u) {
 }
 
 # for survival copulas: family %in% c(13, 14, 16:20)
-linkCDVine.surCDF <- function (copula, u) {
+linkCDVine.surCDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   u1 <- u[,1]
@@ -47,7 +47,7 @@ linkCDVine.surCDF <- function (copula, u) {
 }
 
 # for 90 deg rotated copulas: family %in% c(23, 24, 26:30)
-linkCDVine.r90CDF <- function (copula, u) {
+linkCDVine.r90CDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   u1 <- u[,1]
@@ -62,7 +62,7 @@ linkCDVine.r90CDF <- function (copula, u) {
 }
 
 # for 270 deg rotated copulas: family %in% c(33, 34, 36:40)
-linkCDVine.r270CDF <- function (copula, u) {
+linkCDVine.r270CDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   u1 <- u[,1]
@@ -78,9 +78,9 @@ linkCDVine.r270CDF <- function (copula, u) {
 
 ## derivtives/h-function  from BiCopHfunc
 # ddu
-linkCDVine.ddu <- function (copula, pair) {
+linkCDVine.ddu <- function (u, copula) {
   param <- copula@parameters
-  u <- matrix(pair, ncol = 2)
+  u <- matrix(u, ncol = 2)
   n <- nrow(u)
   fam <- copula@family
   
@@ -91,9 +91,9 @@ linkCDVine.ddu <- function (copula, pair) {
 }
 
 # ddv
-linkCDVine.ddv <- function (copula, pair) {
+linkCDVine.ddv <- function (u, copula) {
   param <- copula@parameters
-  u <- matrix(pair, ncol = 2)
+  u <- matrix(u, ncol = 2)
   n <- nrow(u)
   fam <- copula@family
   
@@ -105,7 +105,7 @@ linkCDVine.ddv <- function (copula, pair) {
 
 
 ## random numbers from CDVineSim
-linkCDVine.r <- function(copula, n){
+linkCDVine.r <- function (n, copula){
   param <- copula@parameters
   fam <- copula@family
   if(is.na(param[2])) param <- c(param,0)

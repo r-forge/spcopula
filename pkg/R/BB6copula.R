@@ -29,25 +29,25 @@ setClass("BB6Copula",
 # constructor
 BB6Copula <- function (param) {
     val <- new("BB6Copula", dimension = as.integer(2), parameters = param, 
-        param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=8, message = "BB6 copula family. Number 8 in CDVine.")
+        param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=8, fullname = "BB6 copula family. Number 8 in CDVine.")
     val
 }
 
 ## density ##
-setMethod("dcopula", signature("BB6Copula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","BB6Copula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("BB6Copula"), linkCDVine.CDF)
+setMethod("pCopula", signature("numeric","BB6Copula"), linkCDVine.CDF)
 
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("BB6Copula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","BB6Copula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvcopula", signature("BB6Copula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","BB6Copula"), linkCDVine.ddv)
 
 ## random number generater ??
-setMethod("rcopula", signature("BB6Copula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","BB6Copula"), linkCDVine.r)
 
 ## kendall distribution/measure, taken from CDVine:::obs.stat
 kendall.BB6 <- function(copula, t){
@@ -78,26 +78,25 @@ setClass("surBB6Copula",
 
 # constructor
 surBB6Copula <- function (param) {
-  val <- new("surBB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=18, message = "Survival BB6 copula family. Number 18 in CDVine.")
+  val <- new("surBB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=18, fullname = "Survival BB6 copula family. Number 18 in CDVine.")
   val
 }
 
 ## density ##
-setMethod("dcopula", signature("surBB6Copula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","surBB6Copula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("surBB6Copula"), linkCDVine.surCDF)
-# persp(surBB6Copula(c(5.329995,2.1201476)),dcopula,zlim=c(0,20))
+setMethod("pCopula", signature("numeric","surBB6Copula"), linkCDVine.surCDF)
   
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("surBB6Copula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","surBB6Copula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvcopula", signature("surBB6Copula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","surBB6Copula"), linkCDVine.ddv)
 
 ## random number generator
-setMethod("rcopula", signature("surBB6Copula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","surBB6Copula"), linkCDVine.r)
 
 #######################
 ## BB6 copula 90 deg ##
@@ -126,26 +125,26 @@ setClass("r90BB6Copula",
 
 # constructor
 r90BB6Copula <- function (param) {
-  val <- new("r90BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=28, message = "90 deg rotated BB6 copula family. Number 28 in CDVine.")
+  val <- new("r90BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=28, fullname = "90 deg rotated BB6 copula family. Number 28 in CDVine.")
   val
 }
 
 ## density ##
-setMethod("dcopula", signature("r90BB6Copula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r90BB6Copula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("r90BB6Copula"), linkCDVine.r90CDF)
+setMethod("pCopula", signature("numeric","r90BB6Copula"), linkCDVine.r90CDF)
 # persp(r90BB6Copula(c(-1.329995,-1.1201476)), pcopula)
   
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("r90BB6Copula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r90BB6Copula"), linkCDVine.ddu)
 
 ## ddv
-setMethod("ddvcopula", signature("r90BB6Copula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","r90BB6Copula"), linkCDVine.ddv)
 
 ## random number generator
-setMethod("rcopula", signature("r90BB6Copula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r90BB6Copula"), linkCDVine.r)
 # rcopula(r90BB6Copula(c(-5.329995,-1.1201476)),500)
 
 #####################
@@ -160,23 +159,23 @@ setClass("r270BB6Copula",
 
 # constructor
 r270BB6Copula <- function (param) {
-  val <- new("r270BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=38, message = "270 deg rotated BB6 copula family. Number 38 in CDVine.")
+  val <- new("r270BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=38, fullname = "270 deg rotated BB6 copula family. Number 38 in CDVine.")
   val
 }
 
 ## density ##
-setMethod("dcopula", signature("r270BB6Copula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r270BB6Copula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pcopula", signature("r270BB6Copula"), linkCDVine.r270CDF)
+setMethod("pCopula", signature("numeric","r270BB6Copula"), linkCDVine.r270CDF)
 # persp(r270BB6Copula(c(-5.329995,-1.1201476)), dcopula)
   
 ## partial derivatives ##
 # ddu
-setMethod("dducopula", signature("r270BB6Copula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r270BB6Copula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvcopula", signature("r270BB6Copula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","r270BB6Copula"), linkCDVine.ddv)
 
 ## random number generator
-setMethod("rcopula", signature("r270BB6Copula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r270BB6Copula"), linkCDVine.r)

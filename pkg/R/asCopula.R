@@ -1,21 +1,21 @@
 #################################################################################
 ##
-##   R package spcopula by Benedikt Gräler Copyright (C) 2011
+##   R package spCopula by Benedikt Gräler Copyright (C) 2011
 ##
-##   This file is part of the R package spcopula.
+##   This file is part of the R package spCopula.
 ##
-##   The R package spcopula is free software: you can redistribute it and/or modify
+##   The R package spCopula is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 3 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package spcopula is distributed in the hope that it will be useful,
+##   The R package spCopula is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 ##
 ##   You should have received a copy of the GNU General Public License
-##   along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>.
+##   along with the R package spCopula. If not, see <http://www.gnu.org/licenses/>.
 ##
 #################################################################################
 
@@ -36,7 +36,7 @@ asCopula <- function (param) {
 
 ## density ##
 
-dASC2 <- function (copula, u) {
+dASC2 <- function (u, copula) {
   a <- copula@parameters[1]
   b <- copula@parameters[2]
   
@@ -48,12 +48,12 @@ dASC2 <- function (copula, u) {
   return(pmax(a * u2 * (((12 - 9 * u1) * u1 - 3) * u2 + u1 * (6 * u1 - 8) + 2) + b * (u2 * ((u1 * (9 * u1 - 12) + 3) * u2 + (12 - 6 * u1) * u1 - 4) - 2 * u1 + 1) + 1,0))
 }
 
-setMethod("dcopula", signature("asCopula"), dASC2)
+setMethod("dCopula", signature("numeric","asCopula"), dASC2)
 
 ## jcdf ##
 
 pASC2 <-
-function (copula, u) 
+function (u, copula) 
 {
     a <- copula@parameters[1]
     b <- copula@parameters[2]
@@ -64,50 +64,46 @@ function (copula, u)
     return( u1 * u2 + u1 * u2 * (1 - u1) * (1 - u2) * ((a - b) * u2 * (1 - u1) + b) )
 }
 
-setMethod("pcopula", signature("asCopula"), pASC2)
+setMethod("pCopula", signature("numeric", "asCopula"), pASC2)
 
 ## partial derivatives ##
 ## ddu
 
-dduASC2 <-
-function (copula, pair) 
+dduASC2 <- function (u, copula) 
 {
     a <- copula@parameters[1]
     b <- copula@parameters[2]
-    if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
+    if (!is.matrix(pair)) u <- matrix(u, ncol = 2)
 
-    u <- pair[, 1]
-    v <- pair[, 2]
+    u1 <- u[, 1]
+    u2 <- u[, 2]
 
-    return(v*(1 + b*(-1 + 2*u)*(-1 + v) - (a - b)*(1 - 4*u + 3*u^2)*(-1 + v)*v))
+    return(u2*(1 + b*(-1 + 2*u1)*(-1 + u2) - (a - b)*(1 - 4*u1 + 3*u1^2)*(-1 + u2)*u2))
 }
 
-setMethod("dducopula", signature("asCopula"),dduASC2)
+setMethod("dduCopula", signature("numeric", "asCopula"), dduASC2)
 
 ## ddv
 
-ddvASC2 <-
-function (copula, pair) 
-{
+ddvASC2 <- function (u, copula){
     a <- copula@parameters[1]
     b <- copula@parameters[2]
-    if (!is.matrix(pair)) pair <- matrix(pair, ncol = 2)
+    if (!is.matrix(pair)) u <- matrix(u, ncol = 2)
 
-    u <- pair[, 1]
-    v <- pair[, 2]
+    u1 <- u[, 1]
+    u2 <- u[, 2]
 
-    return( u + b*(-1 + u)*u*(-1 + 2*v) - (a - b)*(-1 + u)^2*u*v*(-2 + 3*v))
+    return( u1 + b*(-1 + u1)*u1*(-1 + 2*u2) - (a - b)*(-1 + u1)^2*u1*u2*(-2 + 3*u2))
 }
 
-setMethod("ddvcopula", signature("asCopula"),ddvASC2)
+setMethod("ddvCopula", signature("numeric", "asCopula"),ddvASC2)
 
 ## random number generater
 # incorporating the inverse of the partial derivative that is solved numerically using optimize
 
 ## inverse partial derivative 
 
-invdduASC2 <- function (copula, u, y) 
-{
+invdduASC2 <- function (u, copula, y) {
     if (length(u)!=length(y)) 
         stop("Length of u and y differ!")
 
@@ -131,11 +127,10 @@ filter <- function(vec){
 return(apply(v,1,filter))
 }
 
-setMethod("invdducopula", signature("asCopula"),invdduASC2)
+setMethod("invdduCopula", signature("numeric","asCopula","numeric"),invdduASC2)
 
 ## inverse partial derivative ddv
-invddvASC2 <- function (copula, v, y)
-{
+invddvASC2 <- function (v, copula, y) {
     if (length(v)!=length(y)) 
         stop("Length of v and y differ!")
 
@@ -159,16 +154,16 @@ filter <- function(vec){
 return(apply(u,1,filter))
 }
 
-setMethod("invddvcopula", signature("asCopula"),invddvASC2)
+setMethod("invddvCopula", signature("numeric","asCopula","numeric"),invddvASC2)
 
 ## random number generator
-rASC2 <- function (copula, n) {
+rASC2 <- function (n, copula) {
     u <- runif(n, min = 0, max = 1)
     y <- runif(n, min = 0, max = 1)
-    return(cbind(u, invdduASC2(copula, u, y) ))
+    return(cbind(u, invdduASC2(u, copula, y) ))
 }
 
-setMethod("rcopula", signature("asCopula"), rASC2)
+setMethod("rCopula", signature("numeric", "asCopula"), rASC2)
 
 ## fitment
 
@@ -180,7 +175,7 @@ fitCopulaASC2 <- function (copula, data, method = "ml", start=c(0,0),
                 ml=fitASC2.ml(copula, data, start, lower, upper, optim.control, optim.method),
                 itau=fitASC2.itau(copula, data, estimate.variance),
                 irho=fitASC2.irho(copula, data, estimate.variance),
-                stop("Implemented methods for copulas in the spcopula package are: ml, itau, and irho."))
+                stop("Implemented methods for copulas in the spCopula package are: ml, itau, and irho."))
   return(fit)
 }
 
@@ -206,7 +201,7 @@ return(new("fitCopula",
   estimate = esti, 
   var.est = matrix(NA), 
   method = "Inversion of Kendall's tau and MLE",
-  loglik = sum(log(dcopula(copula,data))),
+  loglik = sum(log(dCopula(data, copula))),
   convergence = as.integer(NA),
   nsample = nrow(data),
   copula=copula
@@ -221,7 +216,7 @@ return(new("fitCopula",
   estimate = esti, 
   var.est = matrix(NA), 
   method = "Inversion of Spearman's rho and MLE",
-  loglik = sum(log(dcopula(copula,data))),
+  loglik = sum(log(dCopula(data, copula))),
   convergence = as.integer(NA),
   nsample = nrow(data),
   copula=copula
@@ -229,31 +224,31 @@ return(new("fitCopula",
 }
 
 fitASC2.moa <- function(moa, data, method="itau") {
-smpl <- as.matrix(data)
+  smpl <- as.matrix(data)
 
-iTau <- function(p) {
-  iTauASC2(p,moa)
-}
+  iTau <- function(p) {
+    iTauASC2(p,moa)
+  }
 
-iRho <- function(p) {
-  iRhoASC2(p,moa)
-}
+  iRho <- function(p) {
+    iRhoASC2(p,moa)
+  }
 
-iFun <- switch(method, itau=iTau, irho=iRho)
+  iFun <- switch(method, itau=iTau, irho=iRho)
 
-sec <- function (parameters) {
-res <- NULL
-for(param in parameters) {
-  res <- rbind(res, -sum(log( dASC2(asCopula(c(iFun(param),param)),u=smpl) )))
-}
-return(res)
-}
+  sec <- function (parameters) {
+    res <- NULL
+    for(param in parameters) {
+      res <- rbind(res, -sum(log( dASC2(asCopula(c(iFun(param),param)),u=smpl) )))
+    }
+    return(res)
+  }
 
-b <- optimize(sec,c(-1,1))$minimum
+  b <- optimize(sec,c(-1,1))$minimum
 
-param <- c(iFun(b),b)
+  param <- c(iFun(b),b)
 
-return(param)
+  return(param)
 }
 
 # maximum log-likelihood estimation of a and b using optim
