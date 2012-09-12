@@ -46,7 +46,11 @@ dCQSec <- function (u, copula) {
   return(pmax(1-b*(1-2*u2)*(1-2*u1)+(b-a)*(1-u2)*(1-3*u2)*(1-u1)*(1-3*u1),0))
 }
 
-setMethod("dCopula", signature("numeric", "cqsCopula"), dCQSec)
+setMethod("dCopula", signature("numeric", "cqsCopula"),
+          function(u, copula, ...) {
+            dCQSec(matrix(u,ncol=copula@dimension), copula)
+          })
+setMethod("dCopula", signature("matrix", "cqsCopula"), dCQSec)
 
 ## jcdf ##
 
@@ -59,8 +63,12 @@ pCQSec <- function (u, copula) {
     u2 <- u[, 2]
 return(u1*u2*(1- b*(1-u1)*(1-u2) + (b-a)*(1-u2)^2*(1-u1)^2))
 }
+setMethod("pCopula", signature("numeric", "cqsCopula"),
+          function(u, copula, ...) {
+            pCQSec(matrix(u,ncol=copula@dimension), copula)
+          })
 
-setMethod("dCopula", signature("numeric","cqsCopula"), pCQSec)
+setMethod("pCopula", signature("matrix","cqsCopula"), pCQSec)
 
 ## partial derivatives ##
 
@@ -105,19 +113,21 @@ return((z-b)/(3*a))
 
 ## partial derivative ddu pCQSec
 
-dduCQSec <- function (u, copula) 
-{
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(u)) u <- matrix(u, ncol = 2)
+dduCQSec <- function (u, copula) {
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
 
-    u1 <- u[, 1]
-    u2 <- u[, 2]
+  u1 <- u[, 1]
+  u2 <- u[, 2]
 
-return(u2-b*(u2-u2^2-2*u1*u2+2*u1*u2^2)+(b-a)*(u2-4*u1*u2+3*u1^2*u2-2*u2^2+8*u1*u2^2-6*u1^2*u2^2+u2^3-4*u1*u2^3+3*u1^2*u2^3))
+  return(u2-b*(u2-u2^2-2*u1*u2+2*u1*u2^2)+(b-a)*(u2-4*u1*u2+3*u1^2*u2-2*u2^2+8*u1*u2^2-6*u1^2*u2^2+u2^3-4*u1*u2^3+3*u1^2*u2^3))
 }
 
-setMethod("dduCopula", signature("numeric","cqsCopula"), dduCQSec)
+setMethod("dduCopula", signature("numeric","cqsCopula"),
+          function(u, copula, ...) {
+            dduCQSec(matrix(u,ncol=copula@dimension), copula)
+          }) 
+setMethod("dduCopula", signature("matrix","cqsCopula"), dduCQSec)
 
 ## inverse partial derivative ddu
 
@@ -147,7 +157,7 @@ filter <- function(vec){
 return(apply(v,1,filter))
 }
 
-setMethod("invdduCopula", signature("numeric","cqsCopula"), invdduCQSec)
+setMethod("invdduCopula", signature("numeric","cqsCopula","numeric"), invdduCQSec)
 
 ## partial derivative ddv
 
@@ -162,7 +172,11 @@ ddvCQSec <- function (u, copula) {
 return(u1-b*(u1-2*u1*u2-u1^2+2*u1^2*u2)+(b-a)*(u1-2*u1^2+u1^3-4*u1*u2+8*u1^2*u2-4*u1^3*u2+3*u1*u2^2-6*u1^2*u2^2+3*u1^3*u2^2))
 }
 
-setMethod("ddvCopula", signature("numeric","cqsCopula"), ddvCQSec)
+setMethod("ddvCopula", signature("numeric","cqsCopula"),
+          function(u, copula, ...) {
+            ddvQSec(matrix(u,ncol=copula@dimension), copula)
+          })
+setMethod("ddvCopula", signature("matrix","cqsCopula"), ddvCQSec)
 
 ## inverse partial derivative ddv
 # seems to be accurate (1e-05 is the max out of 5000 random CQSec-copulas for 1000 random pairs (u,v) each. Very most are below 10*.Machine$double.eps)
@@ -190,7 +204,7 @@ filter <- function(vec){
 return(apply(u,1,filter))
 }
 
-setMethod("invddvCopula", signature("numeric","cqsCopula"), invddvCQSec)
+setMethod("invddvCopula", signature("numeric","cqsCopula","numeric"), invddvCQSec)
 
 ## random number generator
 

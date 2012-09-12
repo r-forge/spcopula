@@ -78,7 +78,7 @@ criticalTriple <- function(empCop, cl, u, ind, eps=10e-6) {
 }
 
 
-setGeneric("qCopula_u",function(copula,p,u,...) {standardGeneric("qcopula_u")})
+setGeneric("qCopula_u",function(copula,p,u,...) {standardGeneric("qCopula_u")})
 
 qCopula_u.def <- function(copula,p,u,sample=NULL) {
   dim <- copula@dimension

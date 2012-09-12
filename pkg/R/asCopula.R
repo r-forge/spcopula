@@ -48,55 +48,63 @@ dASC2 <- function (u, copula) {
   return(pmax(a * u2 * (((12 - 9 * u1) * u1 - 3) * u2 + u1 * (6 * u1 - 8) + 2) + b * (u2 * ((u1 * (9 * u1 - 12) + 3) * u2 + (12 - 6 * u1) * u1 - 4) - 2 * u1 + 1) + 1,0))
 }
 
-setMethod("dCopula", signature("numeric","asCopula"), dASC2)
+setMethod("dCopula", signature("numeric","asCopula"), 
+          function(u, copula, ...) {
+            dASC2(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dCopula", signature("matrix","asCopula"), dASC2)
 
 ## jcdf ##
+pASC2 <- function (u, copula) {
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
 
-pASC2 <-
-function (u, copula) 
-{
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(u)) 
-        u <- matrix(u, ncol = 2)
-    u1 <- u[, 1]
-    u2 <- u[, 2]
-    return( u1 * u2 + u1 * u2 * (1 - u1) * (1 - u2) * ((a - b) * u2 * (1 - u1) + b) )
+  u1 <- u[, 1]
+  u2 <- u[, 2]
+  return( u1 * u2 + u1 * u2 * (1 - u1) * (1 - u2) * ((a - b) * u2 * (1 - u1) + b) )
 }
 
-setMethod("pCopula", signature("numeric", "asCopula"), pASC2)
+setMethod("pCopula", signature("numeric", "asCopula"),
+          function(u, copula, ...) {
+            pASC2(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("pCopula", signature("matrix", "asCopula"), pASC2)
 
 ## partial derivatives ##
 ## ddu
 
-dduASC2 <- function (u, copula) 
-{
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(pair)) u <- matrix(u, ncol = 2)
+dduASC2 <- function (u, copula) {
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
+  
+  u1 <- u[, 1]
+  u2 <- u[, 2]
 
-    u1 <- u[, 1]
-    u2 <- u[, 2]
-
-    return(u2*(1 + b*(-1 + 2*u1)*(-1 + u2) - (a - b)*(1 - 4*u1 + 3*u1^2)*(-1 + u2)*u2))
+  return(u2*(1 + b*(-1 + 2*u1)*(-1 + u2) - (a - b)*(1 - 4*u1 + 3*u1^2)*(-1 + u2)*u2))
 }
 
-setMethod("dduCopula", signature("numeric", "asCopula"), dduASC2)
+setMethod("dduCopula", signature("numeric", "asCopula"),
+          function(u, copula, ...) {
+            dduASC2(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix", "asCopula"), dduASC2)
 
 ## ddv
-
 ddvASC2 <- function (u, copula){
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-    if (!is.matrix(pair)) u <- matrix(u, ncol = 2)
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
 
-    u1 <- u[, 1]
-    u2 <- u[, 2]
+  u1 <- u[, 1]
+  u2 <- u[, 2]
 
-    return( u1 + b*(-1 + u1)*u1*(-1 + 2*u2) - (a - b)*(-1 + u1)^2*u1*u2*(-2 + 3*u2))
+  return( u1 + b*(-1 + u1)*u1*(-1 + 2*u2) - (a - b)*(-1 + u1)^2*u1*u2*(-2 + 3*u2))
 }
 
-setMethod("ddvCopula", signature("numeric", "asCopula"),ddvASC2)
+setMethod("ddvCopula", signature("numeric", "asCopula"),
+          function(u, copula, ...) {
+            ddvASC2(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix", "asCopula"),ddvASC2)
 
 ## random number generater
 # incorporating the inverse of the partial derivative that is solved numerically using optimize

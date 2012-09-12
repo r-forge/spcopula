@@ -22,8 +22,8 @@
 # partial derivatives and their inverse of some copulas from the copula package
 # new defined copulas store their partial derivative separately
 
-setGeneric("dduCopula", function(u, copula, pair) standardGeneric("dduCopula"))
-setGeneric("ddvCopula", function(u, copula, pair) standardGeneric("ddvCopula"))
+setGeneric("dduCopula", function(u, copula, ...) standardGeneric("dduCopula"))
+setGeneric("ddvCopula", function(u, copula, ...) standardGeneric("ddvCopula"))
 
 ## inverse partial derivatives 
 # numerical standard function
