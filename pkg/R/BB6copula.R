@@ -168,7 +168,6 @@ setMethod("dCopula", signature("numeric","r270BB6Copula"), linkCDVine.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","r270BB6Copula"), linkCDVine.r270CDF)
-# persp(r270BB6Copula(c(-5.329995,-1.1201476)), dcopula)
   
 ## partial derivatives ##
 # ddu

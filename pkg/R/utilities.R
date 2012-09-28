@@ -60,7 +60,7 @@ dependencePlot <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transfor
 }
 
 ##
-univScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformation=function (x) x, ...) {
+unitScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformation=function (x) x, ...) {
   smpl <- as.data.frame(smpl)
   if(is.null(formula)) {
     if (ncol(smpl)>2) {
@@ -79,4 +79,9 @@ univScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformat
   }
 
   xyplot(formula, smpl, aspect="iso", xlim=c(0,1), ylim=c(0,1), ...)
+}
+
+univScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformation=function (x) x, ...) {
+  warning("Use unitScatter instead!")
+  unitScatter(formula, smpl, cuts, bandwidth, transformation, ...)
 }

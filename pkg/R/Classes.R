@@ -21,7 +21,7 @@
 ## some additional bivariate copulas extending the set of copulas in the package copula
 
 ####
-## an asymmetric copula with cubic and qudratic sections
+## an asymmetric copula with cubic and quadratic sections
 
 validAsCopula = function(object) {
   if (object@dimension != 2)
@@ -84,8 +84,8 @@ validSpCopula <- function(object) {
   check.upper <- NULL
   check.lower <- NULL
   
-  if(!is.null(object@calibMoa())) {
-    for (i in 1:length(object@components)) {
+  if(!is.null(object@calibMoa(normalCopula(0),0))) {
+    for (i in 1:(length(object@components)-1)) {
       check.upper <- c(check.upper, is.na(object@calibMoa(object@components[[i]], object@distances[i+1])))
       check.lower <- c(check.lower, is.na(object@calibMoa(object@components[[i]], c(0,object@distances)[i])))
     }
@@ -96,8 +96,7 @@ validSpCopula <- function(object) {
                                         paste(sapply(object@components[check.lower], function(x) x@message), 
                                               "at", object@distances[check.lower],collapse="\n")))
   }
-  
-  else return(TRUE)
+  return(TRUE)
 }
 
 setClass("spCopula", representation = representation("copula", 

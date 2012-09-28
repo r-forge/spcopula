@@ -16,7 +16,7 @@ export(vineCopula)
 export(neighbourhood)
 
 # general functions
-export(rankTransform, dependencePlot, univScatter)
+export(rankTransform, dependencePlot, unitScatter, univScatter)
 export(fitCopula)
 export(dduCopula,ddvCopula)
 export(invdduCopula, invddvCopula)

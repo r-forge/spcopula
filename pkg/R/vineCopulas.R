@@ -62,7 +62,7 @@ dDvine <- function(copula, u){
   for (i in 1:(dim-1)) {
     tmpCop <- copula@copulas[[i]]
     tmpU <- u[[1]][,i:(i+1)]
-    den <- den*dcopula(tmpCop,tmpU)
+    den <- den*dCopula(tmpU,tmpCop)
     if (i == 1) {
       newU <- cbind(newU, ddvcopula(tmpCop,tmpU))
     } else {
@@ -82,7 +82,7 @@ dDvine <- function(copula, u){
 #       cat(used+i,"\n")
       tmpCop <- copula@copulas[[used+i]]
       tmpU <- u[[l]][,(i*2-1):(i*2)]
-      den <- den*dcopula(tmpCop, tmpU)
+      den <- den*dCopula(tmpU, tmpCop)
       if (l < dim-1) {
         if (i == 1) {
           newU <- cbind(newU,ddvcopula(tmpCop,tmpU))
@@ -120,7 +120,7 @@ dCvine <- function(copula, u) {
 #       cat(used+i,"\n")
       tmpCop <- copula@copulas[[used+i]]
       tmpU <- u[[l]][,c(1,(i+1))]
-      den <- den*dcopula(tmpCop, tmpU)
+      den <- den*dCopula(tmpU, tmpCop)
       if(l < (dim-1)) newU <- cbind(newU,dducopula(tmpCop,tmpU))
     }
     if(l < (dim-1)) {
@@ -134,13 +134,13 @@ dCvine <- function(copula, u) {
 
 ##
 
-dvineCopula <- function(copula, u) { 
+dvineCopula <- function(u, copula) { 
   den <- switch(getNumType(copula),dCvine ,dDvine)
   return(den(copula, u))
 } 
 
-setMethod("dcopula", signature("vineCopula"), dvineCopula)
-
+setMethod("dCopula", signature("numeric","vineCopula"), dvineCopula)
+setMethod("dCopula", signature("matrix","vineCopula"), dvineCopula)
 
 ## jcdf ##
 genEmpCop <- function(data) {
@@ -163,18 +163,19 @@ genEmpCop <- function(data) {
   return(empCop)
 }
 
-pvineCopula <- function(copula, u) {
+pvineCopula <- function(u, copula) {
   cat("Note: the copula is empirically evaluated from 100.000 samples.")
   empCop <- genEmpCop(rcopula(copula,1e5))
 
   return(empCop(u))
 }
 
-setMethod("pcopula", signature("vineCopula"), pvineCopula)
+setMethod("pCopula", signature("numeric","vineCopula"), pvineCopula)
+setMethod("pCopula", signature("matrix","vineCopula"), pvineCopula)
 
 
 ## random numbers
-linkCDVineSim <- function(copula, n) {
+linkCDVineSim <- function(n, copula) {
   numType <- getNumType
 
   getFamily <- function(copula) {
@@ -193,4 +194,4 @@ linkCDVineSim <- function(copula, n) {
   return(CDVine::CDVineSim(n,numFam,par1,par2,numType))
 }
 
-setMethod("rcopula", signature("vineCopula"), linkCDVineSim)
+setMethod("rCopula", signature("numeric","vineCopula"), linkCDVineSim)

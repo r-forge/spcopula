@@ -67,7 +67,7 @@ setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
 
 # returns an neighbourhood object
 # spData	spatialPointsDataFrame
-# variable 		one or multiple variable names, all is the default
+# var 		one or multiple variable names, all is the default
 # size		the size of the neighbourhood, default of 5
 # dep		denoting a subset of dependent locations (default NULL: all locations will be used)
 # indep		denoting a subset of independent locations (default NULL: all locations will be used)
@@ -77,7 +77,7 @@ nLocs <- length(spData)
 distMat <- spDists(spData)
 if(min.dist>0) distMat[distMat<min.dist] <- Inf
 if ( any(is.na( match(var,names(spData)) )) ) 
-  stop("At least one of the variables is unkown is not part of the data.")
+  stop("At least one of the variables is unkown or is not part of the data.")
 if(is.null(dep) & !is.null(indep))   dep <- 1:nLocs[-indep]
 if(!is.null(dep) & is.null(indep)) indep <- 1:nLocs[-dep]
 if(!is.null(dep) & !is.null(indep)) {
@@ -175,7 +175,7 @@ calcSpLagInd <- function(data, boundaries) {
 
 # the generic calcBins, calculates bins for spatiaql and spatio-temporal data
 
-setGeneric("calcBins", function(data, nbins=15, boundaries=NA, cutoff=500000, ...) standardGeneric("calcBins") )
+setGeneric("calcBins", function(data, var, nbins=15, boundaries=NA, cutoff=500000, ...) standardGeneric("calcBins") )
 
 # calculating the spatial bins
 # 
@@ -184,7 +184,7 @@ setGeneric("calcBins", function(data, nbins=15, boundaries=NA, cutoff=500000, ..
 # cor.method is passed on to cor() (default="kendall")
 # if plot=TRUE (default), the correlation measures are plotted agaisnt the mean lag separation distance
 # 
-calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, cor.method="kendall", plot=TRUE) {
+calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA, cutoff=NA, cor.method="kendall", plot=TRUE) {
 
   if(is.na(boundaries)) {
     diagonal <- spDists(coordinates(t(data@bbox)))[1,2]
@@ -213,7 +213,7 @@ setMethod(calcBins, signature("Spatial"), calcSpBins)
 #            NA      -> all observations
 #            other   -> temporal indexing as in spacetime/xts, the parameter t.lags is set to 0 in this case.
 # t.lags:    numeric -> temporal shifts between obs
-calcStBins <- function(data, variable="PM10", nbins=15, boundaries=NA, cutoff=NA, instances=10, t.lags=c(0), cor.method="kendall", plot=TRUE) {
+calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, instances=10, t.lags=c(0), cor.method="kendall", plot=TRUE) {
 
   if(is.na(boundaries)) {
     diagonal <- spDists(coordinates(t(data@sp@bbox)))[1,2]
@@ -243,8 +243,8 @@ calcStBins <- function(data, variable="PM10", nbins=15, boundaries=NA, cutoff=NA
     binnedData <- NULL
     for (i in 1:(ncol(tempIndices)/2)) {
       binnedData <- cbind(binnedData, 
-                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], variable]@data, 
-                                           data[spIndex[,2], tempIndices[,2*i], variable]@data))))
+                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], var]@data, 
+                                           data[spIndex[,2], tempIndices[,2*i], var]@data))))
     }
     return(binnedData)
   }

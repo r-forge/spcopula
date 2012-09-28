@@ -55,7 +55,7 @@ stCopula <- function(components, distances, t.lags, stDepFun, unit="m", t.res="d
   param.low   <- unlist(lapply(spCopList, function(x) x@param.lowbnd))
   param.up    <- unlist(lapply(spCopList, function(x) x@param.upbnd))
   
-  new("stCopula", dimension=2, parameters=param, param.names=param.names,
+  new("stCopula", dimension=as.integer(2), parameters=param, param.names=param.names,
       param.lowbnd=param.low, param.upbnd=param.up,
       fullname="Spatio-Temporal Copula: distance and time dependent convex combination of bivariate copulas",
       spCopList=spCopList, t.lags=t.lags, t.res=t.res)
@@ -308,8 +308,8 @@ loglikByCopulasLags <- function(bins, calcTau, families=c(normalCopula(0), tCopu
     print(cop)
     tmploglik <- NULL
     for(i in 1:length(bins$meanDists)) {
-      cop@parameters[1] <- calibKendallsTau(cop,tau=calcTau(bins$meanDists[i]))
-      tmploglik <- c(tmploglik, sum(log(dCopula(cop,bins$lagData[[i]]))))
+      cop@parameters[1] <- iTau(cop,tau=calcTau(bins$meanDists[i]))
+      tmploglik <- c(tmploglik, sum(log(dCopula(bins$lagData[[i]],cop))))
     }
     loglik <- cbind(loglik, tmploglik)
   }
