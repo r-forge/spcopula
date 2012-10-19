@@ -4,17 +4,17 @@
 
 
 # density from BiCopPDF
-linkCDVine.PDF <- function (u, copula) {
+linkCDVine.PDF <- function (u, copula, log) {
   param <- copula@parameters
   if(length(param)==1) param <- c(param,0)
-  if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   n <- nrow(u)
   fam <- copula@family
 
   coplik = .C("LL_mod_seperate", as.integer(fam), as.integer(n), as.double(u[,1]), 
               as.double(u[,2]), as.double(param[1]), as.double(param[2]), 
               as.double(rep(0, n)), PACKAGE = "CDVine")[[7]]
-  return(exp(coplik))
+  if(log) return(coplik)
+  else return(exp(coplik))
 }
 
 # cdf from BiCopCDF

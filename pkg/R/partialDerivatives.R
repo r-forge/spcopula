@@ -33,8 +33,8 @@ invdduCopula <- function(u, copula, y) {
     warning("Numerical evaluation of invddu takes place.")
     res <- NULL
     for (i in 1:length(u)) {
-        res <- rbind(res, optimize(function(x) (dduCopula(copula, 
-            cbind(rep(u[i], length(x)), x)) - y[i])^2, 
+        res <- rbind(res, optimize( function(x) 
+          (dduCopula(cbind(rep(u[i], length(x)), x),copula) - y[i])^2, 
             interval = c(0, 1))$minimum)
     }
     return(res)
@@ -49,8 +49,8 @@ invddvCopula <- function(v, copula, y) {
   warning("Numerical evaluation of invddv takes place.")
     res <- NULL
     for (i in 1:length(v)) {
-        res <- rbind(res, optimize(function(x) (ddvCopula(copula, 
-            cbind(x, rep(v[i], length(x)))) - y[i])^2, 
+        res <- rbind(res, optimize(function(x) 
+          (ddvCopula(cbind(x, rep(v[i], length(x))),copula) - y[i])^2, 
             interval = c(0, 1))$minimum)
     }
     return(res)
