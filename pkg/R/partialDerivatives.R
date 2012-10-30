@@ -67,7 +67,6 @@ setGeneric("invddvCopula")
 
 dduNorm <- function(u, copula){
   rho <- copula@parameters
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
 
   u1 <- qnorm(u[,1]) # u ~ N(0,1)
   u2 <- qnorm(u[,2]) # v ~ N(0,1)
@@ -75,7 +74,11 @@ dduNorm <- function(u, copula){
   return(pnorm(u2,mean=rho*u1,sd=sqrt(1-rho^2)))
 }
 
-setMethod("dduCopula", signature("numeric","normalCopula"), dduNorm)
+setMethod("dduCopula", signature("numeric","normalCopula"),
+          function(u, copula, ...) {
+            dduNorm(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","normalCopula"), dduNorm)
 
 ## inverse of the partial derivative d/du
 #########################################
@@ -93,7 +96,6 @@ setMethod("invdduCopula", signature("numeric","normalCopula"), invdduNorm)
 
 ddvNorm <- function(u, copula){
   rho <- copula@parameters
-  if (!is.matrix(u)) u <- matrix(u,ncol=2)
 
   u1 <- qnorm(u[,1])
   u2 <- qnorm(u[,2])
@@ -101,7 +103,11 @@ ddvNorm <- function(u, copula){
   return(pnorm(u1,mean=rho*u2,sd=sqrt(1-rho^2)))
 }
 
-setMethod("ddvCopula", signature("numeric","normalCopula"),ddvNorm)
+setMethod("ddvCopula", signature("numeric","normalCopula"),
+          function(u, copula, ...) {
+            ddvNorm(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","normalCopula"), ddvNorm)
 
 ## inverse of the partial derivative d/dv
 #########################################
@@ -120,12 +126,11 @@ setMethod("invddvCopula", signature("numeric","normalCopula","numeric"), invddvN
 ## partial derivative d/du
 ##########################
 
-dduIndep <- function(u, copula){
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
-  return(u[,2])
-}
-
-setMethod("dduCopula", signature("numeric","indepCopula"),dduIndep)
+setMethod("dduCopula", signature("numeric","indepCopula"),
+          function(u, copula, ...) {
+            matrix(u,ncol=copula@dimension)[,2]
+          })
+setMethod("dduCopula", signature("matrix","indepCopula"), function(u, copula, ...) u[,2])
 
 ## inverse of the partial derivative d/du
 #########################################
@@ -139,12 +144,11 @@ setMethod("invdduCopula", signature("numeric","indepCopula","numeric"), invdduIn
 ## partial derivative d/dv
 ##########################
 
-ddvIndep <- function(u, copula){
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
-  return(u[,1])
-}
-
-setMethod("ddvCopula", signature("numeric","indepCopula"),ddvIndep)
+setMethod("ddvCopula", signature("numeric","indepCopula"),
+          function(u, copula, ...) {
+            matrix(u,ncol=copula@dimension)[,1]
+          })
+setMethod("ddvCopula", signature("matrix","indepCopula"), function(u, copula, ...) u[,1])
 
 ## inverse of the partial derivative d/dv
 #########################################
@@ -165,7 +169,6 @@ setMethod("invddvCopula", signature("numeric","indepCopula"), invddvIndep)
 
 dduClayton <- function(u, copula){
   rho <- copula@parameters
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
 
   u1 <- u[,1]
   u2 <- u[,2]
@@ -173,7 +176,11 @@ dduClayton <- function(u, copula){
   pmax(u1^(-rho)+u2^(-rho)-1,0)^((-1-rho)/rho)*u1^(-rho-1)
 }
 
-setMethod("dduCopula", signature("numeric", "claytonCopula"), dduClayton)
+setMethod("dduCopula", signature("numeric","claytonCopula"),
+          function(u, copula, ...) {
+            dduClayton(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","claytonCopula"), dduClayton)
 
 ## inverse of the partial derivative d/du
 #########################################
@@ -200,7 +207,12 @@ ddvClayton <- function(u, copula){
   pmax(u2^(-rho)+u1^(-rho)-1,0)^((-1-rho)/rho)*u2^(-rho-1)
 }
 
-setMethod("ddvCopula", signature("numeric", "claytonCopula"), ddvClayton)
+setMethod("ddvCopula", signature("numeric","claytonCopula"),
+          function(u, copula, ...) {
+            ddvClayton(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","claytonCopula"), ddvClayton)
+
 
 ## inverse of the partial derivative d/dv
 #########################################
@@ -224,7 +236,6 @@ setMethod("invddvCopula", signature("numeric", "claytonCopula", "numeric"), invd
 
 dduGumbel <- function(u, copula){
   rho <- copula@parameters
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
 
   u1 <- u[,1]
   u2 <- u[,2]
@@ -232,14 +243,18 @@ dduGumbel <- function(u, copula){
   pcopula(gumbelCopula(rho),u) * ((-log(u1))^rho+(-log(u2))^rho)^(1/rho-1) * (-log(u1))^(rho-1)/u1
 }
 
-setMethod("dduCopula", signature("numeric", "gumbelCopula"),dduGumbel)
+setMethod("dduCopula", signature("numeric","gumbelCopula"),
+          function(u, copula, ...) {
+            dduGumbel(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","gumbelCopula"), dduGumbel)
+
 
 ## partial derivative d/dv
 ##########################
 
 ddvGumbel <- function(u, copula){
   rho <- copula@parameters
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
 
   u1 <- u[,1]
   u2 <- u[,2]
@@ -247,7 +262,12 @@ ddvGumbel <- function(u, copula){
   pcopula(gumbelCopula(rho),u) * ((-log(u2))^rho+(-log(u1))^rho)^(1/rho-1) * (-log(u2))^(rho-1)/u2
 }
 
-setMethod("ddvCopula", signature("numeric", "gumbelCopula"), ddvGumbel)
+setMethod("ddvCopula", signature("numeric","gumbelCopula"),
+          function(u, copula, ...) {
+            ddvGumbel(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","gumbelCopula"), ddvGumbel)
+
 
 
 ##################
@@ -259,7 +279,6 @@ setMethod("ddvCopula", signature("numeric", "gumbelCopula"), ddvGumbel)
 
 dduFrank <- function(u, copula){
   rho <- copula@parameters
-  if (!is.matrix(u)) u <- matrix(u,ncol=2)
 
   u1 <- u[,1]
   u2 <- u[,2]
@@ -267,7 +286,12 @@ dduFrank <- function(u, copula){
   exp(-rho*u1)*(exp(-rho*u2)-1) / ( (exp(-rho)-1) + (exp(-rho*u1)-1)*(exp(-rho*u2)-1) )
 }
 
-setMethod("dduCopula", signature("numeric", "frankCopula"), dduFrank)
+setMethod("dduCopula", signature("numeric","frankCopula"),
+          function(u, copula, ...) {
+            dduFrank(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","frankCopula"), dduFrank)
+
 
 ## inverse of the partial derivative d/du
 #########################################
@@ -281,12 +305,12 @@ invdduFrank <- function(u, copula, y){
 
 setMethod("invdduCopula", signature("numeric", "frankCopula", "numeric"), invdduFrank)
 
+
 ## partial derivative d/dv
 ##########################
 
 ddvFrank <- function(u, copula){
   rho <- copula@parameters
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
 
   u1 <- u[,1]
   u2 <- u[,2]
@@ -294,7 +318,12 @@ ddvFrank <- function(u, copula){
   exp(-rho*u2)*(exp(-rho*u1)-1) / ( (exp(-rho)-1) + (exp(-rho*u2)-1)*(exp(-rho*u1)-1) )
 }
 
-setMethod("ddvCopula", signature("numeric", "frankCopula"), ddvFrank)
+setMethod("ddvCopula", signature("numeric","frankCopula"),
+          function(u, copula, ...) {
+            ddvFrank(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","frankCopula"), ddvFrank)
+
 
 ## inverse of the partial derivative d/dv
 #########################################
@@ -316,8 +345,6 @@ setMethod("invddvCopula", signature("numeric", "frankCopula", "numeric"), invddv
 ##########################
 
 dduStudent <- function(u, copula){
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
-  
   df <- copula@df
   v <- qt(u,df=df)
   
@@ -326,14 +353,17 @@ dduStudent <- function(u, copula){
   return(pt(sqrt((df+1)/(df+v[,1]^2)) / sqrt(1 - rho^2) * (v[,2] - rho * v[,1]), df=df+1))
 }
 
-setMethod("dduCopula", signature("numeric","tCopula"), dduStudent)
+setMethod("dduCopula", signature("numeric","tCopula"),
+          function(u, copula, ...) {
+            dduStudent(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","tCopula"), dduStudent)
+
 
 ## partial derivative d/dv
 ##########################
 
 ddvStudent <- function(u, copula){
-  if (!is.matrix(u)) u <- matrix(u, ncol=2)
-  
   df <- copula@df
   v <- qt(u, df=df)
   
@@ -342,7 +372,12 @@ ddvStudent <- function(u, copula){
   return(pt(sqrt((df+1)/(df+v[,2]^2)) / sqrt(1 - rho^2) * (v[,1] - rho * v[,2]), df=df+1))
 }
 
-setMethod("ddvCopula", signature("numeric","tCopula"), ddvStudent)
+setMethod("ddvCopula", signature("numeric","tCopula"),
+          function(u, copula, ...) {
+            ddvStudent(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","tCopula"), ddvStudent)
+
 
 ## kendall distribution
 

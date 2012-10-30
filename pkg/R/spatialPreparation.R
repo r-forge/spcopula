@@ -173,9 +173,9 @@ calcSpLagInd <- function(data, boundaries) {
   return(lags)
 }
 
-# the generic calcBins, calculates bins for spatiaql and spatio-temporal data
+# the generic calcBins, calculates bins for spatial and spatio-temporal data
 
-setGeneric("calcBins", function(data, var, nbins=15, boundaries=NA, cutoff=500000, ...) standardGeneric("calcBins") )
+setGeneric("calcBins", function(data, var, nbins=15, boundaries=NA, cutoff=NA, cor.method="kendall", plot=T, ...) standardGeneric("calcBins") )
 
 # calculating the spatial bins
 # 
@@ -196,7 +196,10 @@ calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA, cutoff=NA
   mDists <- sapply(lags,function(x) mean(x[,3]))
   lagData <- lapply(lags, function(x) as.matrix((cbind(data[x[,1],var]@data, data[x[,2],var]@data))))
   
-  lagCor <- sapply(lagData,function(x) cor(x,method=cor.method)[1,2])
+  if(cor.method == "fasttau")
+    lagCor <- sapply(lagData, function(x) CDVine:::fasttau(x[,1], x[,2]))
+  else 
+    lagCor <- sapply(lagData, function(x) cor(x,method=cor.method)[1,2])
   
   if(plot) { 
     plot(mDists, lagCor, xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
@@ -215,11 +218,8 @@ setMethod(calcBins, signature("Spatial"), calcSpBins)
 # t.lags:    numeric -> temporal shifts between obs
 calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, instances=10, t.lags=c(0), cor.method="kendall", plot=TRUE) {
 
-  if(is.na(boundaries)) {
-    diagonal <- spDists(coordinates(t(data@sp@bbox)))[1,2]
-    boundaries <- ((1:nbins) * min(cutoff,diagonal/3,na.rm=T) / nbins)
-  }
-
+  if(is.na(cutoff)) cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
+  if(is.na(boundaries)) boundaries <- ((1:nbins) * cutoff / nbins)
   if(is.na(instances)) instances=length(data@time)
   
   spIndices <- calcSpLagInd(data@sp, boundaries)

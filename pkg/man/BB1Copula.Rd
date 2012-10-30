@@ -1,0 +1,42 @@
+\name{BB1Copula}
+\alias{BB1Copula}
+\alias{surBB1Copula}
+\alias{r90BB1Copula}
+\alias{r270BB1Copula}
+
+\title{
+Constructor of the BB1 family and its derivates
+}
+\description{
+Constructs an object of the \code{\linkS4class{BB1Copula}} (survival \code{sur}, 90 degree rotated \code{r90} and 270 degree rotated \code{r270}) family for a given parameter.
+}
+\usage{
+BB1Copula(param)
+surBB1Copula(param)
+r90BB1Copula(param)
+r270BB1Copula(param)
+}
+
+\arguments{
+  \item{param}{
+The parameter \code{param} defines the copula through \code{theta} and \code{delta}.
+}
+}
+\value{
+One of the respective BB1 copula classes (\code{\linkS4class{BB1Copula}}, \code{\linkS4class{surBB1Copula}}, \code{\linkS4class{r90BB1Copula}}, \code{\linkS4class{r270BB1Copula}}).
+}
+\references{
+Joe, H., (1997). Multivariate Models and Dependence Concepts. Monogra. Stat. Appl. Probab. 73, London: Chapman and Hall.
+}
+\author{
+Benedikt Graeler
+}
+\seealso{
+See also \code{\link{BB6Copula}}, \code{\link{BB7Copula}}, \code{\link{BB8Copula}} and \code{\link{JoeCopula}} for further wrapper functions to the \code{\link{CDVine-package}}. 
+}
+\examples{
+persp(BB1Copula(c(1,1.5)),dCopula, zlim=c(0,10))
+persp(surBB1Copula(c(1,1.5)),dCopula, zlim=c(0,10))
+persp(r90BB1Copula(c(-1,-1.5)),dCopula, zlim=c(0,10))
+persp(r270BB1Copula(c(-1,-1.5)),dCopula, zlim=c(0,10))
+}
