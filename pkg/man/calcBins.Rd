@@ -1,6 +1,10 @@
 \name{calcBins}
 \alias{calcBins}
 
+\alias{calcBins-methods}
+\alias{calcBins,Spatial-method}
+\alias{calcBins,STFDF-method}
+
 \title{
 A function calculating the spatial/spatio-temporal bins
 }

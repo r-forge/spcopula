@@ -29,28 +29,23 @@ bins <- calcBins(dataSet,var="zinc",nbins=10,cutoff=800)
 # transform data to the unit interval
 bins$lagData <- lapply(bins$lagData, function(x) cbind(rank(x[,1])/(nrow(x)+1),rank(x[,2])/(nrow(x)+1)))
 
-abline(h=0,col="red")
-modelCoeff <- lm(bins$lagCor[1:7]~bins$meanDists[1:7])$coefficients 
-abline(modelCoeff,col="blue") # 8 lags
-range <- as.numeric(-modelCoeff[1]/modelCoeff[2])
-
 ## calculate parameters for Kendall's tau function ##
 # either linear
-calcKTau <- function(h) pmax(h*modelCoeff[2]+modelCoeff[1],0)
-curve(calcKTau,0, 1000, col="red", add=T)
+calcKTauLin <- fitCorFun(bins, degree=1, cutoff=600)
+curve(calcKTauLin,0, 1000, col="red",add=TRUE)
 
-# or polynomial
-calcKTau <- fitCorFun(bins)
-curve(calcKTau,0, 1000, col="purple",add=T)
+# or polynomial (used here)
+calcKTauPol <- fitCorFun(bins, degree=3)
+curve(calcKTauPol,0, 1000, col="purple",add=TRUE)
 
 ## find best fitting copula per lag class
-loglikTau <- loglikByCopulasLags(bins, calcKTau)
-bestFitTau <- apply(apply(loglikTau[1:7,], 1, rank),2,function(x) which(x==5))
+loglikTau <- loglikByCopulasLags(bins, calcKTauPol)
+bestFitTau <- apply(apply(loglikTau, 1, rank),2,function(x) which(x==5))
 
 ## set-up a spatial Copula ##
 spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
                                   frankCopula(1), normalCopula(0), claytonCopula(0),
-                                  claytonCopula(0), claytonCopula(0)),
-                  distances=c(bins$meanDists[1:7],range),
-                  spDepFun=calcKTau, unit="m")
-
+                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
+                                  claytonCopula(0)),
+                  distances=bins$meanDists,
+                  spDepFun=calcKTauPol, unit="m")

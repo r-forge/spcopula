@@ -43,7 +43,6 @@ invdduCopula <- function(u, copula, y) {
 setGeneric("invdduCopula")
 
 invddvCopula <- function(v, copula, y) {
-#  standardGeneric("invddvCopula")
     if (length(v) != length(y)) 
         stop("Length of v and y differ!")
   warning("Numerical evaluation of invddv takes place.")
@@ -88,7 +87,7 @@ invdduNorm <- function(u, copula, y){
   return(pnorm(qnorm(y,mean=rho*qnorm(u),sd=sqrt(1-rho^2))))
 }
 
-setMethod("invdduCopula", signature("numeric","normalCopula"), invdduNorm)
+setMethod("invdduCopula", signature("numeric","normalCopula","numeric"), invdduNorm)
 
 
 ## partial derivative d/dv
@@ -157,7 +156,7 @@ invddvIndep <- function(v, copula, y){
   return(y)
 }
 
-setMethod("invddvCopula", signature("numeric","indepCopula"), invddvIndep)
+setMethod("invddvCopula", signature("numeric","indepCopula", "numeric"), invddvIndep)
 
 
 ####################

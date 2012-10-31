@@ -20,7 +20,7 @@
 #################################################################################
 
 # constructor
-# dimension = "numeric"     set to 2
+# dimension = "integer"     set to 2
 # parameters = "numeric"    set of parameters
 # param.names = "character" appropriate names
 # param.lowbnd = "numeric"  appropriate lower bounds
@@ -160,7 +160,7 @@ dStCopula <- function (u, copula) {
   return(res)
 }
 
-setMethod("dCopula", signature("numeric","stCopula"), dStCopula)
+setMethod("dCopula", signature("list","stCopula"), dStCopula)
 
 
 ## partial derivatives ##
@@ -204,7 +204,7 @@ dduStCopula <- function (u, copula) {
   return(res)
 }
 
-setMethod("dduCopula", signature("numeric","stCopula"), dduStCopula)
+setMethod("dduCopula", signature("list","stCopula"), dduStCopula)
 
 
 ## ddvSpCopula
@@ -245,123 +245,101 @@ ddvStCopula <- function (u, copula) {
   return(res)
 }
 
-setMethod("ddvCopula", signature("numeric","stCopula"), ddvStCopula)
+setMethod("ddvCopula", signature("list","stCopula"), ddvStCopula)
 
-#############
-##         ##
-## FITTING ##
-##         ##
-#############
-
-# two models: 
-# 1) Kendall's tau driven:
-#    fit curve through emp. Kendall's tau values, identify validity ranges for
-#    copula families deriving parameters from the fit, fade from one family to 
-#    another at borders
-# 2) convex-linear combination of copulas: 
-#    fit one per lag, fade from one to another
-
-# towards the first model:
-
-# INPUT: the stBinning
-# steps
-# a) fit a curve
-# b) estimate bivariate copulas per lag (limited to those with some 1-1-relation 
-#    to Kendall's tau')
-# INTERMEDIATE RESULT
-# c) select best fits based on ... e.g. log-likelihood, visual inspection
-# d) compose bivariate copulas to one spatial copula
-# OUTPUT: a spatial copula parametrixued by distance through Kendall's tau
-
-# towards a)
-# bins   -> typically output from calcBins
-# type   -> the type of curve (by now only polynominals are supported)
-# degree -> the degree of the polynominal
-# cutoff -> maximal distance that should be considered for fitting
-# bounds -> the bounds of the correlation function (typically c(0,1))
-# method -> the measure of association, either "kendall" or "spearman"
-fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), method="kendall") {
-  bins <- as.data.frame(bins[1:2])
-  if(!is.na(cutoff)) bins <- bins[which(bins[[1]] <= cutoff),]
-  
-  fitCor <- lm(lagCor ~ poly(meanDists, degree), data = bins)
-  
-  print(fitCor)
-  cat("Sum of squared residuals:",sum(fitCor$residuals^2),"\n")
-  
-  function(x) {
-    if (is.null(x)) return(method)
-    return(pmin(bounds[2], pmax(bounds[1], eval(predict(fitCor, data.frame(meanDists=x))))))
-  }
-}
-
-
-# towards b)
-# bins     -> typically output from calcBins
-# calcTau  -> a function on distance providing Kendall's tau estimates, 
-# families -> a vector of dummy copula objects of each family to be considered
-#             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
-loglikByCopulasLags <- function(bins, calcTau, families=c(normalCopula(0), tCopula(0,dispstr="un"),
-                                                          claytonCopula(0), frankCopula(1), gumbelCopula(1))) {
-  loglik <- NULL
-  for (cop in families) {
-    print(cop)
-    tmploglik <- NULL
-    for(i in 1:length(bins$meanDists)) {
-      cop@parameters[1] <- iTau(cop,tau=calcTau(bins$meanDists[i]))
-      tmploglik <- c(tmploglik, sum(log(dCopula(bins$lagData[[i]],cop))))
-    }
-    loglik <- cbind(loglik, tmploglik)
-  }
-
-  colnames(loglik) <- sapply(families, function(x) class(x)[1])
-
-  return(loglik)
-}
-
-# towards d)
-composeSpCop <- function(bestFit, families, bins, calcCor) {
-  nfits <- length(bestFit)
-  gaps <- which(diff(bestFit)!=0)
-
-  if(missing(calcCor)) noCor <- nfits
-  else noCor <- min(which(calcCor(bins$meanDists)<=0), nfits)
-  
-  breaks <- sort(c(gaps, gaps+1, noCor))
-  breaks <- breaks[breaks<noCor]
-  
-  cops <- as.list(families[bestFit[breaks]])
-  
-  breaks <- unique(c(breaks, min(nfits,rev(breaks)[1]+1)))
-  distances <- bins$meanDists[breaks]
-  
-  if(length(breaks)==length(cops)) {
-    warning("Lags do not cover the entire range with positive correlation. ", 
-             "An artifical one fading towards the indepCopula has been added.")
-    distances <- c(distances, rev(distances)[1]+diff(bins$meanDists[nfits+c(-1,0)]))
-  }
-
-  if(missing(calcCor)) return(spCopula(components=cops, distances=distances, unit="m"))
-  else return(spCopula(components=cops, distances=distances, unit="m", spDepFun=calcCor))
-}
-
-# in once
-
-# bins   -> typically output from calcBins
-# cutoff -> maximal distance that should be considered for fitting
-# families -> a vector of dummy copula objects of each family to be considered
-#             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
-# ...
-# type   -> the type of curve (by now only polynominals are supported)
-# degree -> the degree of the polynominal
-# bounds -> the bounds of the correlation function (typically c(0,1))
-# method -> the measure of association, either "kendall" or "spearman"
-fitSpCopula <- function(bins, cutoff=NA, families=c(normalCopula(0), tCopula(0,dispstr="un"),
-                                                    claytonCopula(0), frankCopula(1), gumbelCopula(1)), ...) {
-  calcTau <- fitCorFun(bins, cutoff=cutoff, ...)
-  loglik <- loglikByCopulasLags(bins, calcTau=calcTau, families=families)
-  
-  bestFit <- apply(apply(loglik, 1, rank),2,function(x) which(x==length(families)))
-  
-  return(composeSpCop(bestFit, families, bins, calcTau))
-}
+# #############
+# ##         ##
+# ## FITTING ##
+# ##         ##
+# #############
+# 
+# # two models: 
+# # 1) Kendall's tau driven:
+# #    fit curve through emp. Kendall's tau values, identify validity ranges for
+# #    copula families deriving parameters from the fit, fade from one family to 
+# #    another at borders
+# # 2) convex-linear combination of copulas: 
+# #    fit one per lag, fade from one to another
+# 
+# # towards the first model:
+# 
+# # INPUT: the stBinning
+# # steps
+# # a) fit a curve
+# # b) estimate bivariate copulas per lag (limited to those with some 1-1-relation 
+# #    to Kendall's tau')
+# # INTERMEDIATE RESULT
+# # c) select best fits based on ... e.g. log-likelihood, visual inspection
+# # d) compose bivariate copulas to one spatial copula
+# # OUTPUT: a spatial copula parametrixued by distance through Kendall's tau
+# 
+# 
+# # towards b)
+# # bins     -> typically output from calcBins
+# # calcTau  -> a function on distance providing Kendall's tau estimates, 
+# # families -> a vector of dummy copula objects of each family to be considered
+# #             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
+# loglikByCopulasLags <- function(bins, calcTau, families=c(normalCopula(0), tCopula(0,dispstr="un"),
+#                                                           claytonCopula(0), frankCopula(1), gumbelCopula(1))) {
+#   loglik <- NULL
+#   for (cop in families) {
+#     print(cop)
+#     tmploglik <- NULL
+#     for(i in 1:length(bins$meanDists)) {
+#       cop@parameters[1] <- iTau(cop,tau=calcTau(bins$meanDists[i]))
+#       tmploglik <- c(tmploglik, sum(log(dCopula(bins$lagData[[i]],cop))))
+#     }
+#     loglik <- cbind(loglik, tmploglik)
+#   }
+# 
+#   colnames(loglik) <- sapply(families, function(x) class(x)[1])
+# 
+#   return(loglik)
+# }
+# 
+# # towards d)
+# composeSpCop <- function(bestFit, families, bins, calcCor) {
+#   nfits <- length(bestFit)
+#   gaps <- which(diff(bestFit)!=0)
+# 
+#   if(missing(calcCor)) noCor <- nfits
+#   else noCor <- min(which(calcCor(bins$meanDists)<=0), nfits)
+#   
+#   breaks <- sort(c(gaps, gaps+1, noCor))
+#   breaks <- breaks[breaks<noCor]
+#   
+#   cops <- as.list(families[bestFit[breaks]])
+#   
+#   breaks <- unique(c(breaks, min(nfits,rev(breaks)[1]+1)))
+#   distances <- bins$meanDists[breaks]
+#   
+#   if(length(breaks)==length(cops)) {
+#     warning("Lags do not cover the entire range with positive correlation. ", 
+#              "An artifical one fading towards the indepCopula has been added.")
+#     distances <- c(distances, rev(distances)[1]+diff(bins$meanDists[nfits+c(-1,0)]))
+#   }
+# 
+#   if(missing(calcCor)) return(spCopula(components=cops, distances=distances, unit="m"))
+#   else return(spCopula(components=cops, distances=distances, unit="m", spDepFun=calcCor))
+# }
+# 
+# # in once
+# 
+# # bins   -> typically output from calcBins
+# # cutoff -> maximal distance that should be considered for fitting
+# # families -> a vector of dummy copula objects of each family to be considered
+# #             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
+# # ...
+# # type   -> the type of curve (by now only polynominals are supported)
+# # degree -> the degree of the polynominal
+# # bounds -> the bounds of the correlation function (typically c(0,1))
+# # method -> the measure of association, either "kendall" or "spearman"
+# fitSpCopula <- function(bins, cutoff=NA, families=c(normalCopula(0), tCopula(0,dispstr="un"),
+#                                                     claytonCopula(0), frankCopula(1), gumbelCopula(1)), ...) {
+#   calcTau <- fitCorFun(bins, cutoff=cutoff, ...)
+#   loglik <- loglikByCopulasLags(bins, calcTau=calcTau, families=families)
+#   
+#   bestFit <- apply(apply(loglik, 1, rank),2,function(x) which(x==length(families)))
+#   
+#   return(composeSpCop(bestFit, families, bins, calcTau))
+# }

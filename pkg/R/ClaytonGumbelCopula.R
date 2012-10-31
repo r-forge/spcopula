@@ -37,17 +37,33 @@ surClaytonCopula <- function (param) {
 }
 
 ## density ##
-setMethod("dCopula", signature("numeric","surClaytonCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","surClaytonCopula"), 
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("dCopula", signature("matrix","surClaytonCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pCopula", signature("numeric","surClaytonCopula"), linkCDVine.surCDF)
-  
+setMethod("pCopula", signature("numeric","surClaytonCopula"), 
+          function(u, copula, log) {
+            linkCDVine.surCDF(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("pCopula", signature("matrix","surClaytonCopula"), linkCDVine.surCDF)
+
 ## partial derivatives ##
 # ddu
-setMethod("dduCopula", signature("numeric","surClaytonCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","surClaytonCopula"), 
+          function(u, copula, log) {
+            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("dduCopula", signature("matrix","surClaytonCopula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvCopula", signature("numeric","surClaytonCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","surClaytonCopula"), 
+          function(u, copula, log) {
+            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("ddvCopula", signature("matrix","surClaytonCopula"), linkCDVine.ddv)
 
 ## random number generater ??
 setMethod("rCopula", signature("numeric","surClaytonCopula"), linkCDVine.r)
@@ -92,17 +108,33 @@ r90ClaytonCopula <- function (param) {
 }
 
 ## density ##
-setMethod("dCopula", signature("numeric","r90ClaytonCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r90ClaytonCopula"), 
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("dCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pCopula", signature("numeric","r90ClaytonCopula"), linkCDVine.r90CDF)
+setMethod("pCopula", signature("numeric","r90ClaytonCopula"), 
+          function(u, copula) {
+            linkCDVine.r90CDF(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("pCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.r90CDF)
 
 ## partial derivatives ##
 # ddu
-setMethod("dduCopula", signature("numeric","r90ClaytonCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r90ClaytonCopula"), 
+          function(u, copula) {
+            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.ddu)
 
 ## ddv
-setMethod("ddvCopula", signature("numeric","r90ClaytonCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","r90ClaytonCopula"), 
+          function(u, copula) {
+            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rCopula", signature("numeric","r90ClaytonCopula"), linkCDVine.r)
@@ -132,17 +164,33 @@ r270ClaytonCopula <- function (param) {
 }
 
 ## density ##
-setMethod("dCopula", signature("numeric","r270ClaytonCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r270ClaytonCopula"), 
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("dCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pCopula", signature("numeric","r270ClaytonCopula"), linkCDVine.r270CDF)
-  
+setMethod("pCopula", signature("numeric","r270ClaytonCopula"), 
+          function(u, copula) {
+            linkCDVine.r270CDF(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("pCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.r270CDF)
+
 ## partial derivatives ##
 # ddu
-setMethod("dduCopula", signature("numeric","r270ClaytonCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r270ClaytonCopula"), 
+          function(u, copula) {
+            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.ddu)
 
-# ddv
-setMethod("ddvCopula", signature("numeric","r270ClaytonCopula"), linkCDVine.ddv)
+## ddv
+setMethod("ddvCopula", signature("numeric","r270ClaytonCopula"), 
+          function(u, copula) {
+            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rCopula", signature("numeric","r270ClaytonCopula"), linkCDVine.r)
@@ -193,17 +241,33 @@ surGumbelCopula <- function (param) {
 }
 
 ## density ##
-setMethod("dCopula", signature("numeric","surGumbelCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","surGumbelCopula"), 
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("dCopula", signature("matrix","surGumbelCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pCopula", signature("numeric","surGumbelCopula"), linkCDVine.surCDF)
+setMethod("pCopula", signature("numeric","surGumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.surCDF(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("pCopula", signature("matrix","surGumbelCopula"), linkCDVine.surCDF)
 
 ## partial derivatives ##
 # ddu
-setMethod("dduCopula", signature("numeric","surGumbelCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","surGumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","surGumbelCopula"), linkCDVine.ddu)
 
 # ddv
-setMethod("ddvCopula", signature("numeric","surGumbelCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","surGumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","surGumbelCopula"), linkCDVine.ddv)
 
 ## random number generater ??
 setMethod("rCopula", signature("numeric","surGumbelCopula"), linkCDVine.r)
@@ -248,17 +312,33 @@ r90GumbelCopula <- function (param) {
 }
 
 ## density ##
-setMethod("dCopula", signature("numeric","r90GumbelCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r90GumbelCopula"), 
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("dCopula", signature("matrix","r90GumbelCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pCopula", signature("numeric","r90GumbelCopula"), linkCDVine.r90CDF)
+setMethod("pCopula", signature("numeric","r90GumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.r90CDF(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("pCopula", signature("matrix","r90GumbelCopula"), linkCDVine.r90CDF)
 
 ## partial derivatives ##
 # ddu
-setMethod("dduCopula", signature("numeric","r90GumbelCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r90GumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","r90GumbelCopula"), linkCDVine.ddu)
 
 ## ddv
-setMethod("ddvCopula", signature("numeric","r90GumbelCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("numeric","r90GumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","r90GumbelCopula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rCopula", signature("numeric","r90GumbelCopula"), linkCDVine.r)
@@ -288,17 +368,33 @@ r270GumbelCopula <- function (param) {
 }
 
 ## density ##
-setMethod("dCopula", signature("numeric","r270GumbelCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("numeric","r270GumbelCopula"), 
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+          })
+setMethod("dCopula", signature("matrix","r270GumbelCopula"), linkCDVine.PDF)
 
 ## jcdf ##
-setMethod("pCopula", signature("numeric","r270GumbelCopula"), linkCDVine.r270CDF)
+setMethod("pCopula", signature("numeric","r270GumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.r270CDF(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("pCopula", signature("matrix","r270GumbelCopula"), linkCDVine.r270CDF)
 
 ## partial derivatives ##
 # ddu
-setMethod("dduCopula", signature("numeric","r270GumbelCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("numeric","r270GumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("dduCopula", signature("matrix","r270GumbelCopula"), linkCDVine.ddu)
 
-# ddv
-setMethod("ddvCopula", signature("numeric","r270GumbelCopula"), linkCDVine.ddv)
+## ddv
+setMethod("ddvCopula", signature("numeric","r270GumbelCopula"), 
+          function(u, copula) {
+            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+          })
+setMethod("ddvCopula", signature("matrix","r270GumbelCopula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rCopula", signature("numeric","r270GumbelCopula"), linkCDVine.r)

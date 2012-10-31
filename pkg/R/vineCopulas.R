@@ -64,12 +64,12 @@ dDvine <- function(copula, u){
     tmpU <- u[[1]][,i:(i+1)]
     den <- den*dCopula(tmpU,tmpCop)
     if (i == 1) {
-      newU <- cbind(newU, ddvcopula(tmpCop,tmpU))
+      newU <- cbind(newU, ddvCopula(tmpU, tmpCop))
     } else {
-      newU <- cbind(newU, dducopula(tmpCop,tmpU))
+      newU <- cbind(newU, dduCopula(tmpU, tmpCop))
     }
     if (1<i & i<(dim-1)) { 
-      newU <- cbind(newU, ddvcopula(tmpCop,tmpU))
+      newU <- cbind(newU, ddvCopula(tmpU, tmpCop))
     }
   }
   u[[2]] <- newU
@@ -85,12 +85,12 @@ dDvine <- function(copula, u){
       den <- den*dCopula(tmpU, tmpCop)
       if (l < dim-1) {
         if (i == 1) {
-          newU <- cbind(newU,ddvcopula(tmpCop,tmpU))
+          newU <- cbind(newU,ddvCopula(tmpU, tmpCop))
         } else {
-          newU <- cbind(newU,dducopula(tmpCop,tmpU))
+          newU <- cbind(newU,dduCopula(tmpU, tmpCop))
         }
         if (1<i & i<(dim-1)) { 
-          newU <- cbind(newU,ddvcopula(tmpCop,tmpU))
+          newU <- cbind(newU,ddvCopula(tmpU, tmpCop))
         }
       } 
     }
@@ -121,7 +121,7 @@ dCvine <- function(copula, u) {
       tmpCop <- copula@copulas[[used+i]]
       tmpU <- u[[l]][,c(1,(i+1))]
       den <- den*dCopula(tmpU, tmpCop)
-      if(l < (dim-1)) newU <- cbind(newU,dducopula(tmpCop,tmpU))
+      if(l < (dim-1)) newU <- cbind(newU,dduCopula(tmpU, tmpCop))
     }
     if(l < (dim-1)) {
       u[[l+1]] <- newU

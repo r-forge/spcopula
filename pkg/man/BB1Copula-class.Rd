@@ -4,21 +4,29 @@
 \alias{BB1Copula-class}
 \alias{dduCopula,numeric,BB1Copula-method}
 \alias{ddvCopula,numeric,BB1Copula-method}
+\alias{dduCopula,matrix,BB1Copula-method}
+\alias{ddvCopula,matrix,BB1Copula-method}
+
 \alias{getKendallDistr,BB1Copula-method}
 \alias{kendallDistribution,BB1Copula-method}
 
 \alias{surBB1Copula-class}
 \alias{dduCopula,numeric,surBB1Copula-method}
 \alias{ddvCopula,numeric,surBB1Copula-method}
-
+\alias{dduCopula,matrix,surBB1Copula-method}
+\alias{ddvCopula,matrix,surBB1Copula-method}
 
 \alias{r90BB1Copula-class}
 \alias{dduCopula,numeric,r90BB1Copula-method}
 \alias{ddvCopula,numeric,r90BB1Copula-method}
+\alias{dduCopula,matrix,r90BB1Copula-method}
+\alias{ddvCopula,matrix,r90BB1Copula-method}
 
 \alias{r270BB1Copula-class}
 \alias{dduCopula,numeric,r270BB1Copula-method}
 \alias{ddvCopula,numeric,r270BB1Copula-method}
+\alias{dduCopula,matrix,r270BB1Copula-method}
+\alias{ddvCopula,matrix,r270BB1Copula-method}
 
 \title{Classes \code{"BB1Copula"}, \code{"surBB1Copula"}, \code{"r90BB1Copula"} and \code{"r270BB1Copula"}}
 \description{

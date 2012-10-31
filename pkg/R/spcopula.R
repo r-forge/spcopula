@@ -101,7 +101,7 @@ spDepFunCop <- function(fun, copula, pairs, h) {
     tmpPairs <- pairs[sel,,drop=FALSE]
     for (j in 1:length(tmpH)) {
       tmpCop@parameters[1] <- calibPar(tmpCop, tmpH[j])
-      res <- c(res, fun(tmpCop, tmpPairs[j,]))
+      res <- c(res, fun(tmpPairs[j,], tmpCop))
     }
   }
   
@@ -121,15 +121,15 @@ spDepFunCop <- function(fun, copula, pairs, h) {
           for (j in 1:length(tmpH)) {
             lowerCop@parameters[1] <- calibPar(lowerCop,  tmpH[j])
             upperCop@parameters[1] <- calibPar(upperCop, tmpH[j])
-            lowerVals <- c(lowerVals, fun(lowerCop, tmpPairs[j,]))
-            upperVals <- c(upperVals, fun(upperCop, tmpPairs[j,]))
+            lowerVals <- c(lowerVals, fun(tmpPairs[j,], lowerCop))
+            upperVals <- c(upperVals, fun(tmpPairs[j,], upperCop))
           }
           res <- c(res,(high-tmpH)/(high-low)*lowerVals+(tmpH-low)/(high-low)*upperVals)
         } else {
           newVals <- numeric(0)
           for (j in 1:length(tmpH)) {
             lowerCop@parameters <- calibPar(lowerCop, tmpH[j])
-            newVals <- c(newVals, fun(lowerCop, tmpPairs[j,]))
+            newVals <- c(newVals, fun(tmpPairs[j,], lowerCop))
           }
           res <- c(res, newVals)
         }
@@ -389,7 +389,7 @@ dduSpCopula <- function (u, copula) {
   return(res)
 }
 
-setMethod("dduCopula", signature("numeric","spCopula"), dduSpCopula)
+setMethod("dduCopula", signature("list","spCopula"), dduSpCopula)
 
 ## ddvSpCopula
 ###############
@@ -442,7 +442,7 @@ ddvSpCopula <- function (u, copula) {
   return(res)
 }
 
-setMethod("ddvCopula", signature("numeric","spCopula"), ddvSpCopula)
+setMethod("ddvCopula", signature("list","spCopula"), ddvSpCopula)
 
 
 #############
@@ -473,13 +473,21 @@ setMethod("ddvCopula", signature("numeric","spCopula"), ddvSpCopula)
 
 # towards a)
 # bins   -> typically output from calcBins
-# type   -> the type of curve (by now only polynominals are supported)
 # degree -> the degree of the polynominal
 # cutoff -> maximal distance that should be considered for fitting
 # bounds -> the bounds of the correlation function (typically c(0,1))
 # method -> the measure of association, either "kendall" or "spearman"
-fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1), 
-                      method="kendall") {
+fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1), 
+                      cor.method=NULL) {
+  if(is.null(cor.method)) {
+    if(is.null(attr(bins,"cor.method")))
+      stop("Neither the bins arguments has an attribute cor.method nor is the parameter cor.method provided.") 
+    else 
+      cor.method <- attr(bins,"cor.method")
+  } else 
+    if(!is.null(attr(bins,"cor.method")) && cor.method != attr(bins,"cor.method"))
+      stop("The cor.method attribute of the bins argument and the argument cor.method do not match.")
+    
   bins <- as.data.frame(bins[1:2])
   if(!is.na(cutoff)) bins <- bins[which(bins[[1]] <= cutoff),]
   
@@ -489,10 +497,9 @@ fitCorFun <- function(bins, type="poly", degree=3, cutoff=NA, bounds=c(0,1),
   cat("Sum of squared residuals:",sum(fitCor$residuals^2),"\n")
   
   function(x) {
-    if (is.null(x)) return(method)
+    if (is.null(x)) return(cor.method)
     return(pmin(bounds[2], pmax(bounds[1], 
-                                eval(predict(fitCor, 
-                                             data.frame(meanDists=x))))))
+                                eval(predict(fitCor, data.frame(meanDists=x))))))
   }
 }
 

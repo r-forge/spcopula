@@ -130,12 +130,12 @@ setClass("stCopula", representation = representation("copula",
 ## neighbourhood:
 
 sizeLim <- 25 #  a constant
-setSizeLim <- function(x) {
-  env <- parent.env(environment())
-  unlockBinding("neighbourLim",env)
-  assign("neighbourLim", x,envir=env)
-  lockBinding("neighbourLim",env)
-}
+# setSizeLim <- function(x) {
+#   env <- parent.env(environment())
+#   unlockBinding("neighbourLim",env)
+#   assign("neighbourLim", x,envir=env)
+#   lockBinding("neighbourLim",env)
+# }
 
 # a class combining two matrices holding the data and the corresponding 
 # distances as well a slot for the coordinates refernce system and an attribute

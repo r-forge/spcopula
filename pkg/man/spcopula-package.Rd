@@ -12,8 +12,8 @@ This package provides a framework to analyse spatial data provided in the format
 \tabular{ll}{
 Package: \tab spcopula\cr
 Type: \tab Package\cr
-Version: \tab 1.0.55\cr
-Date: \tab 2012-03-13\cr
+Version: \tab 1.0.67\cr
+Date: \tab 2012-10-31\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 Depends: \tab copula, spacetime, CDVine, methods, lattice, R (>= 2.13.2)\cr
@@ -22,13 +22,13 @@ Collate: \tab Classes.R partialDerivatives.R cqsCopula.R asCopula.R\cr
 \tab spcopula.R stcopula.R spatialPreparation.R linkingCDVine.R\cr
 \tab BB1copula.R BB6copula.R BB7copula.R BB8copula.R JoeCopula.R\cr
 \tab ClaytonGumbelCopula.R vineCopulas.R utilities.R returnPeriods.R\cr
-Packaged: \tab 2012-03-13 12:23:06 UTC; b_grae02\cr
-Built: \tab R 2.14.2; ; 2012-03-13 12:26:39 UTC; windows\cr
+Packaged: \tab 2012-10-31 12:23:06 UTC; b_grae02\cr
+Built: \tab R 2.15.2; ; 2012-10-31; windows\cr
 }
 
 Index:
 \preformatted{
-spCopula-package        spatial copula
+spcopula-package        spatial copula
 }
 
 }

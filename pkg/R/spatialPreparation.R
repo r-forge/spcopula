@@ -207,7 +207,9 @@ calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA, cutoff=NA
     abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
   }
   
-  return(list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags))
+  res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags)
+  attr(res,"cor.method") <- cor.method
+  return(res)
 }
 
 setMethod(calcBins, signature("Spatial"), calcSpBins)
@@ -277,7 +279,9 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, instances=
     abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
   }
   
-  return(list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices)))
+  res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices))
+  attr(res,"cor.method") <- cor.method
+  return(res)
 }
 
 setMethod(calcBins, signature("STFDF"), calcStBins)

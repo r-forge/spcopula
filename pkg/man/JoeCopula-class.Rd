@@ -4,21 +4,30 @@
 \alias{JoeCopula-class}
 \alias{dduCopula,numeric,JoeCopula-method}
 \alias{ddvCopula,numeric,JoeCopula-method}
+\alias{dduCopula,matrix,JoeCopula-method}
+\alias{ddvCopula,matrix,JoeCopula-method}
+
 \alias{getKendallDistr,JoeCopula-method}
 \alias{kendallDistribution,JoeCopula-method}
 
 \alias{surJoeCopula-class}
 \alias{dduCopula,numeric,surJoeCopula-method}
 \alias{ddvCopula,numeric,surJoeCopula-method}
+\alias{dduCopula,matrix,surJoeCopula-method}
+\alias{ddvCopula,matrix,surJoeCopula-method}
 
 
 \alias{r90JoeCopula-class}
 \alias{dduCopula,numeric,r90JoeCopula-method}
 \alias{ddvCopula,numeric,r90JoeCopula-method}
+\alias{dduCopula,matrix,r90JoeCopula-method}
+\alias{ddvCopula,matrix,r90JoeCopula-method}
 
 \alias{r270JoeCopula-class}
 \alias{dduCopula,numeric,r270JoeCopula-method}
 \alias{ddvCopula,numeric,r270JoeCopula-method}
+\alias{dduCopula,matrix,r270JoeCopula-method}
+\alias{ddvCopula,matrix,r270JoeCopula-method}
 
 \title{Classes \code{"JoeCopula"}, \code{"surJoeCopula"}, \code{"r90JoeCopula"} and \code{"r270JoeCopula"}}
 \description{

@@ -4,21 +4,29 @@
 \alias{BB8Copula-class}
 \alias{dduCopula,numeric,BB8Copula-method}
 \alias{ddvCopula,numeric,BB8Copula-method}
+\alias{dduCopula,matrix,BB8Copula-method}
+\alias{ddvCopula,matrix,BB8Copula-method}
+
 \alias{getKendallDistr,BB8Copula-method}
 \alias{kendallDistribution,BB8Copula-method}
 
 \alias{surBB8Copula-class}
 \alias{dduCopula,numeric,surBB8Copula-method}
 \alias{ddvCopula,numeric,surBB8Copula-method}
-
+\alias{dduCopula,matrix,surBB8Copula-method}
+\alias{ddvCopula,matrix,surBB8Copula-method}
 
 \alias{r90BB8Copula-class}
 \alias{dduCopula,numeric,r90BB8Copula-method}
 \alias{ddvCopula,numeric,r90BB8Copula-method}
+\alias{dduCopula,matrix,r90BB8Copula-method}
+\alias{ddvCopula,matrix,r90BB8Copula-method}
 
 \alias{r270BB8Copula-class}
 \alias{dduCopula,numeric,r270BB8Copula-method}
 \alias{ddvCopula,numeric,r270BB8Copula-method}
+\alias{dduCopula,matrix,r270BB8Copula-method}
+\alias{ddvCopula,matrix,r270BB8Copula-method}
 
 \title{Classes \code{"BB8Copula"}, \code{"surBB8Copula"}, \code{"r90BB8Copula"} and \code{"r270BB8Copula"}}
 \description{
@@ -60,7 +68,7 @@ Benedikt Graeler
 }
 
 \seealso{
-See also \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}}, \code{\linkS4class{BB8Copula}} and \code{\linkS4class{JoeCopula}} for further wrapper classes to the \code{\link{CDVine-package}}.
+See also \code{\linkS4class{BB1Copula}}, \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}} and \code{\linkS4class{JoeCopula}} for further wrapper classes to the \code{\link{CDVine-package}}.
 }
 \examples{
 showClass("BB8Copula")
