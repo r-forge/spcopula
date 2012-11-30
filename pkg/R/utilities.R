@@ -6,14 +6,18 @@ setMethod("calibSpearmansRho", signature("indepCopula"), function(copula, rho) r
 
 # ranks are automatically removed and NAs are by default randomly distributed
 rankTransform <- function(u,v=NULL, ties.method="average") {
-  if(is.matrix(u) && ncol(u)==2) {
-    v <- u[,2]
-    u <- u[,1]
-  } else {
-    if(is.null(v)) stop("u must either be a matrix with 2 columns or u and v must be given.")
+  if(!(is.matrix(u) | is.data.frame(u))) {
+    if (is.null(v))
+      stop("u must either be a matrix with at least 2 columns or u and v must be given.")
+    else
+      u <- cbind(u,v)
   }
-  bool <- !(is.na(u)*is.na(v))
-  cbind(rank(u[bool], na.last=NA, ties.method=ties.method),rank(v[bool], na.last=NA, ties.method=ties.method))/(sum(bool)+1)
+
+  bool <- apply(u,1,function(row) !any(is.na(row)))
+  res <- apply(u[bool,],2,rank,ties.method)/(sum(bool)+1)
+  if(is.data.frame(u))
+    return(as.data.frame(res))
+  return(res)
 }
 
 # strength of dependence scatterplot

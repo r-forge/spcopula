@@ -61,7 +61,7 @@ Class \code{"\linkS4class{Copula}"}, by class "copula", distance 2.
 Benedikt Graeler
 }
 \seealso{
-\code{\link{CVine-package}}
+\code{\link{CDVine-package}}
 }
 \examples{
 persp(surGumbelCopula(1.5),dCopula,zlim=c(0,10))

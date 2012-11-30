@@ -1,24 +1,3 @@
-#################################################################################
-##
-##   R package sdCopula by Benedikt Gräler Copyright (C) 2011
-##
-##   This file is part of the R package sdCopula.
-##
-##   The R package sdCopula is free software: you can redistribute it and/or modify
-##   it under the terms of the GNU General Public License as published by
-##   the Free Software Foundation, either version 3 of the License, or
-##   (at your option) any later version.
-##
-##   The R package sdCopula is distributed in the hope that it will be useful,
-##   but WITHOUT ANY WARRANTY; without even the implied warranty of
-##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##   GNU General Public License for more details.
-##
-##   You should have received a copy of the GNU General Public License
-##   along with the R package sdCopula. If not, see <http://www.gnu.org/licenses/>.
-##
-#################################################################################
-
 ######################################################
 ##                                                  ##
 ## a symmetric copula with cubic quadratic sections ##
@@ -252,7 +231,7 @@ return(new("fitCopula",
   var.est = matrix(NA), 
   method = "Inversion of Kendall's tau and MLE",
   loglik = sum(log(dCopula(data, copula))),
-  convergence = as.integer(NA),
+  fitting.stats=list(convergence = as.integer(NA)),
   nsample = nrow(data),
   copula=copula
 ))
@@ -267,7 +246,7 @@ return(new("fitCopula",
   var.est = matrix(NA), 
   method = "Inversion of Spearman's rho and MLE",
   loglik = sum(log(dCopula(data, copula))),
-  convergence = as.integer(NA),
+  fitting.stats=list(convergence = as.integer(NA)),
   nsample = nrow(data),
   copula=copula
 ))
@@ -316,7 +295,7 @@ fitCQSec.ml <- function(copula, data, start, lower, upper, optim.control, optim.
   
   return(new("fitCopula", estimate = optimized$par, var.est = matrix(NA),
              method = "Numerical MLE over the full range.",
-             loglik = -optimized$value, convergence = optimized$convergence,
+             loglik = -optimized$value, fitting.stats= optimized,
              nsample = nrow(data), copula=cqsCopula(optimized$par)))
 }
 

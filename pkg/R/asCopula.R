@@ -1,24 +1,3 @@
-#################################################################################
-##
-##   R package spCopula by Benedikt Gräler Copyright (C) 2011
-##
-##   This file is part of the R package spCopula.
-##
-##   The R package spCopula is free software: you can redistribute it and/or modify
-##   it under the terms of the GNU General Public License as published by
-##   the Free Software Foundation, either version 3 of the License, or
-##   (at your option) any later version.
-##
-##   The R package spCopula is distributed in the hope that it will be useful,
-##   but WITHOUT ANY WARRANTY; without even the implied warranty of
-##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##   GNU General Public License for more details.
-##
-##   You should have received a copy of the GNU General Public License
-##   along with the R package spCopula. If not, see <http://www.gnu.org/licenses/>.
-##
-#################################################################################
-
 ##########################
 ##                      ##
 ## an asymmetric copula ##
@@ -206,14 +185,13 @@ tau <- cor(data,method="kendall")[1,2]
 esti <- fitASC2.moa(tau, data, method="itau")
 copula <- asCopula(esti)
 return(new("fitCopula",
-  estimate = esti, 
-  var.est = matrix(NA), 
-  method = "Inversion of Kendall's tau and MLE",
-  loglik = sum(log(dCopula(data, copula))),
-  convergence = as.integer(NA),
-  nsample = nrow(data),
-  copula=copula
-))
+           estimate = esti, 
+           var.est = matrix(NA), 
+           loglik = sum(log(dCopula(data, copula))),
+           nsample = nrow(data),
+           method = "Inversion of Kendall's tau and MLE",
+           fitting.stats = list(convergence=as.integer(NA)),
+           copula = copula))
 }
 
 fitASC2.irho <- function(copula, data, estimate.variance){
@@ -221,14 +199,13 @@ rho <- cor(data,method="spearman")[1,2]
 esti <- fitASC2.moa(rho, data, method="itau")
 copula <- asCopula(esti)
 return(new("fitCopula",
-  estimate = esti, 
-  var.est = matrix(NA), 
-  method = "Inversion of Spearman's rho and MLE",
-  loglik = sum(log(dCopula(data, copula))),
-  convergence = as.integer(NA),
-  nsample = nrow(data),
-  copula=copula
-))
+           estimate = esti, 
+           var.est = matrix(NA), 
+           loglik = sum(log(dCopula(data, copula))),
+           nsample = nrow(data),
+           method = "Inversion of Spearman's rho and MLE",
+           fitting.stats = list(convergence=as.integer(NA)),
+           copula = copula))
 }
 
 fitASC2.moa <- function(moa, data, method="itau") {
@@ -271,11 +248,15 @@ fitASC2.ml <- function(copula, data, start, lower, upper, optim.control, optim.m
   
   optimized <- optim(par=start, fn=optFun, method = optim.method, 
                      lower=lower, upper=upper, control = optim.control)
-
-  return(new("fitCopula", estimate = optimized$par, var.est = matrix(NA), 
+  
+  return(new("fitCopula", 
+             estimate = optimized$par, 
+             var.est = matrix(NA), 
+             loglik = -optimized$value,
+             nsample = nrow(data),
              method = "Numerical MLE over the full range.", 
-             loglik = -optimized$value, convergence = optimized$convergence,
-             nsample = nrow(data), copula=asCopula(optimized$par)))
+             fitting.stats = optimized,
+             copula = asCopula(optimized$par)))
 }
 
 ####
