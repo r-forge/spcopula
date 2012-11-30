@@ -274,7 +274,7 @@ tauASC2 <- function(copula){
   return((75*b-b^2+a*(25-b))/450)
 }
 
-setMethod("kendallsTau",signature("asCopula"),tauASC2)
+setMethod("tau",signature("asCopula"),tauASC2)
 
 ####
 # find parameter "a" for parameter "b" under a given measure of association "rho" 
@@ -293,4 +293,4 @@ rhoASC2 <- function(copula){
   return((a+3*b)/12)
 }
 
-setMethod("spearmansRho",signature("asCopula"),tauASC2)
+setMethod("rho",signature("asCopula"),tauASC2)

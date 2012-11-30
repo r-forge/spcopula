@@ -1,5 +1,4 @@
 ## librarys ##
-library(spcopula)
 library(evd)
 
 ## dataset - spatial poionts data.frame ##
@@ -7,7 +6,7 @@ data(meuse)
 coordinates(meuse) = ~x+y
 dataSet <- meuse
 
-spplot(meuse,"zinc")
+spplot(meuse,"zinc", col.regions=bpy.colors(5))
 
 ## margins ##
 hist(dataSet[["zinc"]],freq=F,n=30,ylim=c(0,0.0035))
@@ -39,8 +38,11 @@ calcKTauPol <- fitCorFun(bins, degree=3)
 curve(calcKTauPol,0, 1000, col="purple",add=TRUE)
 
 ## find best fitting copula per lag class
-loglikTau <- loglikByCopulasLags(bins, calcKTauPol)
-bestFitTau <- apply(apply(loglikTau, 1, rank),2,function(x) which(x==5))
+loglikTau <- loglikByCopulasLags(bins, calcKTauPol,
+                                 families=c(normalCopula(0), tCopula(0,dispstr = "un"),
+                                            claytonCopula(0), frankCopula(1), 
+                                            gumbelCopula(1),joeBiCopula(1.5)))
+bestFitTau <- apply(apply(loglikTau, 1, rank),2,function(x) which(x==6))
 
 ## set-up a spatial Copula ##
 spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),

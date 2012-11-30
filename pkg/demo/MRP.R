@@ -9,21 +9,14 @@ plot(peakVol, asp=1)
 # Kendall's tau correlation
 cor(triples,method="kendall")
 
-sum(log(dCopula(peakVol,BB7Copula(c(2,14)))))
-
-sum(dCopula(peakVol,BB7Copula(c(2,14)),log=T))
-sum(dCopula(peakVol,BB7Copula(c(2,14)),log=F))
-
-class(peakVol)
-
-loglikCopula(c(2,14),x=peakVol, BB7Copula(c(2,14)))
-
 # estiamte the BB7 copula by means of maximum likelihood
 copQV <- fitCopula(BB7Copula(param=c(2,14)), peakVol, method="ml",start=c(2,14), estimate.variance=F)@copula
 copQV
 
 # we use a design return period of 100 years
-# the MAR-case
+# the MAR-case: given the 0.99 quantile of one marginal, what is the 
+# corresponding quantile of the second variable with the given joint return 
+# period of 1/(1-0.99)
 v_MAR <- c(0.99,invdduCopula(0.99,copQV,0.99))
 v_MAR
 
@@ -43,4 +36,5 @@ t_KEN2
 kendallRP(kendallFunQV,cl=0.99,mu=1,copula=copQV)
 
 # illustrating the critical lines (empirically)
-contour(copQV,pCopula,levels=c(0.99,t_KEN2),xlim=c(0.98,1),ylim=c(0.98,1),n=1000, asp=1, col="blue")
+contour(copQV,pCopula,levels=c(0.99,t_KEN2),
+        xlim=c(0.98,1), ylim=c(0.98,1), n=1000, asp=1, col="blue")

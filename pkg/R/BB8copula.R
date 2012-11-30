@@ -28,9 +28,11 @@ setClass("BB8Copula",
 
 # constructor
 BB8Copula <- function (param) {
-  val <- new("BB8Copula", dimension = as.integer(2), parameters = param, 
-  param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, 1), family=10, fullname = "BB8 copula family. Number 10 in CDVine.")
-  val
+  if (any(is.na(param)) | param[1] >= Inf | param[2] > 1 | param[1] < 1 | param[2] <= 0)
+    stop("Parameter value out of bound: theta: [1,Inf), delta: (0,1].")
+  new("BB8Copula", dimension = as.integer(2), parameters = param, 
+      param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, 1),
+      family=10, fullname = "BB8 copula family. Number 10 in CDVine.")
 }
 
 ## density ##
@@ -82,6 +84,9 @@ setMethod("kendallDistribution", signature("BB8Copula"), kendall.BB8)
 setMethod("getKendallDistr", signature("BB8Copula"), 
           function(copula) return(function(t) kendall.BB8(copula, t)))
 
+setMethod("tau",signature("BB8Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("BB8Copula"),linkCDVine.tailIndex)
+
 #########################
 ## BB8 survival copula ##
 #########################
@@ -94,8 +99,11 @@ setClass("surBB8Copula",
 
 # constructor
 surBB8Copula <- function (param) {
-  val <- new("surBB8Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, 1), family=20, fullname = "Survival BB8 copula family. Number 20 in CDVine.")
-  val
+  if (any(is.na(param)) | param[1] >= Inf | param[2] > 1 | param[1] < 1 | param[2] <= 0)
+    stop("Parameter value out of bound: theta: [1,Inf), delta: (0,1].")
+  new("surBB8Copula", dimension = as.integer(2), parameters = param,
+      param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, 1),
+      family=20, fullname = "Survival BB8 copula family. Number 20 in CDVine.")
 }
 
 ## density ##
@@ -130,6 +138,9 @@ setMethod("ddvCopula", signature("matrix","surBB8Copula"), linkCDVine.ddv)
 ## random number generator
 setMethod("rCopula", signature("numeric","surBB8Copula"), linkCDVine.r)
 
+setMethod("tau",signature("surBB8Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("surBB8Copula"),linkCDVine.tailIndex)
+
 #######################
 ## BB8 copula 90 deg ##
 #######################
@@ -144,8 +155,6 @@ validRotBB8Copula = function(object) {
     return("Parameter and upper bound have non-equal length")
   if (length(param) != length(lower))
     return("Parameter and lower bound have non-equal length")
-  if (any(is.na(param) | param[1] > upper[1] | param[2] >= upper[2] | param[1] <= lower[1] | param[2] < lower[2]))
-    return("Parameter value out of bound")
   else return (TRUE)
 }
 
@@ -157,8 +166,11 @@ setClass("r90BB8Copula",
 
 # constructor
 r90BB8Copula <- function (param) {
-  val <- new("r90BB8Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=30, fullname = "90 deg rotated BB8 copula family. Number 30 in CDVine.")
-  val
+  if (any(is.na(param) | param[1] > -1 | param[2] >= 0 | param[1] <= -Inf | param[2] < -1))
+    stop("Parameter value out of bound: theta: (-Inf,-1], delta: [-1,0).")
+  new("r90BB8Copula", dimension = as.integer(2), parameters = param, 
+      param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0),
+      family=30, fullname = "90 deg rotated BB8 copula family. Number 30 in CDVine.")
 }
 
 ## density ##
@@ -192,6 +204,9 @@ setMethod("ddvCopula", signature("matrix","r90BB8Copula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rCopula", signature("numeric","r90BB8Copula"), linkCDVine.r)
+
+setMethod("tau",signature("r90BB8Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("r90BB8Copula"),linkCDVine.tailIndex)
 
 ###########################
 ## BB8 copula 270 degree ##
@@ -240,3 +255,6 @@ setMethod("ddvCopula", signature("matrix","r270BB8Copula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rCopula", signature("numeric","r270BB8Copula"), linkCDVine.r)
+
+setMethod("tau",signature("r270BB8Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("r270BB8Copula"),linkCDVine.tailIndex)

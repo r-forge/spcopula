@@ -153,7 +153,7 @@ return(u1-b*(u1-2*u1*u2-u1^2+2*u1^2*u2)+(b-a)*(u1-2*u1^2+u1^3-4*u1*u2+8*u1^2*u2-
 
 setMethod("ddvCopula", signature("numeric","cqsCopula"),
           function(u, copula, ...) {
-            ddvQSec(matrix(u,ncol=copula@dimension), copula)
+            ddvCQSec(matrix(u,ncol=copula@dimension), copula)
           })
 setMethod("ddvCopula", signature("matrix","cqsCopula"), ddvCQSec)
 
@@ -314,7 +314,7 @@ tauCQSec <- function(copula){
   return( (a*b - 25*a - b^2 - 75*b)/450 )
 }
 
-setMethod("kendallsTau",signature("cqsCopula"),tauCQSec)
+setMethod("tau",signature("cqsCopula"),tauCQSec)
 
 ####
 # find parameter "a" for parameter "b" under a given measure of association "rho" 
@@ -333,4 +333,4 @@ rhoCQSec <- function(copula){
   return( -(a+3*b)/12 )
 }
 
-setMethod("spearmansRho",signature("cqsCopula"),rhoCQSec)
+setMethod("rho",signature("cqsCopula"),rhoCQSec)

@@ -28,9 +28,11 @@ setClass("BB6Copula",
 
 # constructor
 BB6Copula <- function (param) {
-    val <- new("BB6Copula", dimension = as.integer(2), parameters = param, 
-        param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=8, fullname = "BB6 copula family. Number 8 in CDVine.")
-    val
+  if (any(is.na(param) | param >= c(Inf, Inf) | param < c(1,1)))
+    stop("Parameter value(s) out of bound(s): theta: [1,Inf), delta: [1,Inf).")
+  new("BB6Copula", dimension = as.integer(2), parameters = param, 
+      param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf),
+      family=8, fullname = "BB6 copula family. Number 8 in CDVine.")
 }
 
 ## density ##
@@ -82,6 +84,9 @@ setMethod("kendallDistribution", signature("BB6Copula"), kendall.BB6)
 setMethod("getKendallDistr", signature("BB6Copula"), 
           function(copula) return(function(t) kendall.BB6(copula, t)))
 
+setMethod("tau",signature("BB6Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("BB6Copula"),linkCDVine.tailIndex)
+
 #########################
 ## BB6 survival copula ##
 #########################
@@ -94,8 +99,11 @@ setClass("surBB6Copula",
 
 # constructor
 surBB6Copula <- function (param) {
-  val <- new("surBB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), family=18, fullname = "Survival BB6 copula family. Number 18 in CDVine.")
-  val
+  if (any(is.na(param) | param >= c(Inf, Inf) | param < c(1,1)))
+    stop("Parameter value(s) out of bound(s): theta: [1,Inf), delta: [1,Inf).")
+  new("surBB6Copula", dimension = as.integer(2), parameters = param, 
+      param.names = c("theta", "delta"), param.lowbnd = c(1, 1), param.upbnd = c(Inf, Inf), 
+      family=18, fullname = "Survival BB6 copula family. Number 18 in CDVine.")
 }
 
 ## density ##
@@ -130,6 +138,9 @@ setMethod("ddvCopula", signature("matrix","surBB6Copula"), linkCDVine.ddv)
 ## random number generator
 setMethod("rCopula", signature("numeric","surBB6Copula"), linkCDVine.r)
 
+setMethod("tau",signature("surBB6Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("surBB6Copula"),linkCDVine.tailIndex)
+
 #######################
 ## BB6 copula 90 deg ##
 #######################
@@ -144,8 +155,6 @@ validRotBB6Copula = function(object) {
     return("Parameter and upper bound have non-equal length")
   if (length(param) != length(lower))
     return("Parameter and lower bound have non-equal length")
-  if (any(is.na(param) | param > upper | param <= lower))
-    return("Parameter value out of bound")
   else return (TRUE)
 }
 
@@ -157,8 +166,11 @@ setClass("r90BB6Copula",
 
 # constructor
 r90BB6Copula <- function (param) {
-  val <- new("r90BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=28, fullname = "90 deg rotated BB6 copula family. Number 28 in CDVine.")
-  val
+  if (any(is.na(param) | param > c(-1,-1) | param <= c(-Inf,-Inf)))
+    stop("Parameter value out of bound: theta: (-Inf,1], delta: (-Inf,1].")
+  new("r90BB6Copula", dimension = as.integer(2), parameters = param, 
+      param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1),
+      family=28, fullname = "90 deg rotated BB6 copula family. Number 28 in CDVine.")
 }
 
 ## density ##
@@ -193,6 +205,9 @@ setMethod("ddvCopula", signature("matrix","r90BB6Copula"), linkCDVine.ddv)
 ## random number generator
 setMethod("rCopula", signature("numeric","r90BB6Copula"), linkCDVine.r)
 
+setMethod("tau",signature("r90BB6Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("r90BB6Copula"),linkCDVine.tailIndex)
+
 ###########################
 ## BB6 copula 270 degree ##
 ###########################
@@ -205,8 +220,11 @@ setClass("r270BB6Copula",
 
 # constructor
 r270BB6Copula <- function (param) {
-  val <- new("r270BB6Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), family=38, fullname = "270 deg rotated BB6 copula family. Number 38 in CDVine.")
-  val
+  if (any(is.na(param) | param > c(-1,-1) | param <= c(-Inf,-Inf)))
+    stop("Parameter value out of bound: theta: (-Inf,1], delta: (-Inf,1].")
+  new("r270BB6Copula", dimension = as.integer(2), parameters = param, 
+      param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1),
+      family=38, fullname = "270 deg rotated BB6 copula family. Number 38 in CDVine.")
 }
 
 ## density ##
@@ -240,3 +258,6 @@ setMethod("ddvCopula", signature("matrix","r270BB6Copula"), linkCDVine.ddv)
 
 ## random number generator
 setMethod("rCopula", signature("numeric","r270BB6Copula"), linkCDVine.r)
+
+setMethod("tau",signature("r270BB6Copula"),linkCDVine.tau)
+setMethod("tailIndex",signature("r270BB6Copula"),linkCDVine.tailIndex)

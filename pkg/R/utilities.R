@@ -1,8 +1,5 @@
 ## utilities
 
-# calib Kendall's tau and Spearman's Rho for the indepCopula
-setMethod("calibKendallsTau", signature("indepCopula"), function(copula, tau) return(numeric(0)) )
-setMethod("calibSpearmansRho", signature("indepCopula"), function(copula, rho) return(numeric(0)) )
 
 # ranks are automatically removed and NAs are by default randomly distributed
 rankTransform <- function(u,v=NULL, ties.method="average") {

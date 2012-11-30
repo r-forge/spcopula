@@ -68,7 +68,7 @@ Benedikt Graeler
 }
 
 \seealso{
-See also \code{\linkS4class{BB1Copula}}, \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}} and \code{\linkS4class{JoeCopula}} for further wrapper classes to the \code{\link{CDVine-package}}.
+See also \code{\linkS4class{BB1Copula}}, \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}} and \code{\linkS4class{joeCopula}} for further wrapper classes to the \code{\link{CDVine-package}}.
 }
 \examples{
 showClass("BB8Copula")

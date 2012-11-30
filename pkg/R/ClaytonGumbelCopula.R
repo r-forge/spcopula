@@ -69,11 +69,14 @@ setMethod("ddvCopula", signature("matrix","surClaytonCopula"), linkCDVine.ddv)
 setMethod("rCopula", signature("numeric","surClaytonCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("surClaytonCopula"), 
+setMethod("iTau", signature("surClaytonCopula"), 
           function(copula, tau) {
             if(tau <= 0) warning("The survival Clayton copula can only represent positive dependence!")
-            linkCDVine.calibKendallsTau(copula, max(1e-6,abs(tau)))
+            linkCDVine.iTau(copula, max(1e-6,abs(tau)))
           })
+
+setMethod("tau",signature("surClaytonCopula"),linkCDVine.tau)
+setMethod("tailIndex",signature("surClaytonCopula"),linkCDVine.tailIndex)
 
 #######################
 ## Clayton copula 90 ##
@@ -140,11 +143,15 @@ setMethod("ddvCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.ddv)
 setMethod("rCopula", signature("numeric","r90ClaytonCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("r90ClaytonCopula"),
+setMethod("iTau", signature("r90ClaytonCopula"),
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Clayton copula can only represent negative dependence!")
-            linkCDVine.calibKendallsTau(copula, min(-1e-6,-abs(tau)))
+            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
           })
+
+setMethod("tau",signature("r90ClaytonCopula"),linkCDVine.tau)
+
+setMethod("tailIndex",signature("r90ClaytonCopula"),linkCDVine.tailIndex)
 
 ########################
 ## Clayton copula 270 ##
@@ -196,11 +203,15 @@ setMethod("ddvCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.ddv)
 setMethod("rCopula", signature("numeric","r270ClaytonCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("r270ClaytonCopula"), 
+setMethod("iTau", signature("r270ClaytonCopula"), 
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Clayton copula can only represent negative dependence!")
-            linkCDVine.calibKendallsTau(copula, min(-1e-6,-abs(tau)))
+            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
           })
+
+setMethod("tau",signature("r270ClaytonCopula"),linkCDVine.tau)
+
+setMethod("tailIndex",signature("r270ClaytonCopula"),linkCDVine.tailIndex)
 
 ####################################
 ##                                ##
@@ -273,11 +284,15 @@ setMethod("ddvCopula", signature("matrix","surGumbelCopula"), linkCDVine.ddv)
 setMethod("rCopula", signature("numeric","surGumbelCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("surGumbelCopula"), 
+setMethod("iTau", signature("surGumbelCopula"), 
           function(copula, tau) {
             if(tau < 0) warning("The survival Gumbel copula can only represent non-negative dependence!")
-            linkCDVine.calibKendallsTau(copula, max(0,abs(tau)))
+            linkCDVine.iTau(copula, max(0,abs(tau)))
           })
+
+setMethod("tau",signature("surGumbelCopula"),linkCDVine.tau)
+
+setMethod("tailIndex",signature("surGumbelCopula"),linkCDVine.tailIndex)
 
 #######################
 ## Gumbel copula 90 ##
@@ -344,11 +359,15 @@ setMethod("ddvCopula", signature("matrix","r90GumbelCopula"), linkCDVine.ddv)
 setMethod("rCopula", signature("numeric","r90GumbelCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("r90GumbelCopula"),
+setMethod("iTau", signature("r90GumbelCopula"),
           function(copula, tau) {
             if(tau > 0) warning("The rotated Gumbel copula can only represent non-positive dependence!")
-            linkCDVine.calibKendallsTau(copula, min(0,-abs(tau)))
+            linkCDVine.iTau(copula, min(0,-abs(tau)))
           })
+
+setMethod("tau",signature("r90GumbelCopula"),linkCDVine.tau)
+
+setMethod("tailIndex",signature("r90GumbelCopula"),linkCDVine.tailIndex)
 
 ########################
 ## Gumbel copula 270 ##
@@ -400,8 +419,12 @@ setMethod("ddvCopula", signature("matrix","r270GumbelCopula"), linkCDVine.ddv)
 setMethod("rCopula", signature("numeric","r270GumbelCopula"), linkCDVine.r)
 
 ## Kendalls tau to parameter conversion
-setMethod("calibKendallsTau", signature("r270GumbelCopula"), 
+setMethod("iTau", signature("r270GumbelCopula"), 
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Gumbel copula can only represent negative dependence!")
-            linkCDVine.calibKendallsTau(copula, min(-1e-6,-abs(tau)))
+            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
           })
+
+setMethod("tau",signature("r270GumbelCopula"),linkCDVine.tau)
+
+setMethod("tailIndex",signature("r270GumbelCopula"),linkCDVine.tailIndex)
