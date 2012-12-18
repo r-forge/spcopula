@@ -61,7 +61,7 @@ dependencePlot <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transfor
 }
 
 ##
-unitScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformation=function (x) x, ...) {
+unitScatter <- function(formula=NULL, smpl, ...) {
   smpl <- as.data.frame(smpl)
   if(is.null(formula)) {
     if (ncol(smpl)>2) {
@@ -74,15 +74,15 @@ unitScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformat
 
   for(variable in all.vars(formula)){
     if( min(smpl[,variable])<0 | max(smpl[,variable])>1) {
-      smpl[,variable] <- rankTransform(smpl[,variable])
-      warning("The variable ",variable," seems to exceed [0,1] and has been transformed using rankTransform.")
+      smpl[,variable] <- rank(smpl[,variable])/(length(smpl[,variable])+1)
+      warning("The variable ",variable," seems to exceed [0,1] and has been transformed using the rank order transformation.")
     }
   }
 
   xyplot(formula, smpl, aspect="iso", xlim=c(0,1), ylim=c(0,1), ...)
 }
 
-univScatter <- function(formula=NULL, smpl, cuts=15, bandwidth=.075, transformation=function (x) x, ...) {
+univScatter <- function(formula=NULL, smpl) {
   warning("Use unitScatter instead!")
-  unitScatter(formula, smpl, cuts, bandwidth, transformation, ...)
+  unitScatter(formula, smpl)
 }

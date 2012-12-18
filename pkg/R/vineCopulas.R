@@ -18,23 +18,28 @@ validVineCopula = function(object) {
 }
 
 setClass("vineCopula",
-  representation = representation(copulas="list", dimension="integer", type="character", pdf="numeric"),
+  representation = representation(copulas="list", dimension="integer", 
+                                  type="character"),
   validity = validVineCopula,
   contains = list("copula")
 )
 
 # constructor
 vineCopula <- function (copulas, dim, type) {
-    val <- new("vineCopula", copulas=copulas, dimension = dim, parameters = numeric(), 
-        param.names = character(), param.lowbnd = numeric(), param.upbnd = numeric(), type=type, pdf=numeric(), fullname = paste(type, "copula family."))
-    val
+  new("vineCopula", copulas=copulas, dimension = as.integer(dim), parameters = numeric(),
+      param.names = character(), param.lowbnd = numeric(), 
+      param.upbnd = numeric(), type=type, 
+      fullname = paste(type, "copula family."))
 }
 
 showVineCopula <- function(object) {
   cat(object@fullname, "\n")
   cat("Dimension: ", object@dimension, "\n")
   cat("Copulas:\n")
-  for (i in (1:length(object@copulas))) cat("  ", class(object@copulas[[i]]), "with parameter(s)", object@copulas[[i]]@parameters, "\n")
+  for (i in (1:length(object@copulas))) {
+    cat("  ", class(object@copulas[[i]]), "with parameter(s)", 
+        object@copulas[[i]]@parameters, "\n")
+  }
 }
 
 setMethod("show", signature("vineCopula"), showVineCopula)
@@ -149,8 +154,6 @@ dvineCopula <- function(u, copula, log=F) {
   den <- switch(getNumType(copula),dCvine ,dDvine)
   return(den(copula, u, log))
 } 
-
-
 
 setMethod("dCopula", signature("numeric","vineCopula"), dvineCopula)
 setMethod("dCopula", signature("matrix","vineCopula"), dvineCopula)
