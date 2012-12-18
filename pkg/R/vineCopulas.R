@@ -50,7 +50,13 @@ getNumType <- function(copula) {
 
 ## d-vine structure
 
-dDvine <- function(copula, u){
+# copula <- vineFit
+# u <- empVine
+#   empCopVine
+
+# dDvine(vineFit, empVine,log=T)
+
+dDvine <- function(copula, u, log=FALSE){
   dim <- copula@dimension
   tmp <- u
   u <- NULL
@@ -62,7 +68,10 @@ dDvine <- function(copula, u){
   for (i in 1:(dim-1)) {
     tmpCop <- copula@copulas[[i]]
     tmpU <- u[[1]][,i:(i+1)]
-    den <- den*dCopula(tmpU,tmpCop)
+    if(log)
+      den <- den + dCopula(tmpU, tmpCop,log=T)
+    else
+      den <- den*dCopula(tmpU,tmpCop,log=F)
     if (i == 1) {
       newU <- cbind(newU, ddvCopula(tmpU, tmpCop))
     } else {
@@ -75,14 +84,16 @@ dDvine <- function(copula, u){
   u[[2]] <- newU
   
   used <- dim-1
-  
   for (l in 2:(dim-1)) {
     newU <- NULL
     for (i in 1:(dim-l)) {
 #       cat(used+i,"\n")
       tmpCop <- copula@copulas[[used+i]]
       tmpU <- u[[l]][,(i*2-1):(i*2)]
-      den <- den*dCopula(tmpU, tmpCop)
+      if(log)
+        den <- den + dCopula(tmpU, tmpCop,log=T)
+      else
+        den <- den*dCopula(tmpU, tmpCop, log=F)
       if (l < dim-1) {
         if (i == 1) {
           newU <- cbind(newU,ddvCopula(tmpU, tmpCop))
@@ -134,10 +145,12 @@ dCvine <- function(copula, u) {
 
 ##
 
-dvineCopula <- function(u, copula) { 
+dvineCopula <- function(u, copula, log=F) { 
   den <- switch(getNumType(copula),dCvine ,dDvine)
-  return(den(copula, u))
+  return(den(copula, u, log))
 } 
+
+
 
 setMethod("dCopula", signature("numeric","vineCopula"), dvineCopula)
 setMethod("dCopula", signature("matrix","vineCopula"), dvineCopula)
@@ -176,7 +189,7 @@ setMethod("pCopula", signature("matrix","vineCopula"), pvineCopula)
 
 ## random numbers
 linkCDVineSim <- function(n, copula) {
-  numType <- getNumType
+  numType <- getNumType(copula)
 
   getFamily <- function(copula) {
     if("family" %in% slotNames(copula)) numFam <- copula@family

@@ -108,8 +108,8 @@ surBB7Copula <- function (param) {
 
 ## density ##
 setMethod("dCopula", signature("numeric","surBB7Copula"), 
-          function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension,),copula,log=log)
           })
 setMethod("dCopula", signature("matrix","surBB7Copula"), linkCDVine.PDF)
 
@@ -177,8 +177,8 @@ r90BB7Copula <- function (param) {
 
 ## density ##
 setMethod("dCopula", signature("numeric","r90BB7Copula"), 
-          function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
 setMethod("dCopula", signature("matrix","r90BB7Copula"), linkCDVine.PDF)
 
@@ -231,8 +231,8 @@ r270BB7Copula <- function (param) {
 
 ## density ##
 setMethod("dCopula", signature("numeric","r270BB7Copula"), 
-          function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
 setMethod("dCopula", signature("matrix","r270BB7Copula"), linkCDVine.PDF)
 

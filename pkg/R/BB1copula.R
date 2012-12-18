@@ -105,8 +105,8 @@ surBB1Copula <- function (param) {
 
 ## density ##
 setMethod("dCopula", signature("numeric","surBB1Copula"), 
-          function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
 setMethod("dCopula", signature("matrix","surBB1Copula"), linkCDVine.PDF)
 
@@ -132,7 +132,7 @@ setMethod("ddvCopula", signature("numeric","surBB1Copula"),
           })
 setMethod("ddvCopula", signature("matrix","surBB1Copula"), linkCDVine.ddv)
 
-## random number generater ??
+## random number generator
 setMethod("rCopula", signature("numeric","surBB1Copula"), linkCDVine.r)
 
 setMethod("tau",signature("surBB1Copula"),linkCDVine.tau)
@@ -172,8 +172,8 @@ r90BB1Copula <- function (param) {
 BiCopCDF
 ## density ##
 setMethod("dCopula", signature("numeric","r90BB1Copula"), 
-          function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
 setMethod("dCopula", signature("matrix","r90BB1Copula"), linkCDVine.PDF)
 
@@ -226,8 +226,8 @@ r270BB1Copula <- function (param) {
 
 ## density ##
 setMethod("dCopula", signature("numeric","r270BB1Copula"), 
-          function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+          function(u, copula, log) {
+            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
 setMethod("dCopula", signature("matrix","r270BB1Copula"), linkCDVine.PDF)
 

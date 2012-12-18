@@ -243,7 +243,7 @@ fitASC2.ml <- function(copula, data, start, lower, upper, optim.control, optim.m
   
   optFun <- function(param=c(0,0)) {
     if(any(param > 1) | param[2] < -1 | param[1] < limA(param[2])) return(1)
-    return(-sum(log( dASC2(asCopula(param),u=data))))
+    return(-sum(log( dASC2(data, asCopula(param)))))
   }
   
   optimized <- optim(par=start, fn=optFun, method = optim.method, 

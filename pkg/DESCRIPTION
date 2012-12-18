@@ -1,8 +1,8 @@
 Package: spcopula
 Type: Package
 Title: copula driven spatial analysis
-Version: 1.0.69
-Date: 2012-11-30
+Version: 1.0.70
+Date: 2012-12-18
 Author: Benedikt Graeler
 Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
 Description: This package provides a framework to analyse spatial data provided in the format of the spacetime package with copulas. Additionally, support for calculating multivariate return periods is implemented.

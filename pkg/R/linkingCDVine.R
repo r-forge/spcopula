@@ -4,7 +4,7 @@
 
 
 # density from BiCopPDF
-linkCDVine.PDF <- function (u, copula, log) {
+linkCDVine.PDF <- function (u, copula, log=FALSE) {
   param <- copula@parameters
   if(length(param)==1) param <- c(param,0)
   n <- nrow(u)
