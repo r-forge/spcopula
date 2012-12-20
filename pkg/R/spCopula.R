@@ -19,19 +19,22 @@ spCopula <- function(components, distances, spDepFun, unit="m") {
   if (missing(spDepFun)) { 
     calibMoa <- function(copula, h) return(NULL)
   } else {
-    if (is.na(match(spDepFun(NULL),c("kendall","spearman","id","none")))) stop("spDepFun(NULL) must return 'spearman', 'kendall' or 'id'.")
-    cat("The parameters of the components will be recalculated according to the provided spDepFun. \n")
+    if (is.na(match(spDepFun(NULL), c("kendall","spearman","id")))) 
+      stop("spDepFun(NULL) must return 'spearman', 'kendall' or 'id'.")
+    cat("The parameters of the components will be recalculated according to the provided spDepFun where possible. \nIn case no 1-1 relation is known, the copula as in components is used. \n")
     calibMoa <- switch(spDepFun(NULL), 
                        kendall=function(copula, h) iTau(copula, spDepFun(h)),
                        spearman=function(copula, h) iRho(copula, spDepFun(h)),
                        id=function(copula, h) return(h))
     
     for (i in 1:length(components)) {
-      components[[i]]@parameters[1] <- calibMoa(components[[i]], distances[i]) # take care of non single parameter copulas
+      param <- try(calibMoa(components[[i]], distances[i]),T)
+      if (class(param) == "numeric")
+        components[[i]]@parameters[1] <- param # take care of non single parameter copulas
     }
   }
 
-  components <- append(components,indepCopula())
+#   components <- append(components,indepCopula())
   
   param       <- unlist(lapply(components, function(x) x@parameters))
   param.names <- unlist(lapply(components, function(x) x@param.names))
@@ -448,7 +451,7 @@ setMethod("ddvCopula", signature("list","spCopula"), ddvSpCopula)
 # INTERMEDIATE RESULT
 # c) select best fits based on ... e.g. log-likelihood, visual inspection
 # d) compose bivariate copulas to one spatial copula
-# OUTPUT: a spatial copula parametrixued by distance through Kendall's tau
+# OUTPUT: a spatial copula parametrised by distance through Kendall's tau
 
 # towards a)
 # bins   -> typically output from calcBins
@@ -488,17 +491,22 @@ fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1),
 # calcTau  -> a function on distance providing Kendall's tau estimates, 
 # families -> a vector of dummy copula objects of each family to be considered
 #             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
-loglikByCopulasLags <- function(bins, calcTau, 
+loglikByCopulasLags <- function(bins, calcCor, 
                                 families=c(normalCopula(0), 
                                            tCopula(0,dispstr="un"),
                                            claytonCopula(0), frankCopula(1), 
                                            gumbelCopula(1))) {
+  moa <- switch(calcCor(NULL),
+                kendall=function(copula, h) iTau(copula, calcCor(h)),
+                spearman=function(copula, h) iRho(copula, calcCor(h)),
+                id=function(copula, h) calcCor(h))
   loglik <- NULL
   for (cop in families) {
     print(cop)
     tmploglik <- NULL
     for(i in 1:length(bins$meanDists)) {
-      cop@parameters[1] <- iTau(cop, tau=calcTau(bins$meanDists[i]))
+      if(class(cop)!="indepCopula")
+        cop@parameters[1] <- moa(cop, bins$meanDists[i])
       tmploglik <- c(tmploglik, sum(log(dCopula(bins$lagData[[i]],cop))))
     }
     loglik <- cbind(loglik, tmploglik)
@@ -510,33 +518,55 @@ loglikByCopulasLags <- function(bins, calcTau,
 }
 
 # towards d)
-composeSpCop <- function(bestFit, families, bins, calcCor) {
-  nfits <- length(bestFit)
-  gaps <- which(diff(bestFit)!=0)
-
-  if(missing(calcCor)) noCor <- nfits
-  else noCor <- min(which(calcCor(bins$meanDists)<=0), nfits)
+composeSpCopula <- function(bestFit, families, bins, calcCor, range=max(bins$meanDists)) {
+  nFits <- length(bestFit)
+  if(nFits > length(bins$meanDists))
+    stop("There may not be less bins than best fits.\n")
+  rangeIndex <- min(nFits, max(which(bins$meanDists <= range)))
   
-  breaks <- sort(c(gaps, gaps+1, noCor))
-  breaks <- breaks[breaks<noCor]
-  
-  cops <- as.list(families[bestFit[breaks]])
-  
-  breaks <- unique(c(breaks, min(nfits,rev(breaks)[1]+1)))
-  distances <- bins$meanDists[breaks]
-  
-  if(length(breaks)==length(cops)) {
-    warning("Lags do not cover the entire range with positive correlation. ", 
-             "An artifical one fading towards the indepCopula has been added.")
-    distances <- c(distances, 
-                   rev(distances)[1]+diff(bins$meanDists[nfits+c(-1,0)]))
+  if (missing(calcCor)) {
+    return(spCopula(components = as.list(families[bestFit[1:rangeIndex]]),
+                    distances = bins$meanDists[1:rangeIndex], 
+                    unit = "m"))
   }
-
-  if(missing(calcCor)) return(spCopula(components=cops, distances=distances, 
-                                       unit="m"))
-  else return(spCopula(components=cops, distances=distances, unit="m", 
-                       spDepFun=calcCor))
+  
+  else {
+    rangeIndex <- min(rangeIndex, which(calcCor(bins$meanDists) <= 0))
+    
+    return(spCopula(components = as.list(families[bestFit[1:rangeIndex]]),
+                    distances = bins$meanDists[1:rangeIndex], 
+                    unit = "m", spDepFun = calcCor))
+  }
 }
+
+# older implementation:
+# composeSpCop <- function(bestFit, families, bins, calcCor) {
+#   nfits <- length(bestFit)
+#   gaps <- which(diff(bestFit)!=0)
+# 
+#   if(missing(calcCor)) noCor <- nfits
+#   else noCor <- min(which(calcCor(bins$meanDists)<=0), nfits)
+#   
+#   breaks <- sort(c(gaps, gaps+1, noCor))
+#   breaks <- breaks[breaks<noCor]
+#   
+#   cops <- as.list(families[bestFit[breaks]])
+#   
+#   breaks <- unique(c(breaks, min(nfits,rev(breaks)[1]+1)))
+#   distances <- bins$meanDists[breaks]
+#   
+#   if(length(breaks)==length(cops)) {
+#     warning("Lags do not cover the entire range with positive correlation. ", 
+#              "An artifical one fading towards the indepCopula has been added.")
+#     distances <- c(distances, 
+#                    rev(distances)[1]+diff(bins$meanDists[nfits+c(-1,0)]))
+#   }
+# 
+#   if(missing(calcCor)) return(spCopula(components=cops, distances=distances, 
+#                                        unit="m"))
+#   else return(spCopula(components=cops, distances=distances, unit="m", 
+#                        spDepFun=calcCor))
+# }
 
 # in once
 
@@ -553,11 +583,11 @@ fitSpCopula <- function(bins, cutoff=NA,
                         families=c(normalCopula(0), 
                                    tCopula(0,dispstr="un"), claytonCopula(0), 
                                    frankCopula(1), gumbelCopula(1)), ...) {
-  calcTau <- fitCorFun(bins, cutoff=cutoff, ...)
-  loglik <- loglikByCopulasLags(bins, calcTau=calcTau, families=families)
+  calcCor <- fitCorFun(bins, cutoff=cutoff, ...)
+  loglik <- loglikByCopulasLags(bins, calcCor, families)
   
   bestFit <- apply(apply(loglik, 1, rank),2, 
                    function(x) which(x==length(families)))
   
-  return(composeSpCop(bestFit, families, bins, calcTau))
+  return(composeSpCopula(bestFit, families, bins, calcCor, range=cutoff))
 }

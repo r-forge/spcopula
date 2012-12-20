@@ -1,24 +1,3 @@
-#################################################################################
-##
-##  R package spcopula by Benedikt Graeler Copyright (C) 2011
-##
-##  This file is part of the R package spcopula.
-##
-##  The R package spcopula is free software: you can redistribute it and/or 
-##  modify it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation, either version 3 of the License, or
-##  (at your option) any later version.
-##
-##  The R package spcopula is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
-##
-##  You should have received a copy of the GNU General Public License
-##  along with the R package spcopula. If not, see <http://www.gnu.org/licenses/>
-##
-#################################################################################
-
 ##################################################################
 ##                                                              ##
 ## dedicated functions based on sp preparing the use of copulas ##
@@ -33,7 +12,7 @@
 # index="matrix"	linking the obs. in data to the coordinates
 
 neighbourhood <- function(data, distances, sp, index){
-  varNames <- names(data[[1]])
+  varNames <- names(data)[[1]]
   sizeN <- ncol(distances)+1
   data <- as.data.frame(data)
   colnames(data) <- paste(paste("N",rep(0:(sizeN-1),each=length(varNames)),sep=""),rep(varNames,sizeN),sep=".")
@@ -118,7 +97,7 @@ for (i in dep) {
   dists <- rbind(dists, c(nbrs[,1]))
 }
 
-return(neighbourhood(lData, dists, SpatialPoints(spData), index))
+return(neighbourhood(as.data.frame(lData), dists, SpatialPoints(spData), index))
 }
 
 ## testing ## 

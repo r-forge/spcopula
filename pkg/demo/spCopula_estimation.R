@@ -41,13 +41,14 @@ curve(calcKTauPol,0, 1000, col="purple",add=TRUE)
 loglikTau <- loglikByCopulasLags(bins, calcKTauPol,
                                  families=c(normalCopula(0), tCopula(0,dispstr = "un"),
                                             claytonCopula(0), frankCopula(1), 
-                                            gumbelCopula(1),joeBiCopula(1.5)))
-bestFitTau <- apply(apply(loglikTau, 1, rank),2,function(x) which(x==6))
+                                            gumbelCopula(1), joeBiCopula(1.5),
+                                            indepCopula()))
+bestFitTau <- apply(apply(loglikTau, 1, rank),2,function(x) which(x==7))
 
 ## set-up a spatial Copula ##
 spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
                                   frankCopula(1), normalCopula(0), claytonCopula(0),
                                   claytonCopula(0), claytonCopula(0), claytonCopula(0),
-                                  claytonCopula(0)),
+                                  claytonCopula(0), indepCopula()),
                   distances=bins$meanDists,
                   spDepFun=calcKTauPol, unit="m")

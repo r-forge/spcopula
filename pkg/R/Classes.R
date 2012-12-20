@@ -57,7 +57,7 @@ setClass("cqsCopula",
 #                             assings valid parameters to the copulas involved
 
 validSpCopula <- function(object) {
-  if (length(object@components) != length(object@distances)) return("Length of components + 1 does not equal length of distances. \n Note: The last distance must give the range and it is automatically associated with the indepenence copula.")
+  if (length(object@components) != length(object@distances)) return("Length of components does not equal length of distances. \n Note: The last distance must give the range and it is automatically associated with the indepenence copula.")
   check.upper <- NULL
   check.lower <- NULL
   

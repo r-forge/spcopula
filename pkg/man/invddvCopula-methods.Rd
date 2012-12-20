@@ -1,5 +1,6 @@
 \name{invddvCopula-methods}
 \docType{methods}
+\alias{invddvCopula}
 \alias{invddvCopula-methods}
 \alias{invddvCopula,numeric,claytonCopula,numeric-method}
 \alias{invddvCopula,numeric,frankCopula,numeric-method}

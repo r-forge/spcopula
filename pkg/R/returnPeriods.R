@@ -1,6 +1,6 @@
 ## kendall function (empirical) -> spcopula
 genEmpKenFun <- function(copula, sample=NULL) {
-  if(is.null(sample)) sample <- rcopula(copula,1e6)
+  if(is.null(sample)) sample <- rCopula(1e6,copula)
   empCop <- genEmpCop(sample)
   ken <- empCop(sample) # takes really long, any suggestions? Comparring a 1e6x3/1e6x2 matrix by 1e6 pairs/triplets values
   
@@ -80,21 +80,27 @@ criticalTriple <- function(empCop, cl, u, ind, eps=10e-6) {
 
 setGeneric("qCopula_u",function(copula,p,u,...) {standardGeneric("qCopula_u")})
 
-qCopula_u.def <- function(copula,p,u,sample=NULL) {
+qCopula_u.def <- function(copula,p,u) { # sample=NULL
   dim <- copula@dimension
   if(length(p) != length(u)) stop("Length of p and u differ!")
-  if(is.null(sample)) sample <- rcopula(copula,1e6)
-  empCop <- genEmpCop(sample)
+#  if(is.null(sample)) sample <- rCopula(1e5,copula)
+#  empCop <- genEmpCop(sample)
   params <- NULL
   
-  for(i in 1:length(p)) {
+  for(i in 1:length(p)) { # i <- 1
     if (u[i] < p[i]) {
       params <- rbind(params,rep(NA,dim-1))
     } else {
       if (dim == 2) {
-        params <- rbind(params,optimize(function(v) (empCop(cbind(u[i],v))-p[i])^2,c(p,1))$minimum)
+        params <- rbind(params, 
+                        optimize(function(v) abs(pCopula(cbind(rep(u[i],length(v)),v),copula)-p[i]),
+                                 c(p,1))$minimum)
+        # function (empCop(cbind(u[i],v))-p[i])^2
       } else {
-        opt <- optim(par=rep(p[i],dim-1), function(vw) (empCop(c(u[i],vw))-p[i])^2, lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
+        opt <- optim(par=rep(p[i],dim-1), 
+                     function(vw) abs(pCopula(c(u[i],vw), copula)-p[i]), 
+                     lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
+        # function(vw) (empCop(c(u[i],vw))-p[i])^2
         params <- rbind(params, opt$par)
       }
     }

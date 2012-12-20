@@ -29,8 +29,9 @@ export(genEmpCop)
 # spatial
 export(getNeighbours)
 export(calcBins)
+
 # fitting
-export(fitCorFun, loglikByCopulasLags, composeSpCop, fitSpCopula)
+export(fitCorFun, loglikByCopulasLags, fitSpCopula, composeSpCopula)
 export(spCopula)
 
 # MRP functions
