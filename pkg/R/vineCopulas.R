@@ -159,31 +159,10 @@ setMethod("dCopula", signature("numeric","vineCopula"), dvineCopula)
 setMethod("dCopula", signature("matrix","vineCopula"), dvineCopula)
 
 ## jcdf ##
-genEmpCop <- function(data) {
-  t_data <- t(data)
-
-  empCop <- function(u) {
-    u <- matrix(u,ncol=nrow(t_data))
-
-# --/-- make this a C-function?
-    res <- NULL
-    for(i in 1:nrow(u)) {
-      bool <- t_data <= u[i,]
-      for (i in 2:nrow(t_data)) bool[1,] <- bool[1,] * bool[i,]
-      res <- c(res,sum(bool[1,]))
-    }
-# --//--
-
-    return(res/ncol(t_data))
-  }
-  return(empCop)
-}
-
 pvineCopula <- function(u, copula) {
-  cat("Note: the copula is empirically evaluated from 100.000 samples.")
-  empCop <- genEmpCop(rcopula(copula,1e5))
+  empCop <- genEmpCop(copula,1e5)
 
-  return(empCop(u))
+  return(pCopula(u, empCop))
 }
 
 setMethod("pCopula", signature("numeric","vineCopula"), pvineCopula)

@@ -1,15 +1,12 @@
 ## kendall function (empirical) -> spcopula
 genEmpKenFun <- function(copula, sample=NULL) {
   if(is.null(sample)) sample <- rCopula(1e6,copula)
-  empCop <- genEmpCop(sample)
-  ken <- empCop(sample) # takes really long, any suggestions? Comparring a 1e6x3/1e6x2 matrix by 1e6 pairs/triplets values
+  # as empirical copula:
+  # copula <- genEmpCop(copula, sample)
+  ken <- pCopula(sample, copula)
   
   empKenFun <- function(tlevel) {
-    res <- NULL
-    for(t in tlevel) {
-      res <- c(res,sum(ken<=t))
-    }
-    return(res/nrow(sample))
+    sapply(tlevel,function(t) sum(ken<=t))/nrow(sample)
   }
   return(empKenFun)
 }
@@ -53,28 +50,48 @@ criticalLevel <- function(kendallFun=NULL, KRP=c(100,1000), mu=1, copula=NULL) {
 }
 
 ## next: calculating critical layer, sampling from the layer, selecting "typical" points
+# calculate critical layer (ONLY 2D by now)
+criticalPair <- function(copula, cl, u, ind) {
+  
+  optimFun <- function(x, u, ind) {
+    pair <- cbind(x,x)
+    pair[,ind] <- u
+    return(abs(pCopula(pair,copula)-cl))
+  }
+  
+  sapply(u, function(uRow) {
+              upper <- cl+(1-uRow)
+              if (upper<cl | uRow < cl) 
+                return(NA)
+              if (upper == cl) 
+                return(cl)
+              optimize(function(x) optimFun(x, uRow, ind),
+                       interval=c(cl,upper))$minimum
+            })
+}
+
 
 # calculate critical layer (ONLY 3D by now)
-criticalTriple <- function(empCop, cl, u, ind, eps=10e-6) {
+criticalTriple <- function(copula, cl, u, ind) {
   if(!is.matrix(u)) u <- matrix(u,ncol=2)
     
   optimFun <- function(x, u, ind) {
     x <- matrix(rep(x,3),ncol=3)
     x[,ind[1]] <- u[1]
     x[,ind[2]] <- u[2]
-    return((empCop(x)-cl)^2*1e6)
+    return(abs(pCopula(x,copula)-cl))
   }
   
-  res <- apply(u, 1, 
-               function(uRow) {
-                  upper <- min(1,2+cl-sum(uRow)) # hyperplane in the hypercube
-                  if (upper < cl | any(uRow < cl)) return(NA)
-                  if (upper == cl) return(cl)
-                  opt <- optimize(function(x) optimFun(x, uRow, ind), interval=c(cl,upper))
-                  if(opt$objective < eps*1e6) return(opt$minimum)
-                  else return(NA)
-               })
-  return(res)
+  apply(u, 1, 
+        function(uRow) {
+          upper <- min(1,2+cl-sum(uRow)) # hyperplane in the hypercube
+          if (upper < cl | any(uRow < cl)) 
+            return(NA)
+          if (upper == cl) 
+            return(cl)
+          optimize(function(x) optimFun(x, uRow, ind), 
+                   interval=c(cl,upper))$minimum
+        })
 }
 
 
@@ -83,10 +100,8 @@ setGeneric("qCopula_u",function(copula,p,u,...) {standardGeneric("qCopula_u")})
 qCopula_u.def <- function(copula,p,u) { # sample=NULL
   dim <- copula@dimension
   if(length(p) != length(u)) stop("Length of p and u differ!")
-#  if(is.null(sample)) sample <- rCopula(1e5,copula)
-#  empCop <- genEmpCop(sample)
-  params <- NULL
   
+  params <- NULL
   for(i in 1:length(p)) { # i <- 1
     if (u[i] < p[i]) {
       params <- rbind(params,rep(NA,dim-1))
@@ -95,12 +110,10 @@ qCopula_u.def <- function(copula,p,u) { # sample=NULL
         params <- rbind(params, 
                         optimize(function(v) abs(pCopula(cbind(rep(u[i],length(v)),v),copula)-p[i]),
                                  c(p,1))$minimum)
-        # function (empCop(cbind(u[i],v))-p[i])^2
       } else {
         opt <- optim(par=rep(p[i],dim-1), 
                      function(vw) abs(pCopula(c(u[i],vw), copula)-p[i]), 
                      lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
-        # function(vw) (empCop(c(u[i],vw))-p[i])^2
         params <- rbind(params, opt$par)
       }
     }

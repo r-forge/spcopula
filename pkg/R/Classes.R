@@ -37,6 +37,22 @@ setClass("cqsCopula",
   contains = list("copula")
 )
 
+####
+## an empirical copula representation
+
+validEmpCopula <- function(object) {
+  if(ncol(object@sample) != object@dimension)
+    return("Dimension of the copula and the sample do not match.")
+  else
+    return(TRUE)
+}
+
+setClass("empiricalCopula",
+         representation = representation("copula", sample="matrix"),
+         validity = validEmpCopula,
+         contains = list("copula")
+)
+
 ## 
 ## the spatial copula
 ##

@@ -7,25 +7,28 @@ Generate an empirical copula
 Generates an empirical copula from a sample and returns the corresponding function.
 }
 \usage{
-genEmpCop(data)
+genEmpCop(copula, sample.size=1e5)
 }
 \arguments{
-  \item{data}{
-The sample to be used as input for the empirical copula.
+  \item{copula}{
+The theoretical copula to be represnted numerically.
+}
+\item{sample.size}{
+The length of the sample to be used. The default is 1e5.
 }
 }
 \value{
-The empirical copula as a function (the multivariate cdf).
+An empirical copula class \code{\linkS4class{empiricalCopula}}.
 }
 \author{
 Benedikt Graeler
 }
 
 \examples{
-empCop <- genEmpCop(rCopula(500, frankCopula(0.7)))
+empCop <- genEmpCop(frankCopula(0.7), 500)
 
 # the empirical value
-empCop(c(0.3, 0.5))
+pCopula(c(0.3, 0.5), empCop)
 
 # the theoretical value
 pCopula(c(0.3, 0.5), frankCopula(0.7))
