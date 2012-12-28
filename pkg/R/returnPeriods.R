@@ -22,11 +22,11 @@ genEmpKenFun <- function(copula, sample=NULL) {
 # <=> K_C(t) = 1 - \mu /KRP
 # <=> t = K_C^{-1}(1 - \mu /KRP)
 
-genInvKenFun <- function(kenFun, ...) {
+genInvKenFun <- function(kenFun, tol=.Machine$double.eps^.5) {
   invKenFun <- function(k){
     res <- NULL
     for(i in 1:length(k)) {
-      res <- c(res, optimize(function(x) (kenFun(x)-k[i])^2,c(0,1))$minimum)
+      res <- c(res, optimize(function(x) (kenFun(x)-k[i])^2, c(0,1), tol=tol)$minimum)
     }
     return(res)
   }
@@ -51,7 +51,7 @@ criticalLevel <- function(kendallFun=NULL, KRP=c(100,1000), mu=1, copula=NULL) {
 
 ## next: calculating critical layer, sampling from the layer, selecting "typical" points
 # calculate critical layer (ONLY 2D by now)
-criticalPair <- function(copula, cl, u, ind) {
+criticalPair <- function(copula, cl, u, ind, tol=sqrt(.Machine$double.eps)) {
   
   optimFun <- function(x, u, ind) {
     pair <- cbind(x,x)
@@ -66,13 +66,13 @@ criticalPair <- function(copula, cl, u, ind) {
               if (upper == cl) 
                 return(cl)
               optimize(function(x) optimFun(x, uRow, ind),
-                       interval=c(cl,upper))$minimum
+                       interval=c(cl,upper), tol=tol)$minimum
             })
 }
 
 
 # calculate critical layer (ONLY 3D by now)
-criticalTriple <- function(copula, cl, u, ind) {
+criticalTriple <- function(copula, cl, u, ind, tol=sqrt(.Machine$double.eps)) {
   if(!is.matrix(u)) u <- matrix(u,ncol=2)
     
   optimFun <- function(x, u, ind) {
@@ -90,14 +90,14 @@ criticalTriple <- function(copula, cl, u, ind) {
           if (upper == cl) 
             return(cl)
           optimize(function(x) optimFun(x, uRow, ind), 
-                   interval=c(cl,upper))$minimum
+                   interval=c(cl,upper),tol=tol)$minimum
         })
 }
 
 
 setGeneric("qCopula_u",function(copula,p,u,...) {standardGeneric("qCopula_u")})
 
-qCopula_u.def <- function(copula,p,u) { # sample=NULL
+qCopula_u.def <- function(copula,p,u, tol=.Machine$double.eps^.5) { # sample=NULL
   dim <- copula@dimension
   if(length(p) != length(u)) stop("Length of p and u differ!")
   
@@ -109,7 +109,7 @@ qCopula_u.def <- function(copula,p,u) { # sample=NULL
       if (dim == 2) {
         params <- rbind(params, 
                         optimize(function(v) abs(pCopula(cbind(rep(u[i],length(v)),v),copula)-p[i]),
-                                 c(p,1))$minimum)
+                                 c(p,1), tol=tol)$minimum)
       } else {
         opt <- optim(par=rep(p[i],dim-1), 
                      function(vw) abs(pCopula(c(u[i],vw), copula)-p[i]), 

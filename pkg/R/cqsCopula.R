@@ -252,7 +252,7 @@ return(new("fitCopula",
 ))
 }
 
-fitCQSec.moa <- function(moa, data, method="itau") {
+fitCQSec.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
 smpl <- as.matrix(data)
 
 iTau <- function(p) {
@@ -273,7 +273,7 @@ for(param in parameters) {
 return(res)
 }
 
-b <- optimize(sec,c(-1,1))$minimum
+b <- optimize(sec,c(-1,1), tol=tol)$minimum
 
 param <- c(iFun(b),b)
 

@@ -9,7 +9,8 @@ dataSet <- meuse
 spplot(meuse,"zinc", col.regions=bpy.colors(5))
 
 ## margins ##
-hist(dataSet[["zinc"]],freq=F,n=30,ylim=c(0,0.0035))
+hist(dataSet[["zinc"]],freq=F,n=30,ylim=c(0,0.0035), 
+     main="Histogram of zinc", xlab="zinc concentration")
 gevEsti <- fgev(dataSet[["zinc"]])$estimate
 loc <- gevEsti[1]
 scale <- gevEsti[2]
@@ -26,7 +27,7 @@ ks.test(dataSet[["zinc"]],plnorm,meanLog,sdLog) # p: 0.03
 bins <- calcBins(dataSet,var="zinc",nbins=10,cutoff=800)
 
 # transform data to the unit interval
-bins$lagData <- lapply(bins$lagData, function(x) cbind(rank(x[,1])/(nrow(x)+1),rank(x[,2])/(nrow(x)+1)))
+bins$lagData <- lapply(bins$lagData, rankTransform)
 
 ## calculate parameters for Kendall's tau function ##
 # either linear
@@ -39,16 +40,32 @@ curve(calcKTauPol,0, 1000, col="purple",add=TRUE)
 
 ## find best fitting copula per lag class
 loglikTau <- loglikByCopulasLags(bins, calcKTauPol,
-                                 families=c(normalCopula(0), tCopula(0,dispstr = "un"),
+                                 families=c(normalCopula(0), tCopula(0),
                                             claytonCopula(0), frankCopula(1), 
                                             gumbelCopula(1), joeBiCopula(1.5),
                                             indepCopula()))
-bestFitTau <- apply(apply(loglikTau, 1, rank),2,function(x) which(x==7))
+bestFitTau <- apply(apply(loglikTau, 1, rank, na.last=T), 2, function(x) which(x==7))
+bestFitTau
 
 ## set-up a spatial Copula ##
-spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
+spCop <- spCopula(components=list(normalCopula(0), tCopula(0),
                                   frankCopula(1), normalCopula(0), claytonCopula(0),
                                   claytonCopula(0), claytonCopula(0), claytonCopula(0),
                                   claytonCopula(0), indepCopula()),
                   distances=bins$meanDists,
                   spDepFun=calcKTauPol, unit="m")
+
+## compare spatial copula loglik by lag:
+spLoglik <- NULL
+for(i in 1:length(bins$lags)) { # i <- 8
+  spLoglik <- c(spLoglik,
+                sum(dCopula(list(u=bins$lagData[[i]], h=bins$lags[[i]][,3]), 
+                                spCop,log=T)))
+}
+
+plot(spLoglik, ylab="log-likelihood", xlim=c(1,11)) 
+points(loglikTau[cbind(1:10,bestFitTau)], col="green", pch=16)
+points(loglikTau[,1], col="red", pch=5)
+legend(6, 50,c("Spatial Copula", "best copula per lag", "Gaussian Copula","number of pairs"), 
+       pch=c(1,16,5,50), col=c("black", "green", "red"))
+text(x=(1:10+0.5),y=spLoglik,lapply(bins$lagData,length))

@@ -208,7 +208,7 @@ return(new("fitCopula",
            copula = copula))
 }
 
-fitASC2.moa <- function(moa, data, method="itau") {
+fitASC2.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
   smpl <- as.matrix(data)
 
   iTau <- function(p) {
@@ -229,7 +229,7 @@ fitASC2.moa <- function(moa, data, method="itau") {
     return(res)
   }
 
-  b <- optimize(sec,c(-1,1))$minimum
+  b <- optimize(sec,c(-1,1), tol=tol)$minimum
 
   param <- c(iFun(b),b)
 

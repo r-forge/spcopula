@@ -7,14 +7,14 @@ Generate the inverse Kendall distribution function
 The inverse of a (empirical) Kendall distribution function is generated based on numerical inversion using optimise.
 }
 \usage{
-genInvKenFun(kenFun, ...)
+genInvKenFun(kenFun, tol)
 }
 \arguments{
   \item{kenFun}{
 The (empirical) Kendall distribution function to be inverted.
 }
-  \item{\dots}{
-Control options passed on to \code{\link{optimise}}.
+  \item{tol}{
+Tolerance passed on to \code{\link{optimise}}.
 }
 }
 \value{
@@ -29,10 +29,10 @@ Benedikt Graeler
 }
 \examples{
 frankKenDistrFun <- getKendallDistr(frankCopula(.5))
-frankInvKenDitrFun <- genInvKenFun(frankKenDistrFun)
+frankInvKenDistrFun <- genInvKenFun(frankKenDistrFun)
 
-frankInvKenDitrFun(.8)
-frankKenDistrFun(frankInvKenDitrFun(.8))
+frankInvKenDistrFun(.8)
+frankKenDistrFun(frankInvKenDistrFun(.8))
 }
 \keyword{ multivariate }
 \keyword{ distribution }

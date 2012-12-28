@@ -24,6 +24,10 @@ An empirical copula class \code{\linkS4class{empiricalCopula}}.
 Benedikt Graeler
 }
 
+\note{
+Its implementation of \code{\link{pCopula}} is based on C-code from \code{\link{copula-package}}.
+}
+
 \examples{
 empCop <- genEmpCop(frankCopula(0.7), 500)
 

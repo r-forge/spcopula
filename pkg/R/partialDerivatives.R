@@ -6,30 +6,30 @@ setGeneric("ddvCopula", function(u, copula, ...) standardGeneric("ddvCopula"))
 
 ## inverse partial derivatives 
 # numerical standard function
-invdduCopula <- function(u, copula, y) {
+invdduCopula <- function(u, copula, y, tol=.Machine$double.eps^0.5) {
     if (length(u) != length(y)) 
         stop("Length of u and y differ!")
-    warning("Numerical evaluation of invddu takes place.")
+    message("Numerical evaluation of invddu takes place.")
     res <- NULL
     for (i in 1:length(u)) {
         res <- rbind(res, optimize( function(x) 
           (dduCopula(cbind(rep(u[i], length(x)), x),copula) - y[i])^2, 
-            interval = c(0, 1))$minimum)
+            interval = c(0, 1), tol=tol)$minimum)
     }
     return(res)
 }
 
 setGeneric("invdduCopula")
 
-invddvCopula <- function(v, copula, y) {
+invddvCopula <- function(v, copula, y, tol=.Machine$double.eps^0.5) {
     if (length(v) != length(y)) 
         stop("Length of v and y differ!")
-  warning("Numerical evaluation of invddv takes place.")
+  message("Numerical evaluation of invddv takes place.")
     res <- NULL
     for (i in 1:length(v)) {
         res <- rbind(res, optimize(function(x) 
           (ddvCopula(cbind(x, rep(v[i], length(x))),copula) - y[i])^2, 
-            interval = c(0, 1))$minimum)
+            interval = c(0, 1), tol=tol)$minimum)
     }
     return(res)
 }

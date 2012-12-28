@@ -4,9 +4,18 @@
 ##                                    ##
 ########################################
 
-
 # constructor
-empiricalCopula <- function (copula, sample) {
+empiricalCopula <- function (sample=NULL, copula) {
+  if(is.null(sample) && missing(copula))
+    stop("At least one parameter of copula or sample must be provided.")
+  if(is.null(sample))
+    return(genEmpCop(copula))
+  if(missing(copula))
+    return(new("empiricalCopula", dimension = as.integer(ncol(sample)), 
+               parameters = as.numeric(NA), param.names = "unknown", 
+               param.lowbnd = as.numeric(NA), param.upbnd = as.numeric(NA), 
+               fullname = "Unkown empirical copula based on a sample.",
+               sample=sample))
   new("empiricalCopula", dimension = copula@dimension, 
       parameters = copula@parameters, param.names = copula@param.names, 
       param.lowbnd = copula@param.lowbnd, param.upbnd = copula@param.upbnd, 
@@ -16,9 +25,10 @@ empiricalCopula <- function (copula, sample) {
 
 # simplified constructor
 genEmpCop <- function(copula, sample.size=1e5) {
-  cat("Note: the copula will be empirically evaluated from a sample of size:", sample.size, "\n")
-  empiricalCopula(copula, rCopula(sample.size,copula))
+  cat("Note: the copula will be empirically represented by a sample of size:", sample.size, "\n")
+  empiricalCopula(rCopula(sample.size,copula), copula)
 }
+
 
 ## density, not yet needed and hence not implemented ##
 
