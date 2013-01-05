@@ -33,39 +33,13 @@ genEmpCop <- function(copula, sample.size=1e5) {
 ## density, not yet needed and hence not implemented ##
 
 ## jcdf ##
-# pempCop <- function(u, copula) {
-#   t_data <- t(copula@sample)
-#   
-#   u <- matrix(u,ncol=copula@dimension)
-#     
-#   # --/-- make this a C-function?
-#   res <- NULL
-#   for(i in 1:nrow(u)) {
-#     bool <- t_data <= u[i,]
-#     for (i in 2:nrow(t_data)) bool[1,] <- bool[1,] * bool[i,]
-#     res <- c(res,sum(bool[1,]))
-#   }
-#   # --//--
-#   
-#   return(res/ncol(t_data))
-# }
-
 # from package copula
 pempCop.C <- function(u, copula) {
-  .C("RmultCn", as.double(copula@sample), as.integer(nrow(copula@sample)),
-     copula@dimension, as.double(u), as.integer(nrow(u)), as.double(u[,1]),
-     PACKAGE="copula")[[6]]
+  Cn(copula@sample, u) # preferred use instead of direct C-code from copula <=0.999-5
+#   .C("RmultCn", as.double(copula@sample), as.integer(nrow(copula@sample)),
+#      copula@dimension, as.double(u), as.integer(nrow(u)), as.double(u[,1]),
+#      PACKAGE="copula")[[6]]
 }
-
-##
-# us <- matrix(runif(100),ncol=2)
-# copula <- genEmpCop(normalCopula(.3),1e6)
-# 
-# hist(pCopula(us,normalCopula(.3)) - pempCop.C(us,copula),main="C")
-# hist(pCopula(us,normalCopula(.3)) - pempCop(us,copula),main="R")
-# 
-# system.time(pempCop.C(us,copula))
-# system.time(pempCop(us,copula))
 
 setMethod("pCopula", signature("numeric", "empiricalCopula"),
           function(u, copula, ...) {
