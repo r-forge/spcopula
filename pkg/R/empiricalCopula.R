@@ -35,10 +35,22 @@ genEmpCop <- function(copula, sample.size=1e5) {
 ## jcdf ##
 # from package copula
 pempCop.C <- function(u, copula) {
-  Cn(copula@sample, u) # preferred use instead of direct C-code from copula <=0.999-5
-#   .C("RmultCn", as.double(copula@sample), as.integer(nrow(copula@sample)),
-#      copula@dimension, as.double(u), as.integer(nrow(u)), as.double(u[,1]),
-#      PACKAGE="copula")[[6]]
+#   Cn(u, copula@sample, do.pobs=F, method="C") # preferred use instead of direct C-code from copula <=0.999-5
+
+  # annoying hack, to be removed after release of copula 0.999-6 with the line above
+  if("RmultCn" %in% names(getDLLRegisteredRoutines(getLoadedDLLs()[["copula"]][["path"]])[[1]])) {
+    if(getDLLRegisteredRoutines(getLoadedDLLs()[["copula"]][["path"]])[[1]][["RmultCn"]]$numParameters == 6)
+       .C("RmultCn", as.double(copula@sample), as.integer(nrow(copula@sample)),
+         copula@dimension, as.double(u), as.integer(nrow(u)), as.double(u[,1]),
+         PACKAGE="copula")[[6]]
+    else
+      .C("RmultCn", as.double(copula@sample), as.integer(nrow(copula@sample)),
+         copula@dimension, as.double(u), as.integer(nrow(u)), as.double(u[,1]),
+         as.double(0), PACKAGE="copula")[[6]]
+  } else # copula > 0.999-5
+    .C("Cn_C", as.double(copula@sample), as.integer(nrow(copula@sample)),
+       copula@dimension, as.double(u), as.integer(nrow(u)), as.double(u[,1]),
+       as.double(0), PACKAGE="copula")[[6]]
 }
 
 setMethod("pCopula", signature("numeric", "empiricalCopula"),

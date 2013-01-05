@@ -1,7 +1,7 @@
 Package: spcopula
 Type: Package
 Title: copula driven spatial analysis
-Version: 1.0.75
+Version: 1.0.76
 Date: 2013-01-05
 Author: Benedikt Graeler
 Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
