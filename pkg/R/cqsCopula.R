@@ -188,9 +188,13 @@ setMethod("invddvCopula", signature("numeric","cqsCopula","numeric"), invddvCQSe
 ## random number generator
 
 rCQSec <- function (n, copula) {
-    u <- runif(n, min = 0, max = 1)
-    y <- runif(n, min = 0, max = 1)
-    return(cbind(u, invdduCQSec(u, copula, y) ))
+  u <- runif(n, min = 0, max = 1)
+  y <- runif(n, min = 0, max = 1)
+    
+  res <- cbind(u, invdduCQSec(u, copula, y))
+  colnames(res) <- c("u","v")
+    
+  return(res)
 }
 
 setMethod("rCopula", signature("numeric","cqsCopula"), rCQSec)

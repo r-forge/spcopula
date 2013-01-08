@@ -100,30 +100,6 @@ for (i in dep) {
 return(neighbourhood(as.data.frame(lData), dists, SpatialPoints(spData), index))
 }
 
-## testing ## 
-# data(meuse)
-# coordinates(meuse) <- ~x+y
-# str(SpatialPoints(meuse))
-# 
-# neighbourSet <- getNeighbours(meuse,size=5)
-# 
-# str(neighbourSet@index)
-# 
-# library(lattice)
-# spplot(neighbourSet,"zinc",col.regions=bpy.colors())
-
-# 
-# as.data.frame(array(1:18,dim=c(2,3,3)))
-# 
-# ?spplot
-# 
-# array(matrix(runif(3*155),ncol=3),dim=c(155,3))
-# 
-# names(neighb)
-# 
-# ## transformation of the sample by local neighborhoods ##
-# 
-
 #############
 ## BINNING ##
 #############

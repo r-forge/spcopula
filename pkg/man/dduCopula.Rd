@@ -44,7 +44,7 @@ asGivenU <- dduCopula(asCopSmpl,asCop)
 
 # vs. conditional probabilities of an asymmetric copula given v
 asGivenV <- ddvCopula(asCopSmpl[,c(2,1)],asCop)
-xyplot(asGivenU ~ asGivenV, asp=1)
+unitScatter(smpl=cbind(asGivenU, asGivenV))
 
 normalCop <- normalCopula(.6)
 normCopSmpl <- rCopula(100,normalCop)
@@ -56,7 +56,7 @@ normGivenU <- dduCopula(normCopSmpl,normalCop)
 
 # vs. conditional probabilities of a Gaussian copula given v
 normGivenV <- ddvCopula(normCopSmpl[,c(2,1)],normalCop)
-xyplot(normGivenU ~ normGivenV)
+unitScatter(smpl=cbind(normGivenU, normGivenV))
 }
 
 \keyword{partial derivative}

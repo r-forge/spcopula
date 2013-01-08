@@ -8,6 +8,7 @@ genEmpKenFun <- function(copula, sample=NULL) {
   empKenFun <- function(tlevel) {
     sapply(tlevel,function(t) sum(ken<=t))/nrow(sample)
   }
+  
   return(empKenFun)
 }
 

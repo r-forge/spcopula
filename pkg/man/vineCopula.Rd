@@ -32,9 +32,7 @@ Benedikt Graeler
 \examples{
 vine <- vineCopula(list(frankCopula(.7), gumbelCopula(3), gumbelCopula(1)),
                    3, "c-vine")
-
-if(require(lattice))
-  cloud(V1~V2+V3, as.data.frame(rCopula(500,vine)))
+\dontrun{cloud(V1~V2+V3, as.data.frame(rCopula(500,vine)))}
 }
 \keyword{ mulitvariate }
 \keyword{ distribution }

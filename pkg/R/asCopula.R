@@ -85,33 +85,33 @@ setMethod("ddvCopula", signature("numeric", "asCopula"),
           })
 setMethod("ddvCopula", signature("matrix", "asCopula"),ddvASC2)
 
-## random number generater
+## random number generator
 # incorporating the inverse of the partial derivative that is solved numerically using optimize
 
 ## inverse partial derivative 
 
 invdduASC2 <- function (u, copula, y) {
-    if (length(u)!=length(y)) 
-        stop("Length of u and y differ!")
-
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
+  if (length(u)!=length(y)) 
+    stop("Length of u and y differ!")
+  
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
 
 # solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
-    usq <- u^2
-    c3 <- (a-b)*(-3*usq+4*u-1)
-    c2 <- (a-b)*(1-4*u+3*usq)+b*(- 1 + 2*u)
-    c1 <- 1+b*(1-2*u)
-    c0 <- -y
+  usq <- u^2
+  c3 <- (a-b)*(-3*usq+4*u-1)
+  c2 <- (a-b)*(1-4*u+3*usq)+b*(- 1 + 2*u)
+  c1 <- 1+b*(1-2*u)
+  c0 <- -y
 
-v <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
+  v <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
 
-filter <- function(vec){
-  vec <- vec[!is.na(vec)]
-  return(vec[vec >= 0 & vec <= 1])
-}
-
-return(apply(v,1,filter))
+  filter <- function(vec) {
+    vec <- vec[!is.na(vec)]
+    return(vec[vec >= 0 & vec <= 1])
+  }
+    
+  return(apply(v,1,filter))
 }
 
 setMethod("invdduCopula", signature("numeric","asCopula","numeric"),invdduASC2)
@@ -145,9 +145,13 @@ setMethod("invddvCopula", signature("numeric","asCopula","numeric"),invddvASC2)
 
 ## random number generator
 rASC2 <- function (n, copula) {
-    u <- runif(n, min = 0, max = 1)
-    y <- runif(n, min = 0, max = 1)
-    return(cbind(u, invdduASC2(u, copula, y) ))
+  u <- runif(n, min = 0, max = 1)
+  y <- runif(n, min = 0, max = 1)
+    
+  res <- cbind(u, invdduASC2(u, copula, y))
+  colnames(res) <- c("u","v")
+  
+  return(res)
 }
 
 setMethod("rCopula", signature("numeric", "asCopula"), rASC2)

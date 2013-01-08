@@ -7,29 +7,26 @@ Kernel smoothed scatterplot
 Plots a kernel smoothed scatterplot of the provided rank-transformed sample. The work is done by the function \code{\link{panel.smoothScatter}}.
 }
 \usage{
-dependencePlot(formula = NULL, smpl, cuts = 15, bandwidth = 0.075, transformation = function(x) x, ..., range.x = list(c(0, 1), c(0, 1)))
+dependencePlot(var = NULL, smpl, bandwidth = 0.075,  main="Stength of dependece", transformation = function(x) x, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{formula}{
-the formula as in common lattice plotting
+  \item{var}{
+Column IDs or variable names to be used. If not provided, the first two columns will be used.
 }
   \item{smpl}{
-can be a two-column matrix holding the data, no formula is needed
-}
-  \item{cuts}{
-the cuts to change colors
+a matrix (two-columns at least) holding the data
 }
   \item{bandwidth}{
 the bandwidth passed to the smoothing kernel
+}
+\item{main}{
+the tilte of the plot
 }
   \item{transformation}{
 a transformation passed to the kernel
 }
   \item{\dots}{
-passed on to the function \code{\link{panel.smoothScatter}}
-}
-  \item{range.x}{
 passed on to the function \code{\link{panel.smoothScatter}}
 }
 }
@@ -43,11 +40,11 @@ A plot.
 Benedikt Graeler
 }
 \note{
-This is simple wrapper to \code{\link{panel.smoothScatter}}.
+This is simple wrapper to \code{\link{smoothScatter}}.
 }
 
 \seealso{
-\code{\link{panel.smoothScatter}}
+\code{\link{smoothScatter}}
 }
 \examples{
 dependencePlot(smpl=rCopula(500,asCopula(c(-1,1))))

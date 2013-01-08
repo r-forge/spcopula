@@ -8,11 +8,11 @@ A scatterplot on the unit-sqaure
 Plots a sample on the unit-square. If needed, it will transform the sample using the rank order transformation as in \code{\link{rankTransform}}.
 }
 \usage{
-unitScatter(formula = NULL, smpl, ...)
+unitScatter(var = NULL, smpl, ...)
 }
 \arguments{
-  \item{formula}{
-A standard plotting formula to select the corresponding columns.
+  \item{var}{
+Column IDs or variable names to be used. If not provided, the first two columns will be used.
 }
   \item{smpl}{
 The data set to be used.
@@ -30,7 +30,7 @@ Benedikt Graeler
 \examples{
 data(loss)
 rt_loss <- rankTransform(loss[,1:2])
-unitScatter(loss~alae,rt_loss)
+unitScatter(smpl=rt_loss)
 }
 \keyword{ hplot }
 

@@ -46,8 +46,8 @@ Benedikt Graeler
 
 \examples{
 data(spCopDemo) # data from demo(spcopula_estimation)
-dCopula(list(u=matrix(c(.3,.3,.7,.7),ncol=2),h=c(200,400)),spCop)
-pCopula(list(u=matrix(c(.3,.3,.7,.7),ncol=2),h=c(200,400)),spCop)
+# dCopula(u=matrix(c(.3,.3,.7,.7),ncol=2),spCop,h=c(200,400))
+pCopula(u=matrix(c(.3,.3,.7,.7),ncol=2),spCop,h=c(200,400))
 }
 \keyword{classes}
 \keyword{spcopula}

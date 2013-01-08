@@ -59,8 +59,8 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0),
 spLoglik <- NULL
 for(i in 1:length(bins$lags)) { # i <- 8
   spLoglik <- c(spLoglik,
-                sum(dCopula(list(u=bins$lagData[[i]], h=bins$lags[[i]][,3]), 
-                                spCop,log=T)))
+                sum(dCopula(u=bins$lagData[[i]], spCop,log=T,
+                            h=bins$lags[[i]][,3])))
 }
 
 plot(spLoglik, ylab="log-likelihood", xlim=c(1,11)) 
