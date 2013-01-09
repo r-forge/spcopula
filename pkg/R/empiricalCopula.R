@@ -35,14 +35,11 @@ genEmpCop <- function(copula, sample.size=1e5) {
 ## jcdf ##
 # from package copula
 pempCop.C <- function(u, copula) {
-  # r-forge hack, to be removed after release of copula 0.999-6 with the line above
-  if(length(formals(Cn))==2) {
+  # r-forge hack, to be removed after release of copula 0.999-6
+  if(exists("C.n")) {
+    return(C.n(u, copula@sample, offset=0, method="C"))
+  } else
     return(Cn(copula@sample,u))
-  }
-  if (length(formals(Cn))== 5) {
-    return(Cn(u, copula@sample, do.pobs=FALSE, offset=0, method="C"))
-  }
-  stop(length(formals(Cn)))
 }
 
 setMethod("pCopula", signature("numeric", "empiricalCopula"),

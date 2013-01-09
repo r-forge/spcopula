@@ -56,6 +56,6 @@ unitScatter <- function(var=NULL, smpl, ...) {
 }
 
 univScatter <- function(formula=NULL, smpl) {
-  warning("Use unitScatter instead!")
+  .Deprecated("unitScatter")
   unitScatter(formula, smpl)
 }

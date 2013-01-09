@@ -47,6 +47,6 @@ This is simple wrapper to \code{\link{smoothScatter}}.
 \code{\link{smoothScatter}}
 }
 \examples{
-dependencePlot(smpl=rCopula(500,asCopula(c(-1,1))))
+\dontrun{dependencePlot(smpl=rCopula(500,asCopula(c(-1,1))))}
 }
 \keyword{plot}
