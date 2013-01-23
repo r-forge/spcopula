@@ -53,6 +53,24 @@ setClass("empiricalCopula",
          contains = list("copula")
 )
 
+####
+## the leaf copula
+
+validLeafCopula <- function(object) {
+  if (object@dimension != 2)
+    return("The leaf copula only supports two dimensions.")
+  
+  if (any(is.na(object@parameters)))
+    return("Parameter value is \"NA\".")
+  else return (TRUE)
+}
+
+setClass("leafCopula",
+         representation = representation("copula"),
+         validity = validLeafCopula,
+         contains = list("copula")
+)
+
 ## 
 ## the spatial copula
 ##

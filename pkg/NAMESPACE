@@ -1,7 +1,7 @@
 import(copula, spacetime, CDVine)
 
 # constructor
-export(asCopula, cqsCopula)
+export(asCopula, cqsCopula, leafCopula)
 export(BB1Copula, surBB1Copula, r90BB1Copula, r270BB1Copula)
 export(BB6Copula, surBB6Copula, r90BB6Copula, r270BB6Copula)
 export(BB7Copula, surBB7Copula, r90BB7Copula, r270BB7Copula)
@@ -37,7 +37,7 @@ export(kendallRP, criticalLevel, kendallDistribution, getKendallDistr)
 export(criticalPair, criticalTriple)
 
 ## classes
-exportClasses(asCopula, cqsCopula, neighbourhood, empiricalCopula)
+exportClasses(asCopula, cqsCopula, neighbourhood, empiricalCopula, leafCopula)
 
 # wrappers to CDVine
 exportClasses(BB1Copula, surBB1Copula, r90BB1Copula, r270BB1Copula)
