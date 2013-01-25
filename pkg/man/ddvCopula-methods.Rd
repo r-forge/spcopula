@@ -7,12 +7,14 @@
 \alias{ddvCopula,matrix,indepCopula-method}
 \alias{ddvCopula,matrix,normalCopula-method}
 \alias{ddvCopula,matrix,tCopula-method}
+\alias{ddvCopula,matrix,leafCopula-method}
 \alias{ddvCopula,numeric,claytonCopula-method}
 \alias{ddvCopula,numeric,frankCopula-method}
 \alias{ddvCopula,numeric,gumbelCopula-method}
 \alias{ddvCopula,numeric,indepCopula-method}
 \alias{ddvCopula,numeric,normalCopula-method}
 \alias{ddvCopula,numeric,tCopula-method}
+\alias{ddvCopula,numeric,leafCopula-method}
 \alias{ddvCopula,list,stCopula-method}
 
 \title{Methods for Function \code{ddvCopula} in Package \pkg{spcopula}}

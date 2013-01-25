@@ -20,6 +20,7 @@ Collate:
   spCopula.R 
   stCopula.R
   spatialPreparation.R
+  wrappingCFunctions.R
   linkingCDVine.R
   BB1copula.R
   BB6copula.R
