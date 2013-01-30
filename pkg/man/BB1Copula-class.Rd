@@ -30,14 +30,14 @@
 
 \title{Classes \code{"BB1Copula"}, \code{"surBB1Copula"}, \code{"r90BB1Copula"} and \code{"r270BB1Copula"}}
 \description{
-Wrapper classes representing the BB1, survial BB1, 90 degree and 270 degree rotated BB1 copula families (Joe 1997) from \code{\link{CDVine-package}}.
+Wrapper classes representing the BB1, survial BB1, 90 degree and 270 degree rotated BB1 copula families (Joe 1997) from \code{\link{VineCopula-package}}.
 }
 \section{Objects from the Classes}{
 Objects can be created by calls of the form \code{new("BB1Copula", ...)}, \code{new("surBB1Copula", ...)}, \code{new("r90BB1Copula", ...)} and \code{new("r270BB1Copula", ...)} or by the functions \code{\link{BB1Copula}}, \code{\link{surBB1Copula}}, \code{\link{r90BB1Copula}} and \code{\link{r270BB1Copula}}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{family}:}{Object of class \code{"numeric"} defining the family number in \code{\link{CDVine-package}} }
+    \item{\code{family}:}{Object of class \code{"numeric"} defining the family number in \code{\link{VineCopula-package}} }
     \item{\code{dimension}:}{Object of class \code{"integer"} defining the dimension of the copula }
     \item{\code{parameters}:}{Object of class \code{"numeric"} the two-place parameter vector}
     \item{\code{param.names}:}{Object of class \code{"character"}, parameter names. }
@@ -68,7 +68,7 @@ Benedikt Graeler
 }
 
 \seealso{
-See also \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}}, \code{\linkS4class{BB8Copula}} and \code{\linkS4class{joeCopula}} for further wrapper classes to the \code{\link{CDVine-package}}.
+See also \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}}, \code{\linkS4class{BB8Copula}} and \code{\linkS4class{joeCopula}} for further wrapper classes to the \code{\link{VineCopula-package}}.
 }
 \examples{
 showClass("BB1Copula")

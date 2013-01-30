@@ -32,7 +32,7 @@ The left hand-side limits of the lag classes to be investigated, if set to \code
 The largest spatial distance to be investiagted, if set to \code{NA}, one third of the boundingbox's diagonal will be used.
 }
   \item{cor.method}{
-  defining the correlation method that should be used. Possible choices are \code{kendall} (default), \code{pearson}, \code{spearman} and \code{fasttau} that re-uses a very fast implementation of Kendall's tau from \code{\link{CDVine-package}}.
+  defining the correlation method that should be used. Possible choices are \code{kendall} (default), \code{pearson}, \code{spearman} and \code{fasttau} that re-uses a very fast implementation of Kendall's tau from \code{\link{VineCopula-package}}.
   }
   \item{plot}{Whether the correlogram should be plotted.}
   \item{\dots}{Additioanl arguments for the spatio-temporal case:
@@ -53,7 +53,7 @@ The largest spatial distance to be investiagted, if set to \code{NA}, one third 
 Benedikt Graeler
 }
 \seealso{
-\code{\link{CDVine-package}}
+\code{\link{VineCopula-package}}
 }
 \examples{
 data(meuse)

@@ -36,45 +36,45 @@ joeBiCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","joeBiCopula"), 
           function(u, copula, log) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","joeBiCopula"), function(u, copula, log) linkCDVine.PDF(u, copula, log))
+setMethod("dCopula", signature("matrix","joeBiCopula"), function(u, copula, log) linkVineCop.PDF(u, copula, log))
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","joeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","joeBiCopula"), linkCDVine.CDF)
+setMethod("pCopula", signature("matrix","joeBiCopula"), linkVineCop.CDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","joeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","joeBiCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","joeBiCopula"), linkVineCop.ddu)
 
 # ddv
 setMethod("ddvCopula", signature("numeric","joeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","joeBiCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","joeBiCopula"), linkVineCop.ddv)
 
 ## random number generater
-setMethod("rCopula", signature("numeric","joeBiCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","joeBiCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("joeBiCopula"), 
           function(copula, tau) {
             if(tau <= 0) warning("The Joe copula can only represent positive dependence!")
-            linkCDVine.iTau(copula, max(1e-6,abs(tau)))
+            linkVineCop.iTau(copula, max(1e-6,abs(tau)))
           })
 
-setMethod("tau",signature("joeBiCopula"),linkCDVine.tau)
+setMethod("tau",signature("joeBiCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("joeBiCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("joeBiCopula"),linkVineCop.tailIndex)
 
 
 ## kendall distribution/measure, taken from CDVine:::obs.stat
@@ -115,45 +115,45 @@ surJoeBiCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","surJoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dCopula", signature("matrix","surJoeBiCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","surJoeBiCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","surJoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","surJoeBiCopula"), linkCDVine.surCDF)
+setMethod("pCopula", signature("matrix","surJoeBiCopula"), linkVineCop.surCDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","surJoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","surJoeBiCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","surJoeBiCopula"), linkVineCop.ddu)
 
 # ddv
 setMethod("ddvCopula", signature("numeric","surJoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","surJoeBiCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","surJoeBiCopula"), linkVineCop.ddv)
 
 ## random number generater
-setMethod("rCopula", signature("numeric","surJoeBiCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","surJoeBiCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("surJoeBiCopula"), 
           function(copula, tau) {
             if(tau <= 0) warning("The survival Joe copula can only represent positive dependence!")
-            linkCDVine.iTau(copula, max(1e-6,abs(tau)))
+            linkVineCop.iTau(copula, max(1e-6,abs(tau)))
           })
 
-setMethod("tau",signature("surJoeBiCopula"),linkCDVine.tau)
+setMethod("tau",signature("surJoeBiCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("surJoeBiCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("surJoeBiCopula"),linkVineCop.tailIndex)
 
 ###################
 ## Joe copula 90 ##
@@ -192,45 +192,45 @@ r90JoeBiCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","r90JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dCopula", signature("matrix","r90JoeBiCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","r90JoeBiCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","r90JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","r90JoeBiCopula"), linkCDVine.r90CDF)
+setMethod("pCopula", signature("matrix","r90JoeBiCopula"), linkVineCop.r90CDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","r90JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","r90JoeBiCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","r90JoeBiCopula"), linkVineCop.ddu)
 
 ## ddv
 setMethod("ddvCopula", signature("numeric","r90JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","r90JoeBiCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","r90JoeBiCopula"), linkVineCop.ddv)
 
 ## random number generator
-setMethod("rCopula", signature("numeric","r90JoeBiCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r90JoeBiCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r90JoeBiCopula"),
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Joe copula can only represent negative dependence!")
-            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
+            linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
-setMethod("tau",signature("r90JoeBiCopula"),linkCDVine.tau)
+setMethod("tau",signature("r90JoeBiCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("r90JoeBiCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("r90JoeBiCopula"),linkVineCop.tailIndex)
 
 ####################
 ## Joe copula 270 ##
@@ -254,42 +254,42 @@ r270JoeBiCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","r270JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dCopula", signature("matrix","r270JoeBiCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","r270JoeBiCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","r270JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","r270JoeBiCopula"), linkCDVine.r270CDF)
+setMethod("pCopula", signature("matrix","r270JoeBiCopula"), linkVineCop.r270CDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","r270JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","r270JoeBiCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","r270JoeBiCopula"), linkVineCop.ddu)
 
 # ddv
 setMethod("ddvCopula", signature("numeric","r270JoeBiCopula"), 
           function(u, copula, ...) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","r270JoeBiCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","r270JoeBiCopula"), linkVineCop.ddv)
 
 ## random number generator
-setMethod("rCopula", signature("numeric","r270JoeBiCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r270JoeBiCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r270JoeBiCopula"), 
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Joe copula can only represent negative dependence!")
-            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
+            linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
-setMethod("tau",signature("r270JoeBiCopula"),linkCDVine.tau)
+setMethod("tau",signature("r270JoeBiCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("r270JoeBiCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("r270JoeBiCopula"),linkVineCop.tailIndex)

@@ -32,7 +32,7 @@ Joe, H., (1997). Multivariate Models and Dependence Concepts. Monogra. Stat. App
 Benedikt Graeler
 }
 \seealso{
-See also \code{\link{BB6Copula}}, \code{\link{BB7Copula}}, \code{\link{BB8Copula}} and \code{\link{joeCopula}} for further wrapper functions to the \code{\link{CDVine-package}}. 
+See also \code{\link{BB6Copula}}, \code{\link{BB7Copula}}, \code{\link{BB8Copula}} and \code{\link{joeCopula}} for further wrapper functions to the \code{\link{VineCopula-package}}. 
 }
 \examples{
 persp(BB7Copula(c(1,1.5)),dCopula, zlim=c(0,10))

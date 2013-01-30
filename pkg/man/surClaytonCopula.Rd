@@ -6,7 +6,7 @@
 suvival and rotated Clayton Copulas
 }
 \description{
-these are wrappers to functions from \code{\link{CDVine-package}}
+these are wrappers to functions from \code{\link{VineCopula-package}}
 }
 \usage{
 surClaytonCopula(param)

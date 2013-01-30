@@ -28,7 +28,7 @@ Objects can be created by calls of the form \code{new("surGumbelCopula", ...)}, 
 }
 \section{Slots}{
   \describe{
-    \item{\code{family}:}{Object of class \code{"numeric"} The family number in \code{\link{CDVine-package}}}
+    \item{\code{family}:}{Object of class \code{"numeric"} The family number in \code{\link{VineCopula-package}}}
     \item{\code{dimension}:}{Object of class \code{"integer"} The dimension of the copula (2). }
     \item{\code{parameters}:}{Object of class \code{"numeric"} The parameter }
     \item{\code{param.names}:}{Object of class \code{"character"} name of the parameter }
@@ -61,7 +61,7 @@ Class \code{"\linkS4class{Copula}"}, by class "copula", distance 2.
 Benedikt Graeler
 }
 \seealso{
-\code{\link{CDVine-package}}
+\code{\link{VineCopula-package}}
 }
 \examples{
 persp(surGumbelCopula(1.5),dCopula,zlim=c(0,10))

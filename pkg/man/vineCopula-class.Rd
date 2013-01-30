@@ -5,7 +5,7 @@
 
 \title{Class \code{"vineCopula"}}
 \description{
-A class representing vine copulas in a object oriented implementations. Many functions go back to the package \code{\link{CDVine-package}}
+A class representing vine copulas in a object oriented implementations. Many functions go back to the package \code{\link{VineCopula-package}}
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("vineCopula", ...)} or through the function \code{\link{vineCopula}}.

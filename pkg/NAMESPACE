@@ -1,4 +1,4 @@
-import(copula, spacetime, CDVine)
+import(copula, spacetime, VineCopula)
 
 # constructor
 export(asCopula, cqsCopula)

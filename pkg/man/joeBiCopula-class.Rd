@@ -31,14 +31,14 @@
 
 \title{Classes \code{"joeBiCopula"}, \code{"surJoeBiCopula"}, \code{"r90JoeBiCopula"} and \code{"r270JoeBiCopula"}}
 \description{
-Wrapper classes representing the bivariate Joe, survial Joe, 90 degree and 270 degree rotated Joe copula families (Joe 1997) from \code{\link{CDVine-package}}. Note that package \code{\link{copula-package}} provides a class \code{\linkS4class{joeCopula}} as well.
+Wrapper classes representing the bivariate Joe, survial Joe, 90 degree and 270 degree rotated Joe copula families (Joe 1997) from \code{\link{VineCopula-package}}. Note that package \code{\link{copula-package}} provides a class \code{\linkS4class{joeCopula}} as well.
 }
 \section{Objects from the Classes}{
 Objects can be created by calls of the form \code{new("joeBiCopula", ...)}, \code{new("surJoeBiCopula", ...)}, \code{new("r90JoeBiCopula", ...)} and \code{new("r270JoeBiCopula", ...)} or by the functions \code{\link{joeBiCopula}}, \code{\link{surJoeBiCopula}}, \code{\link{r90JoeBiCopula}} and \code{\link{r270JoeBiCopula}}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{family}:}{Object of class \code{"numeric"} defining the family number in \code{\link{CDVine-package}} }
+    \item{\code{family}:}{Object of class \code{"numeric"} defining the family number in \code{\link{VineCopula-package}} }
     \item{\code{dimension}:}{Object of class \code{"integer"} defining the dimension of the copula }
     \item{\code{parameters}:}{Object of class \code{"numeric"} the single parameter}
     \item{\code{param.names}:}{Object of class \code{"character"}, parameter name.}
@@ -69,7 +69,7 @@ Benedikt Graeler
 }
 
 \seealso{
-See also \code{\linkS4class{BB1Copula}}, \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}} and \code{\linkS4class{BB8Copula}} for further wrapper classes to the \code{\link{CDVine-package}}.
+See also \code{\linkS4class{BB1Copula}}, \code{\linkS4class{BB6Copula}}, \code{\linkS4class{BB7Copula}} and \code{\linkS4class{BB8Copula}} for further wrapper classes to the \code{\link{VineCopula-package}}.
 }
 \examples{
 showClass("surJoeBiCopula")

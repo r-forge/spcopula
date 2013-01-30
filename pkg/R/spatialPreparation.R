@@ -152,7 +152,7 @@ calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA, cutoff=NA
   lagData <- lapply(lags, function(x) as.matrix((cbind(data[x[,1],var]@data, data[x[,2],var]@data))))
   
   if(cor.method == "fasttau")
-    lagCor <- sapply(lagData, function(x) CDVine:::fasttau(x[,1], x[,2]))
+    lagCor <- sapply(lagData, function(x) VineCopula:::fasttau(x[,1], x[,2]))
   else 
     lagCor <- sapply(lagData, function(x) cor(x,method=cor.method)[1,2])
   
@@ -219,7 +219,7 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, instances=
   calcTau <- function(binnedData) {
     cors <- NULL
     for(i in 1:(ncol(binnedData)/2)) {
-      cors <- c(cors, CDVine:::fasttau(binnedData[,2*i-1], binnedData[,2*i]))
+      cors <- c(cors, VineCopula:::fasttau(binnedData[,2*i-1], binnedData[,2*i]))
     }
     return(cors)
   }

@@ -4,7 +4,7 @@
 
 
 # density from BiCopPDF
-linkCDVine.PDF <- function (u, copula, log=FALSE) {
+linkVineCop.PDF <- function (u, copula, log=FALSE) {
   param <- copula@parameters
   if(length(param)==1) param <- c(param,0)
   n <- nrow(u)
@@ -21,7 +21,7 @@ linkCDVine.PDF <- function (u, copula, log=FALSE) {
 # cdf from BiCopCDF
 
 # for "standard" copulas: family %in% c(3:10)
-linkCDVine.CDF <- function (u, copula) {
+linkVineCop.CDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   n <- nrow(u)
@@ -34,7 +34,7 @@ linkCDVine.CDF <- function (u, copula) {
 }
 
 # for survival copulas: family %in% c(13, 14, 16:20)
-linkCDVine.surCDF <- function (u, copula) {
+linkVineCop.surCDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   u1 <- u[,1]
@@ -50,7 +50,7 @@ linkCDVine.surCDF <- function (u, copula) {
 }
 
 # for 90 deg rotated copulas: family %in% c(23, 24, 26:30)
-linkCDVine.r90CDF <- function (u, copula) {
+linkVineCop.r90CDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   u1 <- u[,1]
@@ -66,7 +66,7 @@ linkCDVine.r90CDF <- function (u, copula) {
 }
 
 # for 270 deg rotated copulas: family %in% c(33, 34, 36:40)
-linkCDVine.r270CDF <- function (u, copula) {
+linkVineCop.r270CDF <- function (u, copula) {
   param <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol = 2)
   u1 <- u[,1]
@@ -83,7 +83,7 @@ linkCDVine.r270CDF <- function (u, copula) {
 
 ## derivtives/h-function  from BiCopHfunc
 # ddu
-linkCDVine.ddu <- function (u, copula) {
+linkVineCop.ddu <- function (u, copula) {
   param <- copula@parameters
   u <- matrix(u, ncol = 2)
   n <- nrow(u)
@@ -97,7 +97,7 @@ linkCDVine.ddu <- function (u, copula) {
 }
 
 # ddv
-linkCDVine.ddv <- function (u, copula) {
+linkVineCop.ddv <- function (u, copula) {
   param <- copula@parameters
   u <- matrix(u, ncol = 2)
   n <- nrow(u)
@@ -112,7 +112,7 @@ linkCDVine.ddv <- function (u, copula) {
 
 
 ## random numbers from CDVineSim
-linkCDVine.r <- function (n, copula){
+linkVineCop.r <- function (n, copula){
   param <- copula@parameters
   fam <- copula@family
   if(is.na(param[2])) param <- c(param,0)
@@ -147,18 +147,18 @@ castCDvine <- function(cdvEst) {
 }
 
 ## Kendall's tau
-linkCDVine.tau <- function(copula) {
+linkVineCop.tau <- function(copula) {
   par <- copula@parameters
   BiCopPar2Tau(copula@family, par[1], par[2])
 }
 
 ## get parameter from Kendall's tau (only for one parameter families)
-linkCDVine.iTau <- function(copula, tau) {
+linkVineCop.iTau <- function(copula, tau) {
   BiCopTau2Par(copula@family, tau)
 }
 
 ## tailIndex
-linkCDVine.tailIndex <- function(copula) {
+linkVineCop.tailIndex <- function(copula) {
   par <- copula@parameters
   unlist(BiCopPar2TailDep(copula@family,par[1],par[2]))
 }

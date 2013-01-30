@@ -39,44 +39,44 @@ surClaytonCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","surClaytonCopula"), 
           function(u, copula, log) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","surClaytonCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","surClaytonCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","surClaytonCopula"), 
           function(u, copula, log) {
-            linkCDVine.surCDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.surCDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("pCopula", signature("matrix","surClaytonCopula"), linkCDVine.surCDF)
+setMethod("pCopula", signature("matrix","surClaytonCopula"), linkVineCop.surCDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","surClaytonCopula"), 
           function(u, copula, log) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dduCopula", signature("matrix","surClaytonCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","surClaytonCopula"), linkVineCop.ddu)
 
 # ddv
 setMethod("ddvCopula", signature("numeric","surClaytonCopula"), 
           function(u, copula, log) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("ddvCopula", signature("matrix","surClaytonCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","surClaytonCopula"), linkVineCop.ddv)
 
 ## random number generater ??
-setMethod("rCopula", signature("numeric","surClaytonCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","surClaytonCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("surClaytonCopula"), 
           function(copula, tau) {
             if(tau <= 0) warning("The survival Clayton copula can only represent positive dependence!")
-            linkCDVine.iTau(copula, max(1e-6,abs(tau)))
+            linkVineCop.iTau(copula, max(1e-6,abs(tau)))
           })
 
-setMethod("tau",signature("surClaytonCopula"),linkCDVine.tau)
-setMethod("tailIndex",signature("surClaytonCopula"),linkCDVine.tailIndex)
+setMethod("tau",signature("surClaytonCopula"),linkVineCop.tau)
+setMethod("tailIndex",signature("surClaytonCopula"),linkVineCop.tailIndex)
 
 #######################
 ## Clayton copula 90 ##
@@ -113,45 +113,45 @@ r90ClaytonCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","r90ClaytonCopula"), 
           function(u, copula, log) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","r90ClaytonCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","r90ClaytonCopula"), 
           function(u, copula) {
-            linkCDVine.r90CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.r90CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.r90CDF)
+setMethod("pCopula", signature("matrix","r90ClaytonCopula"), linkVineCop.r90CDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","r90ClaytonCopula"), 
           function(u, copula) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","r90ClaytonCopula"), linkVineCop.ddu)
 
 ## ddv
 setMethod("ddvCopula", signature("numeric","r90ClaytonCopula"), 
           function(u, copula) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","r90ClaytonCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","r90ClaytonCopula"), linkVineCop.ddv)
 
 ## random number generator
-setMethod("rCopula", signature("numeric","r90ClaytonCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r90ClaytonCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r90ClaytonCopula"),
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Clayton copula can only represent negative dependence!")
-            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
+            linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
-setMethod("tau",signature("r90ClaytonCopula"),linkCDVine.tau)
+setMethod("tau",signature("r90ClaytonCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("r90ClaytonCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("r90ClaytonCopula"),linkVineCop.tailIndex)
 
 ########################
 ## Clayton copula 270 ##
@@ -173,45 +173,45 @@ r270ClaytonCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","r270ClaytonCopula"), 
           function(u, copula, log) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","r270ClaytonCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","r270ClaytonCopula"), 
           function(u, copula) {
-            linkCDVine.r270CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.r270CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.r270CDF)
+setMethod("pCopula", signature("matrix","r270ClaytonCopula"), linkVineCop.r270CDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","r270ClaytonCopula"), 
           function(u, copula) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","r270ClaytonCopula"), linkVineCop.ddu)
 
 ## ddv
 setMethod("ddvCopula", signature("numeric","r270ClaytonCopula"), 
           function(u, copula) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","r270ClaytonCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","r270ClaytonCopula"), linkVineCop.ddv)
 
 ## random number generator
-setMethod("rCopula", signature("numeric","r270ClaytonCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r270ClaytonCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r270ClaytonCopula"), 
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Clayton copula can only represent negative dependence!")
-            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
+            linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
-setMethod("tau",signature("r270ClaytonCopula"),linkCDVine.tau)
+setMethod("tau",signature("r270ClaytonCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("r270ClaytonCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("r270ClaytonCopula"),linkVineCop.tailIndex)
 
 ####################################
 ##                                ##
@@ -254,45 +254,45 @@ surGumbelCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","surGumbelCopula"), 
           function(u, copula, log) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","surGumbelCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","surGumbelCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","surGumbelCopula"), 
           function(u, copula) {
-            linkCDVine.surCDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.surCDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","surGumbelCopula"), linkCDVine.surCDF)
+setMethod("pCopula", signature("matrix","surGumbelCopula"), linkVineCop.surCDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","surGumbelCopula"), 
           function(u, copula) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","surGumbelCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","surGumbelCopula"), linkVineCop.ddu)
 
 # ddv
 setMethod("ddvCopula", signature("numeric","surGumbelCopula"), 
           function(u, copula) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","surGumbelCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","surGumbelCopula"), linkVineCop.ddv)
 
 ## random number generater ??
-setMethod("rCopula", signature("numeric","surGumbelCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","surGumbelCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("surGumbelCopula"), 
           function(copula, tau) {
             if(tau < 0) warning("The survival Gumbel copula can only represent non-negative dependence!")
-            linkCDVine.iTau(copula, max(0,abs(tau)))
+            linkVineCop.iTau(copula, max(0,abs(tau)))
           })
 
-setMethod("tau",signature("surGumbelCopula"),linkCDVine.tau)
+setMethod("tau",signature("surGumbelCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("surGumbelCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("surGumbelCopula"),linkVineCop.tailIndex)
 
 #######################
 ## Gumbel copula 90 ##
@@ -329,45 +329,45 @@ r90GumbelCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","r90GumbelCopula"), 
           function(u, copula, log) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","r90GumbelCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","r90GumbelCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","r90GumbelCopula"), 
           function(u, copula) {
-            linkCDVine.r90CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.r90CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","r90GumbelCopula"), linkCDVine.r90CDF)
+setMethod("pCopula", signature("matrix","r90GumbelCopula"), linkVineCop.r90CDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","r90GumbelCopula"), 
           function(u, copula) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","r90GumbelCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","r90GumbelCopula"), linkVineCop.ddu)
 
 ## ddv
 setMethod("ddvCopula", signature("numeric","r90GumbelCopula"), 
           function(u, copula) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","r90GumbelCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","r90GumbelCopula"), linkVineCop.ddv)
 
 ## random number generator
-setMethod("rCopula", signature("numeric","r90GumbelCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r90GumbelCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r90GumbelCopula"),
           function(copula, tau) {
             if(tau > 0) warning("The rotated Gumbel copula can only represent non-positive dependence!")
-            linkCDVine.iTau(copula, min(0,-abs(tau)))
+            linkVineCop.iTau(copula, min(0,-abs(tau)))
           })
 
-setMethod("tau",signature("r90GumbelCopula"),linkCDVine.tau)
+setMethod("tau",signature("r90GumbelCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("r90GumbelCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("r90GumbelCopula"),linkVineCop.tailIndex)
 
 ########################
 ## Gumbel copula 270 ##
@@ -389,42 +389,42 @@ r270GumbelCopula <- function (param) {
 ## density ##
 setMethod("dCopula", signature("numeric","r270GumbelCopula"), 
           function(u, copula, log) {
-            linkCDVine.PDF(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","r270GumbelCopula"), linkCDVine.PDF)
+setMethod("dCopula", signature("matrix","r270GumbelCopula"), linkVineCop.PDF)
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","r270GumbelCopula"), 
           function(u, copula) {
-            linkCDVine.r270CDF(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.r270CDF(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("pCopula", signature("matrix","r270GumbelCopula"), linkCDVine.r270CDF)
+setMethod("pCopula", signature("matrix","r270GumbelCopula"), linkVineCop.r270CDF)
 
 ## partial derivatives ##
 # ddu
 setMethod("dduCopula", signature("numeric","r270GumbelCopula"), 
           function(u, copula) {
-            linkCDVine.ddu(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("dduCopula", signature("matrix","r270GumbelCopula"), linkCDVine.ddu)
+setMethod("dduCopula", signature("matrix","r270GumbelCopula"), linkVineCop.ddu)
 
 ## ddv
 setMethod("ddvCopula", signature("numeric","r270GumbelCopula"), 
           function(u, copula) {
-            linkCDVine.ddv(matrix(u,ncol=copula@dimension),copula)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
-setMethod("ddvCopula", signature("matrix","r270GumbelCopula"), linkCDVine.ddv)
+setMethod("ddvCopula", signature("matrix","r270GumbelCopula"), linkVineCop.ddv)
 
 ## random number generator
-setMethod("rCopula", signature("numeric","r270GumbelCopula"), linkCDVine.r)
+setMethod("rCopula", signature("numeric","r270GumbelCopula"), linkVineCop.r)
 
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r270GumbelCopula"), 
           function(copula, tau) {
             if(tau >= 0) warning("The rotated Gumbel copula can only represent negative dependence!")
-            linkCDVine.iTau(copula, min(-1e-6,-abs(tau)))
+            linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
-setMethod("tau",signature("r270GumbelCopula"),linkCDVine.tau)
+setMethod("tau",signature("r270GumbelCopula"),linkVineCop.tau)
 
-setMethod("tailIndex",signature("r270GumbelCopula"),linkCDVine.tailIndex)
+setMethod("tailIndex",signature("r270GumbelCopula"),linkVineCop.tailIndex)

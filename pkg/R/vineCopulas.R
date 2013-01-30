@@ -170,7 +170,7 @@ setMethod("pCopula", signature("matrix","vineCopula"), pvineCopula)
 
 
 ## random numbers
-linkCDVineSim <- function(n, copula) {
+linkVineCopSim <- function(n, copula) {
   numType <- getNumType(copula)
 
   getFamily <- function(copula) {
@@ -185,8 +185,10 @@ linkCDVineSim <- function(n, copula) {
   par2[is.na(par2)] <- 0
   numFam <- unlist(lapply(copula@copulas,getFamily))
   tcops <- which(numFam==2) #? length(which(5==3))
-  if(length(tcops)>0) par2[tcops] <- unlist(lapply(copula@copulas[tcops], function(x) x@df))
-  return(CDVine::CDVineSim(n,numFam,par1,par2,numType))
+  if(length(tcops)>0) 
+    par2[tcops] <- unlist(lapply(copula@copulas[tcops], function(x) x@df))
+  
+  return(RVineSim(n, C2RVine(1:copula@dimension, numFam, par1, par2)))
 }
 
-setMethod("rCopula", signature("numeric","vineCopula"), linkCDVineSim)
+setMethod("rCopula", signature("numeric","vineCopula"), linkVineCopSim)

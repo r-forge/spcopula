@@ -50,7 +50,7 @@ setMethod("pCopula", signature("matrix", "empiricalCopula"), pempCop.C)
 
 
 tauempCop <- function(copula){
-  CDVine:::fasttau(copula@sample[,1],copula@sample[,2])
+  VineCopula:::fasttau(copula@sample[,1],copula@sample[,2])
 }
 
 setMethod("tau",signature("asCopula"),tauempCop)
