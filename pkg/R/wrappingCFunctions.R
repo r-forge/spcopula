@@ -1,6 +1,8 @@
 # wrapping C functions to be used in spcopula
 
 RHfunc1 <- function(fam, n, u, param) {
+  if(is.na(param[2]))
+    param[2] <- 0
   .C("Hfunc1", as.integer(fam), as.integer(n), as.double(u[,2]), as.double(u[,1]), 
      as.double(param[1]), as.double(param[2]), as.double(rep(0, n)), 
      PACKAGE = "spcopula")

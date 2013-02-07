@@ -3,6 +3,8 @@
 \docType{class}
 \alias{stCopula-class}
 \alias{show,stCopula-method}
+\alias{dduCopula,list,stCopula-method}
+\alias{ddvCopula,list,stCopula-method}
 
 \title{Class \code{"stCopula"}}
 \description{

@@ -208,7 +208,7 @@ fitCopula.cqs <- function (copula, data, method = "ml", start=c(0,0),
                 ml=fitCQSec.ml(copula, data, start, lower, upper, optim.control, optim.method),
                 itau=fitCQSec.itau(copula, data, estimate.variance),
                 irho=fitCQSec.irho(copula, data, estimate.variance),
-                stop("Implemented methods for copulas in the spCopula package are: ml, itau, and irho."))
+                stop("Implemented methods for copulas in the spcopula package are: ml, itau, and irho."))
   return(fit)
 }
 
@@ -226,8 +226,9 @@ setMethod("fitCopula", signature("cqsCopula"), fitCopula.cqs)
 # method
 #  one of kendall or spearman according to the calculation of moa
 
-fitCQSec.itau <- function(copula, data, estimate.variance) {
-tau <- cor(data,method="kendall")[1,2]
+fitCQSec.itau <- function(copula, data, estimate.variance, tau=NULL) {
+if(is.null(tau))
+  tau <- VineCopula:::fasttau(data[,1],data[,2])
 esti <- fitCQSec.moa(tau, data, method="itau")
 copula <- cqsCopula(esti)
 return(new("fitCopula",

@@ -2,8 +2,10 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{spCopula-class}
-\alias{dduCopula,list,spCopula-method}
-\alias{ddvCopula,list,spCopula-method}
+\alias{dduCopula,matrix,spCopula-method}
+\alias{ddvCopula,matrix,spCopula-method}
+\alias{dduCopula,numeric,spCopula-method}
+\alias{ddvCopula,numeric,spCopula-method}
 
 \title{Class \code{"spCopula"}}
 \description{

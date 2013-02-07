@@ -60,7 +60,7 @@ if ( any(is.na( match(var,names(spData)) )) )
 if(is.null(dep) & !is.null(indep))   dep <- 1:nLocs[-indep]
 if(!is.null(dep) & is.null(indep)) indep <- 1:nLocs[-dep]
 if(!is.null(dep) & !is.null(indep)) {
-  cat("Reduced distance matrix is used: (",dep,") x (",indep,")",sep="")
+  cat("Reduced distance matrix is used: (",paste(dep,collapse=", "),") x (",paste(indep,collapse=", "),")",sep="")
 } else {
   dep <- 1:nLocs
   indep <- 1:nLocs

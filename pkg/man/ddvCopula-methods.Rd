@@ -1,6 +1,7 @@
 \name{ddvCopula-methods}
 \docType{methods}
 \alias{ddvCopula-methods}
+
 \alias{ddvCopula,matrix,claytonCopula-method}
 \alias{ddvCopula,matrix,frankCopula-method}
 \alias{ddvCopula,matrix,gumbelCopula-method}
@@ -8,6 +9,7 @@
 \alias{ddvCopula,matrix,normalCopula-method}
 \alias{ddvCopula,matrix,tCopula-method}
 \alias{ddvCopula,matrix,leafCopula-method}
+
 \alias{ddvCopula,numeric,claytonCopula-method}
 \alias{ddvCopula,numeric,frankCopula-method}
 \alias{ddvCopula,numeric,gumbelCopula-method}
@@ -15,7 +17,6 @@
 \alias{ddvCopula,numeric,normalCopula-method}
 \alias{ddvCopula,numeric,tCopula-method}
 \alias{ddvCopula,numeric,leafCopula-method}
-\alias{ddvCopula,list,stCopula-method}
 
 \title{Methods for Function \code{ddvCopula} in Package \pkg{spcopula}}
 \description{

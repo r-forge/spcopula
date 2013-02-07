@@ -132,7 +132,38 @@ setClass("stCopula", representation = representation("copula",
                                                      t.res="character"),
          validity = validStCopula, contains = list("copula"))
 
+####################
+##  vine copulas  ##
+####################
 
+validVineCopula = function(object) {
+  dim <- object@dimension
+  if( dim <= 2)
+    return("Number of dimension too small (>2).")
+  if(length(object@copulas)!=(dim*(dim-1)/2))
+    return("Number of provided copulas does not match given dimension.")
+  if(!any(unlist(lapply(object@copulas,function(x) is(x,"copula")))))
+    return("Not all provided copulas in your list are indeed copulas.")
+  else return (TRUE)
+}
+
+setClass("vineCopula",
+         representation = representation(copulas="list", dimension="integer", 
+                                         RVM="list"),
+         validity = validVineCopula,
+         contains = list("copula")
+)
+
+#########################
+## Spatial Vine Copula ##
+#########################
+
+validSpVineCopula <- function(object) {
+  return(validObject(object@spCop)&validObject(object@vineCop))
+}
+
+setClass("spVineCopula", representation("copula",spCop="spCopula",vineCop="vineCopula"),
+         validity = validSpVineCopula, contains=list("copula"))
 
 ########################################
 ## spatial classes providing the data ##
@@ -160,7 +191,7 @@ validNeighbourhood <- function(object) {
   if (sizeN > sizeLim) return("The limting size of the neighbourhood is exceeded. Increase the constant sizeLim if needed.")
   if (nrow(object@data) != nrow(object@distances)) return("Data and distances have unequal number of rows.")
   if (ncol(object@data) %% sizeN != 0) return("Data and distances have non matching number of columns.")
-  if (nrow(object@data) != nrow(object@coords) ) return("Data and sp@coordinates have unequal number of rows.")
+#   if (nrow(object@data) != nrow(object@coords) ) return("Data and sp@coordinates have unequal number of rows.")
   if (nrow(object@data) != nrow(object@index)) return("Data and index have unequal number of rows.")
   if (sizeN != ncol(object@index)) return("Data and index have unequal number of columns.")
   if (ncol(object@data) != sizeN * nVars) return(paste("Number of columns in data does not equal the product of the neighbourhood's size (",sizeN,") with number of variables (",nVars,").",sep=""))

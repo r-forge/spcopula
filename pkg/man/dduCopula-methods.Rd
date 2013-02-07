@@ -15,7 +15,7 @@
 \alias{dduCopula,numeric,normalCopula-method}
 \alias{dduCopula,numeric,tCopula-method}
 \alias{dduCopula,numeric,leafCopula-method}
-\alias{dduCopula,list,stCopula-method}
+
 \title{Methods for Function \code{dduCopula} in Package \pkg{spcopula}}
 \description{
  Methods for function \code{dduCopula} in package \pkg{spcopula}

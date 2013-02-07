@@ -199,7 +199,7 @@ spConCop <- function(fun, copula, pairs, h, do.logs=F, ...) {
   res <- numeric(nrow(pairs))
   sel <- which(h < dists[1])
   if(sum(sel)>0) {
-    res[sel] <- fun(pairs[sel,,drop=FALSE],copula@components[[1]],...)
+    res[sel] <- fun(pairs[sel,,drop=FALSE],copula@components[[1]], ...)
   }
   
   if (n.dists >= 2) {
@@ -302,11 +302,10 @@ dSpCopula <- function (u, copula, log=F, h, block=1) {
   }
   
   if(is.null(copula@calibMoa(normalCopula(0),0))){
-    res <- spConCop(dCopula, copula, u, rep(h, length.out=nrow(pairs)), 
+    res <- spConCop(dCopula, copula, u, rep(h, length.out=n), 
                     do.logs=log, log=log)
   }
   else {
-    cat("Yes \n")
     if(length(h)>1) {
       if (block == 1){
         ordering <- order(h)
@@ -344,34 +343,28 @@ setMethod(dCopula, signature("matrix","spCopula"), dSpCopula)
 ## dduSpCopula
 ###############
 
-dduSpCopula <- function (u, copula) {
-  if (!is.list(u) || !length(u)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
+dduSpCopula <- function (u, copula, h, block=1) {
+  if (missing(h)) stop("Point pairs need to be provided with their separating distance h.")
   
-  pairs <- u[[1]]
-  n <- nrow(pairs)
+  n <- nrow(u)
   
-  if(length(u)==3) {
-    block <- u[[3]]
-    if (n%%block != 0) stop("The block size is not a multiple of the data length:",n)
-  } else block <- 1
-  
-  h <- u[[2]]
-  if(length(h)>1 && length(h)!=nrow(u[[1]])) {
+  if(length(h)>1 && length(h)!=n) {
     stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
   }
 
-  if(is.null(copula@calibMoa(normalCopula(0),0))) res <- spConCop(dduCopula, copula, pairs, 
-                                                 rep(h,length.out=nrow(pairs)))
+  if(is.null(copula@calibMoa(normalCopula(0),0)))
+    res <- spConCop(dduCopula, copula, u, rep(h, length.out=n))
+  
   else {
     if(length(h)>1) {
       if (block == 1){
         ordering <- order(h)
         
         # ascending sorted pairs allow for easy evaluation
-        pairs <- pairs[ordering,,drop=FALSE] 
+        u <- u[ordering,,drop=FALSE] 
         h <- h[ordering]
         
-        res <- spDepFunCop(dduCopula, copula, pairs, h)
+        res <- spDepFunCop(dduCopula, copula, u, h)      
         
         # reordering the values
         res <- res[order(ordering)]
@@ -379,52 +372,48 @@ dduSpCopula <- function (u, copula) {
         res <- NULL
         for(i in 1:(n%/%block)) {
           res <- c(res, spDepFunCopSnglDist(dduCopula, copula, 
-                                            pairs[((i-1)*block+1):(i*block),],
+                                            u[((i-1)*block+1):(i*block),], 
                                             h[i*block]))
         }
       }
     } else {
-      res <- spDepFunCopSnglDist(dduCopula, copula, pairs, h)
+      res <- spDepFunCopSnglDist(dduCopula, copula, u, h)
     }
   }
   
   return(res)
 }
 
-setMethod("dduCopula", signature("list","spCopula"), dduSpCopula)
+setMethod("dduCopula", signature("matrix","spCopula"), dduSpCopula)
+setMethod("dduCopula", signature("numeric","spCopula"), 
+          function(u, copula, ...) dduSpCopula(matrix(u,ncol=copula@dimension),copula, ...) )
 
 ## ddvSpCopula
 ###############
 
-ddvSpCopula <- function (u, copula) {
-  if (!is.list(u) || !length(u)>=2) stop("Point pairs need to be provided with their separating distance as a list.")
+
+ddvSpCopula <- function (u, copula, h, block=1) {
+  if (missing(h)) stop("Point pairs need to be provided with their separating distance h.")
   
-  pairs <- u[[1]]
-  n <- nrow(pairs)
+  n <- nrow(u)
   
-  if(length(u)==3) {
-    block <- u[[3]]
-    if (n%%block != 0) stop("The block size is not a multiple of the data length:",n)
-  } else block <- 1
-  
-  h <- u[[2]]
-  if(length(h)>1 && length(h)!=nrow(u[[1]])) {
+  if(length(h)>1 && length(h)!=n) {
     stop("The distance vector must either be of the same length as rows in the data pairs or a single value.")
   }
   
+  if(is.null(copula@calibMoa(normalCopula(0),0)))
+    res <- spConCop(dduCopula, copula, u, rep(h, length.out=n))
   
-  if(is.null(copula@calibMoa(normalCopula(0),0))) res <- spConCop(ddvCopula, copula, pairs, 
-                                                 rep(h,length.out=nrow(pairs)))
   else {
     if(length(h)>1) {
       if (block == 1){
         ordering <- order(h)
         
         # ascending sorted pairs allow for easy evaluation
-        pairs <- pairs[ordering,,drop=FALSE] 
+        u <- u[ordering,,drop=FALSE] 
         h <- h[ordering]
         
-        res <- spDepFunCop(ddvCopula, copula, pairs, h)
+        res <- spDepFunCop(ddvCopula, copula, u, h)      
         
         # reordering the values
         res <- res[order(ordering)]
@@ -432,19 +421,21 @@ ddvSpCopula <- function (u, copula) {
         res <- NULL
         for(i in 1:(n%/%block)) {
           res <- c(res, spDepFunCopSnglDist(ddvCopula, copula, 
-                                            pairs[((i-1)*block+1):(i*block),],
+                                            u[((i-1)*block+1):(i*block),], 
                                             h[i*block]))
         }
       }
     } else {
-      res <- spDepFunCopSnglDist(ddvCopula, copula, pairs, h)
+      res <- spDepFunCopSnglDist(ddvCopula, copula, u, h)
     }
   }
   
   return(res)
 }
 
-setMethod("ddvCopula", signature("list","spCopula"), ddvSpCopula)
+setMethod("ddvCopula", signature("matrix","spCopula"), ddvSpCopula)
+setMethod("ddvCopula", signature("numeric","spCopula"), 
+          function(u, copula, ...) ddvSpCopula(matrix(u,ncol=copula@dimension),copula, ...) )
 
 
 #############

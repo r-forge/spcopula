@@ -12,9 +12,9 @@ Objects can be created by calls of the form \code{new("vineCopula", ...)} or thr
 }
 \section{Slots}{
   \describe{
+    \item{\code{RVM}:}{An \code{RVineMatrix} object from \code{\link{RVineMatrix}} describing the R-Vine strucutre.}
     \item{\code{copulas}:}{Object of class \code{"list"} holding all copulas. }
     \item{\code{dimension}:}{Object of class \code{"integer"}; the vines dimension. }
-    \item{\code{type}:}{Object of class \code{"character"} defining the type of the vine (either \"c-vine\" or \"d-vine\").}
     \item{\code{parameters}:}{Object of class \code{"numeric"}: empty }
     \item{\code{param.names}:}{Object of class \code{"character"}: empty }
     \item{\code{param.lowbnd}:}{Object of class \code{"numeric"}: empty }
@@ -31,6 +31,9 @@ No additional methods yet, but uses e.g. \code{\link{dCopula}}, \code{\link{pCop
 }
 \references{
 Aas, K., C. Czado, A. Frigessi, and H. Bakken (2009). Pair-copula constructions of multiple dependence Insurance: Mathematics and Economics 44 (2), 182-198. 
+}
+\seealso{
+\code{\link{RVineMatrix}} from package \code{\link{VineCopula-package}}
 }
 \author{
 Benedikt Graeler
