@@ -290,7 +290,7 @@ setMethod(pCopula, signature("matrix","spCopula"), pSpCopula)
 # u 
 #   three column matrix providing the transformed pairs and their respective 
 #   separation distances
-dSpCopula <- function (u, copula, log=F, h, block=1) {
+dSpCopula <- function (u, copula, log, h, block=1) {
   if (missing(h)) stop("Point pairs need to be provided with their separating distance \"h\".")
   
   n <- nrow(u)
@@ -335,7 +335,7 @@ dSpCopula <- function (u, copula, log=F, h, block=1) {
 }
 
 setMethod(dCopula, signature("numeric","spCopula"), 
-          function(u, copula, ...) dSpCopula(matrix(u,ncol=2), copula, ...))
+          function(u, copula, log, ...) dSpCopula(matrix(u,ncol=2), copula, log=log, ...))
 setMethod(dCopula, signature("matrix","spCopula"), dSpCopula)
 
 ## partial derivatives ##

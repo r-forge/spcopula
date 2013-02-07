@@ -38,11 +38,11 @@ dspVine <- function(u, spCop, vine, log, h) {
 }
 
 setMethod("dCopula",signature=signature("matrix","spVineCopula"),
-          function(u, copula, ...) {
-            dspVine(u, copula@spCop, copula@vineCop, ...)
+          function(u, copula, log, ...) {
+            dspVine(u, copula@spCop, copula@vineCop, log=log, ...)
           })
 
 setMethod("dCopula",signature=signature("numeric","spVineCopula"),
-          function(u, copula, ...) {
-            dspVine(matrix(u,ncol=copula@dimension), copula@spCop, copula@vineCop, ...)
+          function(u, copula, log, ...) {
+            dspVine(matrix(u,ncol=copula@dimension), copula@spCop, copula@vineCop, log=log, ...)
           })
