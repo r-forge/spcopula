@@ -49,4 +49,4 @@ exportClasses(joeBiCopula, surJoeBiCopula, r90JoeBiCopula, r270JoeBiCopula)
 exportClasses(surClaytonCopula, r90ClaytonCopula, r270ClaytonCopula)
 exportClasses(surGumbelCopula, r90GumbelCopula, r270GumbelCopula)
 
-useDynLib("spcopula")
+# useDynLib("spcopula")
