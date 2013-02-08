@@ -47,8 +47,16 @@ Benedikt Graeler
 }
 
 \examples{
-data(spCopDemo) # data from demo(spcopula_estimation)
-# dCopula(u=matrix(c(.3,.3,.7,.7),ncol=2),spCop,h=c(200,400))
+# data from demo(spcopula_estimation)
+data(spCopDemo) 
+
+spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
+                                  frankCopula(1), normalCopula(0), claytonCopula(0),
+                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
+                                  claytonCopula(0), indepCopula()),
+                  distances=bins$meanDists,
+                  spDepFun=calcKTauPol, unit="m")
+dCopula(u=matrix(c(.3,.3,.7,.7),ncol=2),spCop,h=c(200,400))
 pCopula(u=matrix(c(.3,.3,.7,.7),ncol=2),spCop,h=c(200,400))
 }
 \keyword{classes}
