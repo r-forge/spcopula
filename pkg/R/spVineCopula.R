@@ -3,7 +3,7 @@
 #########################################
 
 # constructor
-spVineCopula <- function(spCop, vineCop) {
+spVineCopula <- function(spCop, vineCop=vineCopula()) {
   new("spVineCopula", dimension = as.integer(vineCop@dimension+1), parameters=numeric(),
       param.names = character(), param.lowbnd = numeric(), 
       param.upbnd = numeric(), fullname = "Spatial vine copula family.",
@@ -46,3 +46,23 @@ setMethod("dCopula",signature=signature("numeric","spVineCopula"),
           function(u, copula, log, ...) {
             dspVine(matrix(u,ncol=copula@dimension), copula@spCop, copula@vineCop, log=log, ...)
           })
+
+# fiiting the spatial vine for a given spatial copula
+
+fitSpVine <- function(copula, data) {
+  stopifnot(class(data)=="neighbourhood")
+  stopifnot(copula@dimension == ncol(data@data))
+  
+  secLevel <- NULL
+  for (i in 1:(copula@dimension-1)) { # i <- 1
+    secLevel <- cbind(secLevel, 
+                      dduCopula(u=as.matrix(data@data[,c(1,i+1)]), 
+                                copula=copula@spCop, h=data@distances[,i]))
+  }
+  
+  vineCop <- fitCopula(copula@vineCop, secLevel) 
+  
+  return(spVineCopula(spCop, vineCop))
+}
+
+setMethod("fitCopula",signature=signature("spVineCopula"),fitSpVine)

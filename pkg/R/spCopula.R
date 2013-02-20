@@ -175,7 +175,7 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h, do.logs=F, ...) {
           if(do.logs)
             res <- log(res)
         } else {
-          if(class(tmpCop) != "indepCopula")
+          if(class(lowerCop) != "indepCopula")
             lowerCop@parameters <- calibPar(lowerCop, h)
           res <- fun(pairs, lowerCop, ...)
         }

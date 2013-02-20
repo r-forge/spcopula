@@ -11,7 +11,7 @@ vineCopula(RVM)
 }
 \arguments{
   \item{RVM}{
-An object of class \code{RVineMatrix} generated from \code{\link{RVineMatrix}} in the package \code{\link{VineCopula-package}}.
+An object of class \code{RVineMatrix} generated from \code{\link{RVineMatrix}} in the package \code{\link{VineCopula-package}} or an integer (e.g. \code{4L}) defining the dimension (an independent C-vine of this dimension will be constructed).
 }
 }
 \value{

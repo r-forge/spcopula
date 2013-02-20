@@ -5,9 +5,19 @@
 ####################
 
 # constructor
-vineCopula <- function (RVM) {
-  if(class(RVM)=="RVineMatrix") # handling non S4-class as subelement in a S4-class
+vineCopula <- function (RVM) { # RVM <- 4L
+  if (is.integer(RVM)) {# assuming dimension; i <- 1
+    Matrix <- NULL
+    for (i in 1:RVM) {
+      Matrix <- cbind(Matrix,c(rep(0,i-1),(RVM-i+1):1))
+    }
+    RVM <- RVineMatrix(Matrix)
+  }
+  
+  # handling non S4-class as sub-element in a S4-class
+  stopifnot(class(RVM)=="RVineMatrix") 
     class(RVM) <- "list"
+  
   ltr <- lower.tri(RVM$Matrix)
   copDef <- cbind(RVM$family[ltr], RVM$par[ltr], RVM$par2[ltr])
   copulas <- apply(copDef,1, function(x) copulaFromFamilyIndex(x[1],x[2],x[3]))
@@ -44,7 +54,7 @@ dRVine <- function(u, copula, log=F) {
 }
 
 setMethod("dCopula", signature("numeric","vineCopula"), 
-          function(u, copula, ...) dRVine(matrix(u, ncol=copula@dimension), copula, ...))
+          function(u, copula, log, ...) dRVine(matrix(u, ncol=copula@dimension), copula, log, ...))
 setMethod("dCopula", signature("matrix","vineCopula"), dRVine)
 
 # ## d-vine structure
@@ -151,7 +161,7 @@ setMethod("dCopula", signature("matrix","vineCopula"), dRVine)
 
 ## jcdf ##
 pvineCopula <- function(u, copula) {
-  empCop <- genEmpCop(copula,1e5)
+  empCop <- genEmpCop(copula, 1e5)
 
   return(pCopula(u, empCop))
 }
@@ -189,3 +199,13 @@ rRVine <- function(n, copula) {
 }
 
 setMethod("rCopula", signature("numeric","vineCopula"), rRVine)
+
+# fitting using RVine
+fitVineCop <- function(copula, data, method) {
+  if("StructureSelect" %in% method)
+    vineCopula(RVineStructureSelect(data, indeptest="indeptest" %in% method))
+  else
+    vineCopula(RVineCopSelect(data, Matrix=copula@RVM$Matrix, indeptest="indeptest" %in% method))
+}
+
+setMethod("fitCopula", signature=signature("vineCopula"), fitVineCop) 
