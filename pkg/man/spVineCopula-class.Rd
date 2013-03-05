@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{spVineCopula-class}
+\alias{fitCopula,spVineCopula-method}
 
 \title{Class \code{"spVineCopula"}}
 \description{

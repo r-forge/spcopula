@@ -6,6 +6,8 @@ leafCopula <- function (param=c(1.446923, -1.722742)) {
   return(val)
 }
 
+# param <- c(1.446923, -1.722742)
+
 # weak lower border, two-place parameter
 weakBorderPoly <- function(x, par) {
   par[1]*x^3+par[2]*x^2+x
@@ -50,12 +52,11 @@ invStrongBor <- function(v) {
 
 # precalculate ellipse parameters
 solveQ <- function(u) {
-  sqrt(0.5*(strongBorderPoly(u)-u)^2)
+  sqrt(0.5)*(strongBorderPoly(u)-u)
 }
 
 ddxsolveQ <- function(u) {
-  sBor <- strongBorderPoly(u)
-  1/(2*sqrt(0.5*(sBor-u)^2))*(sBor-u)*(ddxstrongBorderPoly(u)-1)
+  sqrt(0.5)*(ddxstrongBorderPoly(u)-1)
 }
 
 # ## double check
@@ -68,7 +69,7 @@ ddxsolveQ <- function(u) {
 # ##
 
 solveXb <- function(u, par) {
-  sqrt(2*(u-weakBorderPoly(u, par))^2)+solveQ(u)
+  sqrt(2)*(u-weakBorderPoly(u, par))+solveQ(u)
 }
 
 ddxsolveXb <- function(u, par) {
@@ -99,7 +100,7 @@ ddxsolveXb <- function(u, par) {
 solveA <- function(u, par) {
   xb <- solveXb(u, par)
   q <- solveQ(u)
-  sqrt((-xb^3+2*q*xb^2-q^2*xb)/(-2*xb+2*q+xb))
+  sqrt(xb^2 - q^2*xb/(2*q-xb))
 }
 
 ddusolveA <- function(u, par) {
@@ -122,7 +123,7 @@ ddusolveA <- function(u, par) {
 solveB <- function(u, par) {
   a <- solveA(u, par)
   xb <- solveXb(u, par)
-  a^2*sqrt(1-(xb/a)^2)/xb
+  a*sqrt(a^2-xb^2)/xb
 } 
 
 ddusolveB <- function(u, par) {

@@ -2,24 +2,23 @@
 library(spcopula)
 library(evd)
 
-## dataset - spatial poionts data.frame ##
+## meuse - spatial poionts data.frame ##
 data(meuse)
 coordinates(meuse) = ~x+y
-dataSet <- meuse
 
 spplot(meuse,"zinc", col.regions=bpy.colors(5))
 
 ## margins ##
-hist(dataSet[["zinc"]],freq=F,n=30,ylim=c(0,0.0035), 
+hist(meuse[["zinc"]],freq=F,n=30,ylim=c(0,0.0035), 
      main="Histogram of zinc", xlab="zinc concentration")
-gevEsti <- fgev(dataSet[["zinc"]])$estimate
-meanLog <- mean(log(dataSet[["zinc"]]))
-sdLog <- sd(log(dataSet[["zinc"]]))
+gevEsti <- fgev(meuse[["zinc"]])$estimate
+meanLog <- mean(log(meuse[["zinc"]]))
+sdLog <- sd(log(meuse[["zinc"]]))
 curve(dgev(x,gevEsti[1], gevEsti[2], gevEsti[3]),add=T,col="red")
 curve(dlnorm(x,meanLog,sdLog),add=T,col="green")
 
-ks.test(dataSet[["zinc"]],pgev,gevEsti[1], gevEsti[2], gevEsti[3]) # p: 0.07
-ks.test(dataSet[["zinc"]],plnorm,meanLog,sdLog) # p: 0.03
+ks.test(meuse[["zinc"]],pgev,gevEsti[1], gevEsti[2], gevEsti[3]) # p: 0.07
+ks.test(meuse[["zinc"]],plnorm,meanLog,sdLog) # p: 0.03
 
 pMar <- function(q) plnorm(q, meanLog, sdLog)
 qMar <- function(p) qlnorm(p, meanLog, sdLog)
@@ -30,7 +29,7 @@ dMar <- function(x) dlnorm(x, meanLog, sdLog)
 # dMar <- function(x) dgev(x, gevEsti[1], gevEsti[2], gevEsti[3])
 
 ## lag classes ##
-bins <- calcBins(dataSet,var="zinc",nbins=10,cutoff=800)
+bins <- calcBins(meuse,var="zinc",nbins=10,cutoff=800)
 
 # transform data to the unit interval
 bins$lagData <- lapply(bins$lagData, rankTransform)
@@ -82,7 +81,7 @@ text(x=(1:10+0.5),y=spLoglik,lapply(bins$lagData,length))
 ##
 # spatial vine
 vineDim <- 5L
-meuseNeigh <- getNeighbours(dataSet,"zinc",vineDim)
+meuseNeigh <- getNeighbours(meuse,"zinc",vineDim)
 meuseNeigh@data <- rankTransform(meuseNeigh@data)
 
 meuseSpVine <- fitCopula(spVineCopula(spCop, vineCopula(as.integer(vineDim-1))),
@@ -124,22 +123,22 @@ for(loc in 1:nrow(meuseNeigh@data)) { # loc <- 429  predNeigh$data[loc,1]
 }
 proc.time()-time
 
-mean(abs(predMean-dataSet$zinc))
-mean(predMean-dataSet$zinc)
-sqrt(mean((predMean-dataSet$zinc)^2))
+mean(abs(predMean-meuse$zinc))
+mean(predMean-meuse$zinc)
+sqrt(mean((predMean-meuse$zinc)^2))
 
-mean(abs(predMedian-dataSet$zinc))
-mean(predMedian-dataSet$zinc)
-sqrt(mean((predMedian-dataSet$zinc)^2))
+mean(abs(predMedian-meuse$zinc))
+mean(predMedian-meuse$zinc)
+sqrt(mean((predMedian-meuse$zinc)^2))
 
-plot(predMean,dataSet$zinc)
+plot(predMean,meuse$zinc)
 abline(0,1)
 
-plot(predMedian,dataSet$zinc)
+plot(predMedian,meuse$zinc)
 abline(0,1)
 
 ## kriging results:
-# same neighbourhood size:
+# same neighbourhood size 5L:
 # MAE:  158.61
 # BIAS:  -4.24
 # RMSE: 239.85

@@ -62,7 +62,7 @@ fitSpVine <- function(copula, data) {
   
   vineCop <- fitCopula(copula@vineCop, secLevel) 
   
-  return(spVineCopula(spCop, vineCop))
+  return(spVineCopula(copula@spCop, vineCop))
 }
 
 setMethod("fitCopula",signature=signature("spVineCopula"),fitSpVine)

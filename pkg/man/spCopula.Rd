@@ -40,6 +40,8 @@ See also \code{\link{calcBins}} or \code{\link{loglikByCopulasLags}} and \code{d
 \examples{
 data(spCopDemo)
 
+calcKTauPol <- fitCorFun(bins, degree=3)
+
 spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
                                   frankCopula(1), normalCopula(0), claytonCopula(0),
                                   claytonCopula(0), claytonCopula(0), claytonCopula(0),
