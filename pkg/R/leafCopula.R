@@ -74,7 +74,7 @@ solveXb <- function(u, par) {
 
 ddxsolveXb <- function(u, par) {
   wBor <- weakBorderPoly(u, par)
-  -(sqrt(2)*(u-wBor)*(ddxweakBorderPoly(u, par)-1))/sqrt((u-wBor)^2)+ddxsolveQ(u)
+  sqrt(2)*(1-ddxweakBorderPoly(u, par))+ddxsolveQ(u)
 }
 
 # ## double check

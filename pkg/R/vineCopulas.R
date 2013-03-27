@@ -5,13 +5,13 @@
 ####################
 
 # constructor
-vineCopula <- function (RVM) { # RVM <- 4L
-  if (is.integer(RVM)) {# assuming dimension; i <- 1
-    Matrix <- NULL
-    for (i in 1:RVM) {
-      Matrix <- cbind(Matrix,c(rep(0,i-1),(RVM-i+1):1))
-    }
-    RVM <- RVineMatrix(Matrix)
+vineCopula <- function (RVM, type="CVine") { # RVM <- 4L
+  if (is.integer(RVM)) {# assuming a dimension
+    stopifnot(type %in% c("CVine","DVine"))
+    if (type=="CVine")
+      RVM <- C2RVine(1:RVM,rep(0,RVM*(RVM-1)/2),rep(0,RVM*(RVM-1)/2))
+    if (type=="DVine")
+      RVM <- D2RVine(1:RVM,rep(0,RVM*(RVM-1)/2),rep(0,RVM*(RVM-1)/2))
   }
   
   # handling non S4-class as sub-element in a S4-class
@@ -20,7 +20,7 @@ vineCopula <- function (RVM) { # RVM <- 4L
   
   ltr <- lower.tri(RVM$Matrix)
   copDef <- cbind(RVM$family[ltr], RVM$par[ltr], RVM$par2[ltr])
-  copulas <- apply(copDef,1, function(x) copulaFromFamilyIndex(x[1],x[2],x[3]))
+  copulas <- rev(apply(copDef,1, function(x) copulaFromFamilyIndex(x[1],x[2],x[3])))
   
   new("vineCopula", copulas=copulas, dimension = as.integer(nrow(RVM$Matrix)),
       RVM=RVM, parameters = numeric(),
@@ -202,6 +202,7 @@ setMethod("rCopula", signature("numeric","vineCopula"), rRVine)
 
 # fitting using RVine
 fitVineCop <- function(copula, data, method) {
+  stopifnot(copula@dimension==ncol(data))
   if("StructureSelect" %in% method)
     vineCopula(RVineStructureSelect(data, indeptest="indeptest" %in% method))
   else

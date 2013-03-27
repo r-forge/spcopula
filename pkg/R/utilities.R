@@ -11,7 +11,7 @@ rankTransform <- function(u,v=NULL, ties.method="average") {
   }
 
   bool <- apply(u,1,function(row) !any(is.na(row)))
-  res <- apply(u[bool,],2,rank,ties.method)/(sum(bool)+1)
+  res <- apply(u[bool,],2,rank,ties.method=ties.method)/(sum(bool)+1)
   if(is.data.frame(u))
     return(as.data.frame(res))
   return(res)
