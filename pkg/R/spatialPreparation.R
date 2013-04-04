@@ -11,12 +11,14 @@
 # sp="SpatialPoints"	SpatialPoints object providing the coordinates
 # index="matrix"	linking the obs. in data to the coordinates
 
-neighbourhood <- function(data, distances, sp, index){
-  varNames <- names(data)[[1]]
+neighbourhood <- function(data, distances, sp, index, prediction, varNames){
   sizeN <- ncol(distances)+1
   data <- as.data.frame(data)
-  colnames(data) <- paste(paste("N",rep(0:(sizeN-1),each=length(varNames)),sep=""),rep(varNames,sizeN),sep=".")
-  new("neighbourhood", data=data, distances=distances, coords=sp@coords, bbox=sp@bbox, proj4string=sp@proj4string, index=index, varNames=varNames)
+  colnames(data) <- paste(paste("N", rep((0+prediction):(sizeN-1), each=length(varNames)), sep=""),
+                          rep(varNames,(sizeN-prediction)),sep=".")
+  new("neighbourhood", data=data, distances=distances, locations=sp, 
+      bbox=sp@bbox, proj4string=sp@proj4string, index=index, varNames=varNames, 
+      prediction=prediction)
 }
 
 ## show
@@ -45,60 +47,58 @@ setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
 ## calculate neighbourhood from SpatialPointsDataFrame
 
 # returns an neighbourhood object
-# spData	spatialPointsDataFrame
-# var 		one or multiple variable names, all is the default
-# size		the size of the neighbourhood, default of 5
-# dep		denoting a subset of dependent locations (default NULL: all locations will be used)
-# indep		denoting a subset of independent locations (default NULL: all locations will be used)
-#		no location will be paired with itself
-getNeighbours <- function(spData,var=names(spData),size=4,dep=NULL,indep=NULL,min.dist=10){
-nLocs <- length(spData)
-distMat <- spDists(spData)
-if(min.dist>0) distMat[distMat<min.dist] <- Inf
-if ( any(is.na( match(var,names(spData)) )) ) 
-  stop("At least one of the variables is unkown or is not part of the data.")
-if(is.null(dep) & !is.null(indep))   dep <- 1:nLocs[-indep]
-if(!is.null(dep) & is.null(indep)) indep <- 1:nLocs[-dep]
-if(!is.null(dep) & !is.null(indep)) {
-  cat("Reduced distance matrix is used: (",paste(dep,collapse=", "),") x (",paste(indep,collapse=", "),")",sep="")
-} else {
-  dep <- 1:nLocs
-  indep <- 1:nLocs
-}
+# spData	    spatialPointsDataFrame
+# locations   the prediction locations, for fitting, locations=spData
+# var 		    one or multiple variable names, all is the default
+# size		    the size of the neighbourhood, note that for prediction the size 
+#             is one less than for the copula estimation (default of 5)
+# min.dist    the minimum distance between neighbours, must be positive
 
-size <- min(size,length(indep)-1)
-if (size > sizeLim) {
-  stop(paste("Evaluation of copulas might take a long time for more than",
-         sizeLim," neighbours. Increase sizeLim if you want to evaluate neighbourhoods with",
-	 size,"locations."))
-}
+getNeighbours <- function(spData, locations, var=names(spData), size=5, 
+                          prediction=FALSE, min.dist=0.01) {
+  
+  stopifnot((!prediction && missing(locations)) || (prediction && !missing(locations)))
+  stopifnot(min.dist>0 || prediction)
+  
+  if(missing(locations) && !prediction)
+    locations=spData
+  
+  stopifnot(is(locations,"Spatial"))
+  
+  nLocs <- length(locations)
+  
+  if(any(is.na(match(var,names(spData)))))
+    stop("At least one of the variables is unkown or is not part of the data.")
 
-lData <- vector("list",size)
-index <- NULL
-dists <- NULL
+  size <- min(size,length(spData))
 
-for (i in dep) {
-  nbrs <- matrix(Inf,ncol=2,nrow=size-1)
-  ind <- logical(nLocs)
-  ind[indep] <- TRUE
-  ind[i] <- FALSE
-  for (j in (1:nLocs)[ind]) {
-    tmpDist <- distMat[i,j]
-    if (any(tmpDist < nbrs[,1])) {
-      nbrs[size-1,] <- c(tmpDist,j)
-      nbrs <- nbrs[order(nbrs[,1]),]
-    }
+  allDists <- NULL
+  allLocs <- NULL
+  allData <- NULL
+  
+  for(i in 1:length(locations)) { # i <- 1
+    tempDists <- spDistsN1(spData,locations[i,])
+    tempDists[tempDists < min.dist] <- Inf
+    spLocs <- order(tempDists)[1:(size-1)]
+    allLocs <- rbind(allLocs, spLocs)
+    allDists <- rbind(allDists, tempDists[spLocs])
+    
+    if(!prediction)
+      spLocs <- c(i,spLocs)
+    allData <- rbind(allData, as.vector(spData[spLocs, var, drop=F]@data[[1]]))
   }
-  lData[[1]] <- rbind(lData[[1]],spData@data[i,var,drop=FALSE])
-  for (nbr in 2:size) {
-    lData[[nbr]] <- rbind(lData[[nbr]],spData@data[nbrs[nbr-1,2],var,drop=FALSE])
-  }
-  index <- rbind(index, c(i,nbrs[,2]))
-  dists <- rbind(dists, c(nbrs[,1]))
+  
+  return(neighbourhood(allData, allDists, locations, 
+                       allLocs, prediction, var))
 }
 
-return(neighbourhood(as.data.frame(lData), dists, SpatialPoints(spData), index))
-}
+# data(meuse)
+# coordinates(meuse) <- ~x+y
+# meuseNeigh <- getNeighbours(meuse,var="zinc",size=5)
+# str(meuseNeigh)
+# 
+# meuseNeigh <- addAttrToGeom(meuseNeigh@locations,data.frame(rnd=runif(155)),match.ID=F)
+# str(meuseNeigh)
 
 #############
 ## BINNING ##

@@ -147,9 +147,12 @@ validVineCopula = function(object) {
   else return (TRUE)
 }
 
+setOldClass("RVineMatrix")
+
 setClass("vineCopula",
          representation = representation(copulas="list", dimension="integer", 
-                                         RVM="list"),
+                                         RVM="RVineMatrix"),
+         prototype = prototype(RVM=structure(list(),class="RVineMatrix")),
          validity = validVineCopula,
          contains = list("copula")
 )
@@ -188,18 +191,20 @@ sizeLim <- 25 #  a constant
 validNeighbourhood <- function(object) {
   sizeN <- ncol(object@distances)+1
   nVars <- length(object@varNames)
-  if (sizeN > sizeLim) return("The limting size of the neighbourhood is exceeded. Increase the constant sizeLim if needed.")
   if (nrow(object@data) != nrow(object@distances)) return("Data and distances have unequal number of rows.")
-  if (ncol(object@data) %% sizeN != 0) return("Data and distances have non matching number of columns.")
-#   if (nrow(object@data) != nrow(object@coords) ) return("Data and sp@coordinates have unequal number of rows.")
+  if (ncol(object@data) %% (sizeN-object@prediction) != 0) return("Data and distances have non matching number of columns.")
   if (nrow(object@data) != nrow(object@index)) return("Data and index have unequal number of rows.")
-  if (sizeN != ncol(object@index)) return("Data and index have unequal number of columns.")
-  if (ncol(object@data) != sizeN * nVars) return(paste("Number of columns in data does not equal the product of the neighbourhood's size (",sizeN,") with number of variables (",nVars,").",sep=""))
+  if (ncol(object@distances) != ncol(object@index)) return("Data and index have unequal number of columns.")
+  if (ncol(object@data) != (sizeN-object@prediction) * nVars) return(paste("Number of columns in data does not equal the product of the neighbourhood's size (",sizeN,") with number of variables (",nVars,").",sep=""))
   else return(TRUE)
 }
 
 setClass("neighbourhood",
-  representation = representation(data = "data.frame", distances="matrix", "SpatialPoints", index="matrix", varNames="character"),
-  validity = validNeighbourhood,
-  contains = list("SpatialPoints"))
+         representation = representation(data = "data.frame", 
+                                         distances="matrix", 
+                                         index="matrix",
+                                         locations="Spatial", 
+                                         varNames="character", 
+                                         prediction="logical"),
+         validity = validNeighbourhood, contains = list("Spatial"))
 

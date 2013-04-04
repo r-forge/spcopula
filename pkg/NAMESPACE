@@ -19,6 +19,7 @@ export(fitCopula)
 export(dduCopula,ddvCopula)
 export(invdduCopula, invddvCopula)
 export(qCopula_u)
+export(condSpVine,spCopPredict)
 
 # tweaks
 # export(setSizeLim)
