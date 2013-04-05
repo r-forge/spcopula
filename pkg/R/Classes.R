@@ -190,7 +190,7 @@ sizeLim <- 25 #  a constant
 # index: a matrix linking the data entries with the coordinates of the locations
 validNeighbourhood <- function(object) {
   sizeN <- ncol(object@distances)+1
-  nVars <- length(object@varNames)
+  nVars <- length(object@var)
   if (nrow(object@data) != nrow(object@distances)) return("Data and distances have unequal number of rows.")
   if (ncol(object@data) %% (sizeN-object@prediction) != 0) return("Data and distances have non matching number of columns.")
   if (nrow(object@data) != nrow(object@index)) return("Data and index have unequal number of rows.")
@@ -204,7 +204,7 @@ setClass("neighbourhood",
                                          distances="matrix", 
                                          index="matrix",
                                          locations="Spatial", 
-                                         varNames="character", 
+                                         var="character", 
                                          prediction="logical"),
          validity = validNeighbourhood, contains = list("Spatial"))
 

@@ -4,7 +4,7 @@
 rank order transformation of margins
 }
 \description{
-performs the rank order transfroamtion
+performs the rank order transformational
 }
 \usage{
 rankTransform(u, v = NULL, ties.method = "average")

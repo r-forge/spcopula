@@ -5,7 +5,7 @@
 Automated fitting of a correlation function to the correlogram
 }
 \description{
-Polynomials of different degrees can be fitteds to the correlogram calculated using \code{\link{calcBins}}. This function will be used to adjust the copula parameter in the spatial/spatio-temporal copula.
+Polynomials of different degrees can be fitted to the correlogram calculated using \code{\link{calcBins}}. This function will be used to adjust the copula parameter in the spatial/spatio-temporal copula.
 }
 \usage{
 fitCorFun(bins, degree = 3, cutoff = NA, bounds = c(0, 1), cor.method = NULL)
@@ -15,10 +15,10 @@ fitCorFun(bins, degree = 3, cutoff = NA, bounds = c(0, 1), cor.method = NULL)
 Typically the output of \code{\link{calcBins}}. Any \code{data.frame} with a columns \code{lagCor} and \code{meanDists} in the first two columns will do.
 }
   \item{degree}{
-The degree of polynominal to be fitted.
+The degree of polynomial to be fitted.
 }
   \item{cutoff}{
-Maximal distance to which lags should be included in the polynominal fit.
+Maximal distance to which lags should be included in the polynomial fit.
 }
   \item{bounds}{
 Bounds of the correlation values. The default is set [0,1] not allowing any negative relationship but perfect positive dependence.
@@ -28,7 +28,7 @@ The output of \code{\link{calcBins}} has an attribute \code{cor.method}, in case
 }
 }
 \value{
-Returns a function that provides correlation estimate for every seperating distance.
+Returns a function that provides correlation estimate for every separating distance.
 }
 \author{
 Benedikt Graeler

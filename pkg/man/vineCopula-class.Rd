@@ -13,7 +13,7 @@ Objects can be created by calls of the form \code{new("vineCopula", ...)} or thr
 }
 \section{Slots}{
   \describe{
-    \item{\code{RVM}:}{An \code{RVineMatrix} object from \code{\link{RVineMatrix}} describing the R-Vine strucutre.}
+    \item{\code{RVM}:}{An \code{RVineMatrix} object from \code{\link{RVineMatrix}} describing the R-Vine structure.}
     \item{\code{copulas}:}{Object of class \code{"list"} holding all copulas. }
     \item{\code{dimension}:}{Object of class \code{"integer"}; the vines dimension. }
     \item{\code{parameters}:}{Object of class \code{"numeric"}: empty }

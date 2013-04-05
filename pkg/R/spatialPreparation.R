@@ -11,13 +11,13 @@
 # sp="SpatialPoints"	SpatialPoints object providing the coordinates
 # index="matrix"	linking the obs. in data to the coordinates
 
-neighbourhood <- function(data, distances, sp, index, prediction, varNames){
+neighbourhood <- function(data, distances, sp, index, prediction, var){
   sizeN <- ncol(distances)+1
   data <- as.data.frame(data)
-  colnames(data) <- paste(paste("N", rep((0+prediction):(sizeN-1), each=length(varNames)), sep=""),
-                          rep(varNames,(sizeN-prediction)),sep=".")
+  colnames(data) <- paste(paste("N", rep((0+prediction):(sizeN-1), each=length(var)), sep=""),
+                          rep(var,(sizeN-prediction)),sep=".")
   new("neighbourhood", data=data, distances=distances, locations=sp, 
-      bbox=sp@bbox, proj4string=sp@proj4string, index=index, varNames=varNames, 
+      bbox=sp@bbox, proj4string=sp@proj4string, index=index, var=var, 
       prediction=prediction)
 }
 
@@ -25,20 +25,22 @@ neighbourhood <- function(data, distances, sp, index, prediction, varNames){
 showNeighbourhood <- function(object){
   cat("A set of neighbourhoods consisting of", ncol(object@distances)+1, "locations each \n")
   cat("with",nrow(object@data),"rows of observations for:\n")
-  cat(object@varNames,"\n")
+  cat(object@var,"\n")
 }
 
 setMethod(show,signature("neighbourhood"),showNeighbourhood)
 
 ## names (from sp)
 
-setMethod(names, signature("neighbourhood"), namesNeighbourhood <- function(x) x@varNames)
+setMethod(names, signature("neighbourhood"), namesNeighbourhood <- function(x) x@var)
 
 ## spplot ##
-
 spplotNeighbourhood <- function(obj, zcol=names(obj), ..., column=0) {
-  pattern <- paste(paste("N",column,".",sep=""),zcol,sep="")
-  spdf <- SpatialPointsDataFrame(coords=obj@coords, data=obj@data[,pattern,drop=FALSE], proj4string=obj@proj4string, bbox=obj@bbox)
+  stopifnot(all(column<ncol(obj@data)))
+  pattern <- paste(paste("N", column, ".", sep=""), zcol, sep="")
+  spdf <- SpatialPointsDataFrame(coords=obj@locations, 
+                                 data=obj@data[,pattern,drop=FALSE], 
+                                 proj4string=obj@proj4string, bbox=obj@bbox)
   spplot(spdf, ...)
 }
 
@@ -54,7 +56,7 @@ setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
 #             is one less than for the copula estimation (default of 5)
 # min.dist    the minimum distance between neighbours, must be positive
 
-getNeighbours <- function(spData, locations, var=names(spData), size=5, 
+getNeighbours <- function(spData, locations, var=names(spData)[1], size=5, 
                           prediction=FALSE, min.dist=0.01) {
   
   stopifnot((!prediction && missing(locations)) || (prediction && !missing(locations)))
@@ -70,7 +72,7 @@ getNeighbours <- function(spData, locations, var=names(spData), size=5,
   if(any(is.na(match(var,names(spData)))))
     stop("At least one of the variables is unkown or is not part of the data.")
 
-  size <- min(size,length(spData))
+  size <- min(size,length(spData)+prediction)
 
   allDists <- NULL
   allLocs <- NULL

@@ -21,7 +21,7 @@
 
 \title{Classes \code{"surClaytonCopula"}, \code{"r90ClaytonCopula"} and \code{"r270ClaytonCopula"}}
 \description{
-A class representing derivates of the Clayton copula family (survival, 90 and 270 degree rotated).
+A class representing rotated versions of the Clayton copula family (survival, 90 and 270 degree rotated).
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("surClaytonCopula", ...)}, \code{new("r90ClaytonCopula", ...)} and \code{new("r270ClaytonCopula", ...)} or by the function \code{\link{surClaytonCopula}}, \code{\link{r90ClaytonCopula}} and \code{\link{r270ClaytonCopula}} respectively.

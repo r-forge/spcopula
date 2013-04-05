@@ -6,7 +6,7 @@
 
 \title{Class \code{"spVineCopula"}}
 \description{
-A S4-class representing a spatial vine copula struture to model spatial processes.
+A S4-class representing a spatial vine copula structure to model spatial processes.
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("spVineCopula", ...)} or to the constructor \code{\link{spVineCopula}}.
@@ -28,7 +28,7 @@ Class \code{"\linkS4class{copula}"}, directly.
 Class \code{"\linkS4class{Copula}"}, by class "copula", distance 2.
 }
 \section{Methods}{
-No methods defined with class "spVineCopula" in the signature.
+No methods defined with class \code{spVineCopula} in the signature.
 }
 \references{
 Graeler, B. and E. Pebesma (2011): The pair-copula construction for spatial data: a new approach to model spatial dependency. Procedia Environmental Sciences (Vol. 7, pp. 206 - 211), Elsevier.

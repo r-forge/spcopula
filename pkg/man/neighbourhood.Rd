@@ -3,33 +3,22 @@
 \title{
 Constructor of the \code{\linkS4class{neighbourhood}} class.
 }
-\description{
-An object that stores the nearest k-neighbours for each location.
-}
-\usage{
-neighbourhood(data, distances, sp, index)
-}
+\description{An object that stores the nearest k-neighbours for a set of locations.}
+
+\usage{neighbourhood(data, distances, sp, index, prediction, var)}
+
 \arguments{
-  \item{data}{
-A data.frame that contains the variables of interest for each local neighbourhood.
-}
-  \item{distances}{
-A matrix with all the separating distances per local neighbourhood.
-}
-  \item{sp}{
-The coordiantes of the original spatial data.frame.
-}
-  \item{index}{
-An index pointing from each neighbourhood to the corresponding spatial IDs.
-}
-}
-\value{
-A \code{\linkS4class{neighbourhood}} object.
+  \item{data}{A data.frame that contains the variables of interest for each local neighbourhood.}
+  \item{distances}{A matrix with all the separating distances per local neighbourhood.}
+  \item{sp}{A \code{\link[sp:Spatial-class]{Spatial}} object describing the central locations the neighbourhood; must be of same length as rows in \code{data} and \code{distances}.}
+  \item{index}{An index pointing from each neighbourhood to the corresponding spatial IDs.}
+  \item{prediction}{whether this neighbourhood is intended to be used for prediction or fitting purpose.}
+  \item{var}{The variable name(s).}
 }
 
-\author{
-Benedikt Graeler
-}
+\value{A \code{\linkS4class{neighbourhood}} object.}
+
+\author{Benedikt Graeler}
 
 \seealso{
 \code{\linkS4class{neighbourhood}}, \code{\link{getNeighbours}}
@@ -39,12 +28,10 @@ spdf <- data.frame(x=c(112,154,212,289),y=c(124,198,85,168),measure=rlnorm(4))
 coordinates(spdf) <- ~x+y
 
 neigh <- getNeighbours(spdf,size=4)
-
-colnames(neigh@data) <- rep("measure",3)
+neigh
 
 # rebuilding neigh
-neighbourhood(data=neigh@data, neigh@distances, SpatialPoints(neigh@coords), neigh@index)
-neigh
+neighbourhood(neigh@data, neigh@distances, spdf, neigh@index, neigh@prediction, neigh@var)
 }
 
-\keyword{ spatial }
+\keyword{spatial}

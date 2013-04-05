@@ -19,7 +19,7 @@ An \code{\linkS4class{asCopula}} object that behaves (almost) like any other \co
 Example 3.16 in: Nelsen, Roger B. (2006): An Introduction to Copulas, second edition, Springer
 }
 \author{
-Benedikt Gr{\'a}ler
+Benedikt Graeler
 }
 
 \seealso{ 

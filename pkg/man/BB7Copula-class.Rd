@@ -30,7 +30,7 @@
 
 \title{Classes \code{"BB7Copula"}, \code{"surBB7Copula"}, \code{"r90BB7Copula"} and \code{"r270BB7Copula"}}
 \description{
-Wrapper classes representing the BB7, survial BB7, 90 degree and 270 degree rotated BB7 copula families (Joe 1997) from the \code{\link{VineCopula-package}} package.
+Wrapper classes representing the BB7, survival BB7, 90 degree and 270 degree rotated BB7 copula families (Joe 1997) from the \code{\link{VineCopula-package}} package.
 }
 \section{Objects from the Classes}{
 Objects can be created by calls of the form \code{new("BB7Copula", ...)}, \code{new("surBB7Copula", ...)}, \code{new("r90BB7Copula", ...)} and \code{new("r270BB7Copula", ...)} or by the functions \code{\link{BB7Copula}}, \code{\link{surBB7Copula}}, \code{\link{r90BB7Copula}} and \code{\link{r270BB7Copula}}.

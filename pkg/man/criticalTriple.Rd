@@ -11,7 +11,7 @@ criticalTriple(copula, cl, u, ind, tol=sqrt(.Machine$double.eps))
 }
 \arguments{
   \item{copula}{
-The three-dimesnional copula.
+The three-dimensional copula.
 }
   \item{cl}{
 The critical level (cumulative probability level).
@@ -27,7 +27,7 @@ The index of the given arguments.
 }
 }
 \value{
-The third argument for which the geiven critical level (cumulative probability level) is achieved.
+The third argument for which the given critical level (cumulative probability level) is achieved.
 }
 \author{
 Benedikt Graeler

@@ -1,7 +1,7 @@
 \name{copulaFromFamilyIndex}
 \alias{copulaFromFamilyIndex}
 \title{
-Construct a copual object from a VineCopula family index
+Construct a copula object from a \code{\link{VineCopula-package}} family index
 }
 \description{
 A \code{\linkS4class{copula}} object is constructed from the family index used in the package \code{\link{VineCopula-package}} for the provided parameters.

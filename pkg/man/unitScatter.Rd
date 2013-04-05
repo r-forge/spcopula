@@ -2,7 +2,7 @@
 \alias{unitScatter}
 \alias{univScatter}
 \title{
-A scatterplot on the unit-sqaure
+A scatter plot on the unit-square
 }
 \description{
 Plots a sample on the unit-square. If needed, it will transform the sample using the rank order transformation as in \code{\link{rankTransform}}.

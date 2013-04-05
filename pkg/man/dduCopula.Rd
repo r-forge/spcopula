@@ -6,7 +6,7 @@
 partial derivatives of copulas
 }
 \description{
-Similair to the \code{\link{dCopula}} and \code{\link{pCopula}} the function \code{dduCopula} evaluates the partial derivative \eqn{\frac{\partial}{\partial u} C(u,v)} and the function \code{ddvCopula} evaluates the partial derivative \eqn{\frac{\partial}{\partial v} C(u,v)} of the provided copula. 
+Similar to the \code{\link{dCopula}} and \code{\link{pCopula}} the function \code{dduCopula} evaluates the partial derivative \eqn{\frac{\partial}{\partial u} C(u,v)} and the function \code{ddvCopula} evaluates the partial derivative \eqn{\frac{\partial}{\partial v} C(u,v)} of the provided copula. 
 }
 \usage{
 dduCopula(u, copula, ...)
@@ -20,10 +20,10 @@ Pairs of values for which the partial derivative should be evaluated.
   \item{copula}{
 The copula object representing the family member of interest.
 }
-  \item{\dots}{additioanl arguments can be passed on to the underlying functions.}
+  \item{\dots}{additional arguments can be passed on to the underlying functions.}
 }
 \value{
-A vector of the evaluated partial derivaitves of the same length as rows in \code{u}.
+A vector of the evaluated partial derivatives of the same length as rows in \code{u}.
 }
 \author{
 Benedikt Graeler

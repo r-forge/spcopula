@@ -1,7 +1,7 @@
 \name{criticalPair}
 \alias{criticalPair}
 \title{
-Calculate Crtitical Pairs
+Calculate Critical Pairs
 }
 \description{
 For a given argument, the second argument is calculated for a given critical level (cumulated probability level) and copula.
@@ -11,7 +11,7 @@ criticalPair(copula, cl, u, ind, tol=sqrt(.Machine$double.eps))
 }
 \arguments{
   \item{copula}{
-The three-dimesnional copula.
+The three-dimensional copula.
 }
   \item{cl}{
 The critical level (cumulative probability level).
@@ -27,7 +27,7 @@ The index of the given arguments.
 }
 }
 \value{
-The second argument for which the geiven critical level (cumulative probability level) is achieved.
+The second argument for which the given critical level (cumulative probability level) is achieved.
 }
 \author{
 Benedikt Graeler

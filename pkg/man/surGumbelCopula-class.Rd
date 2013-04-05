@@ -21,7 +21,7 @@
 
 \title{Classes \code{"surGumbelCopula"}, \code{"r90GumbelCopula"} and \code{"r270GumbelCopula"}}
 \description{
-A class representing derivates of the Gumbel copula family (survival, 90 and 270 degree rotated).
+A class representing rotated versions of the Gumbel copula family (survival, 90 and 270 degree rotated).
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("surGumbelCopula", ...)}, \code{new("r90GumbelCopula", ...)} and \code{new("r270GumbelCopula", ...)} or by the function \code{\link{surGumbelCopula}}, \code{\link{r90GumbelCopula}} and \code{\link{r270GumbelCopula}} respectively.

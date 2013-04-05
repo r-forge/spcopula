@@ -28,7 +28,7 @@ Class \code{"\linkS4class{copula}"}, directly.
 Class \code{"\linkS4class{Copula}"}, by class "copula", distance 2.
 }
 \section{Methods}{
-No additional methods defined with class "empiricalCopula" in the signature, but \code{\link{pCopula}} works as expected.
+No additional methods defined with class \code{empiricalCopula} in the signature, but \code{\link{pCopula}} works as expected.
 }
 \author{
 Benedikt Graeler}

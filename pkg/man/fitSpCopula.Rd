@@ -5,17 +5,17 @@
 Spatial Copula Fitting
 }
 \description{
-A bivaraite spatial copula is composed out of a set of bivariate copulas. These are combined uisng a convex linear combination with weights based on distances where for copulas with a 1-1 correspondence of Kendall's tau or Spearman's rho a dependence function providing measures of association based on distances might be used. This function estimates a spatial dependence function, evaluates the loglikelihood per family and lag class, selects the bist fits and composes a spatial bivariate copula.
+A bivariate spatial copula is composed out of a set of bivariate copulas. These are combined using a convex linear combination with weights based on distances where for copulas with a 1-1 correspondence of Kendall's tau or Spearman's rho a dependence function providing measures of association based on distances might be used. This function estimates a spatial dependence function, evaluates the log-likelihood per family and lag class, selects the best fits and composes a spatial bivariate copula.
 }
 \usage{
 fitSpCopula(bins, cutoff = NA, families = c(normalCopula(0), tCopula(0, dispstr = "un"), claytonCopula(0), frankCopula(1), gumbelCopula(1)), ...)
 }
 \arguments{
   \item{bins}{
-the bins to be used, typically outpout from \"calcBins\".
+the bins to be used, typically output from \code{\link{calcBins}}.
 }
   \item{cutoff}{
-The maximal distance to be used in the fitment.
+The maximal distance to be used in the fit.
 }
   \item{families}{
 The set of families to be investigated.

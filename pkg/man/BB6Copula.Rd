@@ -5,7 +5,7 @@
 \alias{r270BB6Copula}
 
 \title{
-Constructor of the BB6 family and its derivates
+Constructor of the BB6 family and its derivatives
 }
 \description{
 Constructs an object of the \code{\linkS4class{BB6Copula}} (survival \code{sur}, 90 degree rotated \code{r90} and 270 degree rotated \code{r270}) family for a given parameter.

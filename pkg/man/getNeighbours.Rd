@@ -5,30 +5,27 @@
 Creating Local Neighbourhoods
 }
 \description{
-This function calculates a local neighbourhood to be used in the spatial and spatio-temporal vine copulas.
+This function calculates a local neighbourhood to be used for fitting of spatial/spatio-temporal vine copulas and for prediction using spatial/spatio-temporal vine copulas.
 }
 \usage{
-getNeighbours(spData, var = names(spData), size = 4, dep = NULL, indep = NULL, min.dist = 10)
+getNeighbours(spData, locations, var = names(spData)[1], size = 5, prediction=FALSE, min.dist = 0.01)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{spData}{
-some spatial data frame
+some spatial data frame holding the data used for estimation/prediction
+}
+  \item{locations}{
+A spatial object defining the prediction locations, might be missing if the neighbourhood is used for fitting.
 }
   \item{var}{
-the variable names of interest
+the variable name of interest, by default the first variable is used.
 }
   \item{size}{
-The size of the neighbourhood including the location of interest.
+The size of the neighbourhood including the location of interest (for fitting as well for prediction).
 }
-  \item{dep}{
-Index of dependent locations.
-}
-  \item{indep}{
-Index of independent locations.
-}
+  \item{prediction}{whether the neighbourhood should be used for prediction (TRUE) or spatial/Spatio-temporal vine copula fitting.}
   \item{min.dist}{
-the minimal distance for a location to be included.
+the minimal distance for a location to be included. Must be larger than 0 for fitting purposes and might be 0 for prediction.
 }
 }
 \value{
@@ -45,8 +42,6 @@ See \code{\link{neighbourhood}} for the native constructor of a \code{\linkS4cla
 spdf <- data.frame(x=c(112,154,212,289,345),y=c(124,198,85,168,346),measure=rlnorm(5))
 coordinates(spdf) <- ~x+y
 
-neigh <- getNeighbours(spdf,size=4)
-
-neigh
+getNeighbours(spdf,size=4)
 }
 \keyword{ spatial }

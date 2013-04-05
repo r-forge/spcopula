@@ -5,20 +5,20 @@ Calculating the critical level for a given Kendall Return Period
 }
 \description{
 The critical level corresponding to a given Kendall Return Period and a given 
-kendall distribution or its underlying copula.
+Kendall distribution or its underlying copula.
 }
 \usage{
 criticalLevel(kendallFun = NULL, KRP = c(100, 1000), mu = 1, copula = NULL)
 }
 \arguments{
   \item{kendallFun}{
-The kendall distribution function.
+The Kendall distribution function.
 }
   \item{KRP}{
-The desired Kendall Return Period(s); the feault are 100 and 1000.
+The desired Kendall Return Period(s); the default are 100 and 1000.
 }
   \item{mu}{
-The reoccurence of an event per time unit; the default is 1.
+The recurrence of an event per time unit; the default is 1.
 }
   \item{copula}{
 The copula describing the dependencies between the investigated variables. Only necessary if \code{kendallFun} is not provided.

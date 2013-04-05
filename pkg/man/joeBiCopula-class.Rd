@@ -31,7 +31,7 @@
 
 \title{Classes \code{"joeBiCopula"}, \code{"surJoeBiCopula"}, \code{"r90JoeBiCopula"} and \code{"r270JoeBiCopula"}}
 \description{
-Wrapper classes representing the bivariate Joe, survial Joe, 90 degree and 270 degree rotated Joe copula families (Joe 1997) from \code{\link{VineCopula-package}}. Note that package \code{\link{copula-package}} provides a class \code{\linkS4class{joeCopula}} as well.
+Wrapper classes representing the bivariate Joe, survival Joe, 90 degree and 270 degree rotated Joe copula families (Joe 1997) from \code{\link{VineCopula-package}}. Note that package \code{\link{copula-package}} provides a class \code{\linkS4class{joeCopula}} as well.
 }
 \section{Objects from the Classes}{
 Objects can be created by calls of the form \code{new("joeBiCopula", ...)}, \code{new("surJoeBiCopula", ...)}, \code{new("r90JoeBiCopula", ...)} and \code{new("r270JoeBiCopula", ...)} or by the functions \code{\link{joeBiCopula}}, \code{\link{surJoeBiCopula}}, \code{\link{r90JoeBiCopula}} and \code{\link{r270JoeBiCopula}}.

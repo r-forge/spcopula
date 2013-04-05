@@ -11,7 +11,7 @@ genEmpCop(copula, sample.size=1e5)
 }
 \arguments{
   \item{copula}{
-The theoretical copula to be represnted numerically.
+The theoretical copula to be represented numerically.
 }
 \item{sample.size}{
 The length of the sample to be used. The default is 1e5.

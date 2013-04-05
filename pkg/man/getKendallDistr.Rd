@@ -5,10 +5,10 @@
 \alias{getKendallDistr,gumbelCopula-method}
 
 \title{
-retrieveing the Kendall Distribuiton function for a given copula
+retrieving the Kendall Distribution function for a given copula
 }
 \description{
-Depending on the copula passed, an analytical or empircal Kendall distribution function (\code{\link{kendallDistribution}}) is returned.
+Depending on the copula passed, an analytical or empirical Kendall distribution function (\code{\link{kendallDistribution}}) is returned.
 }
 \usage{
 getKendallDistr(copula, sample = NULL)
@@ -18,7 +18,7 @@ getKendallDistr(copula, sample = NULL)
   A copula object.
 }
   \item{sample}{
-  In case an empirical Kendall Distribution function has to be used, one can pass a sample of the copula that will then ben used to derive the empirical Kendall distribution function. Of it is not provided, it will be sampled on the fly. Note, that fixing a sample might speed up computations considerably.
+  In case an empirical Kendall Distribution function has to be used, one can pass a sample of the copula that will then be used to derive the empirical Kendall distribution function. Of it is not provided, it will be sampled on the fly. Note, that fixing a sample might speed up computations considerably.
 }
 }
 \value{

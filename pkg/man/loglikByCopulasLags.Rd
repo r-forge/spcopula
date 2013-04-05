@@ -1,10 +1,10 @@
 \name{loglikByCopulasLags}
 \alias{loglikByCopulasLags}
 \title{
-Log-Lieklihood per lag calss
+Log-likelihood per lag class
 }
 \description{
-This function calculates the log-lieklihood for a set of provided copula families per lag class.
+This function calculates the log-likelihood for a set of provided copula families per lag class.
 }
 \usage{
 loglikByCopulasLags(bins, calcCor, families = c(normalCopula(0), tCopula(0, dispstr = "un"), claytonCopula(0), frankCopula(1), gumbelCopula(1)))

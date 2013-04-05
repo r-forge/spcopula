@@ -22,7 +22,7 @@ Objects can be created by calls of the form \code{new("spCopula", ...)} or by th
     \item{\code{calibMoa}:}{Object of class \code{"function"} A function providing the copulas' parameter based on a measure of association.}
     \item{\code{unit}:}{Object of class \code{"character"} The spatial unit. }
     \item{\code{dimension}:}{Object of class \code{"integer"} The dimension of the copula (2). }
-    \item{\code{parameters}:}{Object of class \code{"numeric"} The parameters of the copmponents. }
+    \item{\code{parameters}:}{Object of class \code{"numeric"} The parameters of the components. }
     \item{\code{param.names}:}{Object of class \code{"character"} Names of the above parameters. }
     \item{\code{param.lowbnd}:}{Object of class \code{"numeric"} The lower bounds of the above parameters. }
     \item{\code{param.upbnd}:}{Object of class \code{"numeric"} The upper bounds of the above parameters. }

@@ -1,0 +1,83 @@
+\name{spCopPredict}
+\alias{spCopPredict}
+
+\title{
+spatial prediction based on a spatial vine copula
+}
+\description{
+A spatial vine copula is used to predict values at unobserved locations conditioned on observations of a local neighbourhood.
+}
+\usage{
+spCopPredict(predNeigh, spVine, margin, method = "quantile", p = 0.5)
+}
+\arguments{
+  \item{predNeigh}{
+the \code{\linkS4class{neighbourhood}} used for prediction, its slot \code{prediction} must be \code{TRUE}.
+}
+  \item{spVine}{
+the spatial vine copula describing the spatial dependence
+}
+  \item{margin}{
+the marginal distribution as a list with entries named "d" for the density function (PDF), "q" for the quantile function and "p" for cumulative distribution function (CDF).
+}
+  \item{method}{
+one of \code{"quantile"} or \code{"expectation"} denoting the type of predictor.
+}
+  \item{p}{
+only used for the quantile predictor indicating the desired fraction the quantile should correspond to.
+}
+}
+\details{
+Predictions are done based on \code{\link{condSpVine}} through numerical integration/optimisation.
+}
+\value{
+A \code{\link[sp:Spatial-class]{Spatial}} object of the same type as provided in the slot \code{locations} of the argument \code{predNeigh}.
+}
+\references{
+Graeler, B. and E. Pebesma (2011): The pair-copula construction for spatial data: a new approach to model spatial dependency. Procedia Environmental Sciences (Vol. 7, pp. 206 - 211), Elsevier.
+}
+\author{
+Benedikt Graeler
+}
+
+\seealso{
+\code{\link{condSpVine}}
+}
+\examples{
+data(spCopDemo)
+
+calcKTauPol <- fitCorFun(bins, degree=3)
+
+spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
+                                  frankCopula(1), normalCopula(0), claytonCopula(0),
+                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
+                                  claytonCopula(0), indepCopula()),
+                  distances=bins$meanDists,
+                  spDepFun=calcKTauPol, unit="m")
+
+spVineCop <- spVineCopula(spCop, vineCopula(4L))
+
+data(meuse.grid)
+coordinates(meuse.grid) <- ~x+y
+gridded(meuse.grid) <- TRUE
+
+data(meuse)
+coordinates(meuse) <- ~x+y
+
+predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,15:19,24:28,34:38),],"zinc",5L,TRUE,-1)
+predMeuseNeigh@data <- rankTransform(predMeuseNeigh@data)
+
+qMar <- function(x) {
+  qlnorm(x,mean(log(meuse$zinc)),sd(log(meuse$zinc)))
+}
+
+predMedian <- spCopPredict(predMeuseNeigh, spVineCop, list(q=qMar), "quantile", p=0.5)
+
+spplot(predMedian,"quantile.0.5", 
+       sp.layout=list("sp.points", meuse, pch = 19, col = "red"),
+       col.regions=bpy.colors())
+}
+
+\keyword{ distribution }
+\keyword{ prediction }
+\keyword{ spatial }

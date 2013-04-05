@@ -3,7 +3,7 @@
 \alias{r90ClaytonCopula}
 \alias{r270ClaytonCopula}
 \title{
-suvival and rotated Clayton Copulas
+survival and rotated Clayton Copulas
 }
 \description{
 these are wrappers to functions from \code{\link{VineCopula-package}}

@@ -17,7 +17,7 @@ kendallDistribution(copula, t)
 A copula of which the Kendall Distribution should be calculated.
 }
   \item{t}{
-The quantile of the copula for which the Kendall distri bution should be calculated.
+The quantile of the copula for which the Kendall distribution should be calculated.
 }
 }
 \value{

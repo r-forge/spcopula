@@ -3,7 +3,7 @@
 \alias{r90GumbelCopula}
 \alias{r270GumbelCopula}
 \title{
-suvival and rotated Gumbel Copulas
+survival and rotated Gumbel Copulas
 }
 \description{
 these are wrappers to functions from \code{\link{VineCopula-package}}

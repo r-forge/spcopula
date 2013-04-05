@@ -12,16 +12,16 @@ spCopula(components, distances, spDepFun, unit = "m")
 
 \arguments{
   \item{components}{
-A list of bivariate copulas to be used at each lag.Will be supplemented by the independeCopula.
+A list of bivariate copulas to be used at each lag.Will be supplemented by the independence copula.
 }
   \item{distances}{
-A vecotr of the mean distances of the lag classes PLUS the range which will define the use of the independece copula.
+A vector of the mean distances of the lag classes PLUS the range which will define the use of the independence copula.
 }
   \item{spDepFun}{
-The spatial dependece function. Typically, the result of \code{\link{fitCorFun}}. If no spatial dependence function is provided, the spatial copula will be a pure linear convex combination of the provided components (i.e. no further fit of their parameters will take place).
+The spatial dependence function. Typically, the result of \code{\link{fitCorFun}}. If no spatial dependence function is provided, the spatial copula will be a pure linear convex combination of the provided components (i.e. no further fit of their parameters will take place).
 }
   \item{unit}{
-The spatial unit, defualt: m (meters)
+The spatial unit, default: m (meters)
 }
 }
 \value{

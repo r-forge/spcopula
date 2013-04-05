@@ -1,7 +1,7 @@
 \name{empiricalCopula}
 \alias{empiricalCopula}
 \title{
-Constructor of an empircal copula class
+Constructor of an empirical copula class
 }
 \description{
 Constructs an object of the empirical copula class \code{\linkS4class{empiricalCopula}}, see \code{\link{genEmpCop}} for a simplified version.
@@ -14,7 +14,7 @@ empiricalCopula(sample=NULL, copula)
 A sample from a provided or unknown copula family.
 }
   \item{copula}{
-The underlying theoretical copula, in case it is known or a sample should be gnerated.
+The underlying theoretical copula, in case it is known or a sample should be generated.
 }
 }
 \value{
@@ -28,7 +28,7 @@ Its implementation of \code{\link{pCopula}} is based on C-code from \code{\link{
 }
 
 \seealso{
-\code{\link{genEmpCop}} for a simplified constructor with sample length controle.
+\code{\link{genEmpCop}} for a simplified constructor with sample length control.
 }
 \examples{
 empCop <- empiricalCopula(rCopula(500,frankCopula(0.7)))

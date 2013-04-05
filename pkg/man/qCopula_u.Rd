@@ -29,7 +29,7 @@ Passed on to \code{\link{optim}} in the background.
 The evaluation is done numerically using either \code{\link{optim}} or \code{\link{optimise}}.
 }
 \value{
-A matrix having the same number of rows as \"u\" providing u and the other arguments.
+A matrix having the same number of rows as \code{u} providing u and the other arguments.
 }
 \author{
 Benedikt Graeler
