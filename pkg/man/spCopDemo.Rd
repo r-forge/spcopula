@@ -15,10 +15,10 @@
 \alias{spCop}
 \docType{data}
 \title{
-workspace produced in \code{demo(spcopula_estimation)}
+workspace produced in \code{demo(spCopula)}
 }
 \description{
-This workspace is produced by the call \code{demo(spcopula_estimation)} and used in a couple of examples throughout the package.
+This workspace is produced by the call \code{demo(spCopula)} and used in a couple of examples throughout the package.
 }
 \usage{data(spCopDemo)}
 \references{

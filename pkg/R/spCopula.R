@@ -381,6 +381,13 @@ dduSpCopula <- function (u, copula, h, block=1) {
     }
   }
   
+  if(any(res < 0) || any(res > 1)) {
+    warning("Partial derivative produced values outside of [0,1], corrections will be applied to:\n",
+            paste(res[res<0],collapse=" "),paste(res[res>1],collapse=" "))
+    res[res<0] <- 0
+    res[res>1] <- 1
+  }
+  
   return(res)
 }
 
@@ -428,6 +435,13 @@ ddvSpCopula <- function (u, copula, h, block=1) {
     } else {
       res <- spDepFunCopSnglDist(ddvCopula, copula, u, h)
     }
+  }
+  
+  if(any(res < 0) || any(res > 1)) {
+    warning("Partial derivative produced values outside of [0,1], corrections will be applied to:\n",
+            paste(res[res<0],collapse=" "),paste(res[res>1],collapse=" "))
+    res[res<0] <- 0
+    res[res>1] <- 1
   }
   
   return(res)

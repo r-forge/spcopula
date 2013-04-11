@@ -48,8 +48,8 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
 
 spVineCop <- spVineCopula(spCop, vineCopula(4L))
 
-dists <- runif(4,0,800)
-condVar <- runif(4)
+dists <- c(473, 124, 116, 649)
+condVar <- c(0.29, 0.55, 0.05, 0.41)
 condDensity <- condSpVine(condVar,dists,spVineCop)
 
 curve(condDensity)

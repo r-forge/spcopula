@@ -45,7 +45,6 @@ setMethod("show", signature("vineCopula"), showVineCopula)
 
 dRVine <- function(u, copula, log=F) {
   RVM <- copula@RVM
-#   class(RVM) <- "RVineMatrix"
   vineLoglik <- RVineLogLik(u, RVM, separate=T)$loglik
   if(log)
     return(vineLoglik)
