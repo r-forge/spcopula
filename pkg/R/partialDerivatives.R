@@ -218,7 +218,7 @@ dduGumbel <- function(u, copula){
   u1 <- u[,1]
   u2 <- u[,2]
 
-  pcopula(gumbelCopula(rho),u) * ((-log(u1))^rho+(-log(u2))^rho)^(1/rho-1) * (-log(u1))^(rho-1)/u1
+  pCopula(u,gumbelCopula(rho)) * ((-log(u1))^rho+(-log(u2))^rho)^(1/rho-1) * (-log(u1))^(rho-1)/u1
 }
 
 setMethod("dduCopula", signature("numeric","gumbelCopula"),
@@ -237,7 +237,7 @@ ddvGumbel <- function(u, copula){
   u1 <- u[,1]
   u2 <- u[,2]
 
-  pcopula(gumbelCopula(rho),u) * ((-log(u2))^rho+(-log(u1))^rho)^(1/rho-1) * (-log(u2))^(rho-1)/u2
+  pCopula(u,gumbelCopula(rho)) * ((-log(u2))^rho+(-log(u1))^rho)^(1/rho-1) * (-log(u2))^(rho-1)/u2
 }
 
 setMethod("ddvCopula", signature("numeric","gumbelCopula"),

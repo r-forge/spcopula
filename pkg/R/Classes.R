@@ -95,8 +95,10 @@ validSpCopula <- function(object) {
   check.upper <- NULL
   check.lower <- NULL
   
+  nComp <- length(object@components)
   if(!is.null(object@calibMoa(normalCopula(0),0))) {
-    for (i in 1:(length(object@components)-1)) {
+    nonIndep <- sapply(object@components[-nComp], function(x) class(x) != "indepCopula")
+    for (i in (1:(nComp-1))[nonIndep]) {
       check.upper <- c(check.upper, is.na(object@calibMoa(object@components[[i]], object@distances[i+1])))
       check.lower <- c(check.lower, is.na(object@calibMoa(object@components[[i]], c(0,object@distances)[i])))
     }

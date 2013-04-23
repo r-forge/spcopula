@@ -8,7 +8,7 @@ Conditions a spatial vine copula for conditional prediction
 A spatial vine copula is conditioned under the observations of all but one neighbour generating a conditional uivariate distribution used ofr prediction.
 }
 \usage{
-condSpVine(condVar, dists, spVine, n = 100)
+condSpVine(condVar, dists, spVine, n = 1000)
 }
 \arguments{
   \item{condVar}{

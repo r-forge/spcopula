@@ -1,15 +1,11 @@
-##################################################################
-##                                                              ##
-## dedicated functions based on sp preparing the use of copulas ##
-##                                                              ##
-##################################################################
+########################################################
+##                                                    ##
+## functions based on sp preparing the use of copulas ##
+##                                                    ##
+########################################################
 
-## neighbourhood
-# constructor
-# data = "matrix"	a matrix or array providing the data
-# distances="matrix"	a matrix providing the distances
-# sp="SpatialPoints"	SpatialPoints object providing the coordinates
-# index="matrix"	linking the obs. in data to the coordinates
+## neighbourhood constructor
+############################
 
 neighbourhood <- function(data, distances, sp, index, prediction, var){
   sizeN <- ncol(distances)+1
@@ -31,7 +27,6 @@ showNeighbourhood <- function(object){
 setMethod(show,signature("neighbourhood"),showNeighbourhood)
 
 ## names (from sp)
-
 setMethod(names, signature("neighbourhood"), namesNeighbourhood <- function(x) x@var)
 
 ## spplot ##
@@ -49,12 +44,7 @@ setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
 ## calculate neighbourhood from SpatialPointsDataFrame
 
 # returns an neighbourhood object
-# spData	    spatialPointsDataFrame
-# locations   the prediction locations, for fitting, locations=spData
-# var 		    one or multiple variable names, all is the default
-# size		    the size of the neighbourhood, note that for prediction the size 
-#             is one less than for the copula estimation (default of 5)
-# min.dist    the minimum distance between neighbours, must be positive
+##################################
 
 getNeighbours <- function(spData, locations, var=names(spData)[1], size=5, 
                           prediction=FALSE, min.dist=0.01) {
@@ -94,14 +84,6 @@ getNeighbours <- function(spData, locations, var=names(spData)[1], size=5,
                        allLocs, prediction, var))
 }
 
-# data(meuse)
-# coordinates(meuse) <- ~x+y
-# meuseNeigh <- getNeighbours(meuse,var="zinc",size=5)
-# str(meuseNeigh)
-# 
-# meuseNeigh <- addAttrToGeom(meuseNeigh@locations,data.frame(rnd=runif(155)),match.ID=F)
-# str(meuseNeigh)
-
 #############
 ## BINNING ##
 #############
@@ -131,40 +113,46 @@ calcSpLagInd <- function(data, boundaries) {
 }
 
 # the generic calcBins, calculates bins for spatial and spatio-temporal data
+setGeneric("calcBins", function(data, var, nbins=15, boundaries=NA, cutoff=NA,
+                                cor.method="kendall", plot=T, ...) {
+                         standardGeneric("calcBins") 
+                         })
 
-setGeneric("calcBins", function(data, var, nbins=15, boundaries=NA, cutoff=NA, cor.method="kendall", plot=T, ...) standardGeneric("calcBins") )
+## calculating the spatial bins
+################################
 
-# calculating the spatial bins
-# 
-# data denotes the spatial data object
-# var denotes the only variable name used
-# cor.method is passed on to cor() (default="kendall")
-# if plot=TRUE (default), the correlation measures are plotted agaisnt the mean lag separation distance
-# 
-calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA, cutoff=NA, cor.method="kendall", plot=TRUE) {
+calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA, 
+                       cutoff=NA, cor.method="kendall", plot=TRUE) {
 
+  if(is.na(cutoff)) {
+    cutoff <- spDists(coordinates(t(data@bbox)))[1,2]/3
+  }
   if(is.na(boundaries)) {
-    diagonal <- spDists(coordinates(t(data@bbox)))[1,2]
-    boundaries <- ((1:nbins) * min(cutoff,diagonal/3,na.rm=T) / nbins)
+    boundaries <- ((1:nbins) * cutoff/nbins)
   }
   
   lags <- calcSpLagInd(data, boundaries)
     
-  mDists <- sapply(lags,function(x) mean(x[,3]))
+  mDists <- sapply(lags, function(x) mean(x[,3]))
+  np <- sapply(lags, function(x) length(x[,3]))
   lagData <- lapply(lags, function(x) as.matrix((cbind(data[x[,1],var]@data, data[x[,2],var]@data))))
   
   if(cor.method == "fasttau")
     lagCor <- sapply(lagData, function(x) VineCopula:::fasttau(x[,1], x[,2]))
-  else 
+  if(cor.method %in% c("kendall","spearman","perarson"))
     lagCor <- sapply(lagData, function(x) cor(x,method=cor.method)[1,2])
-  
+  if(cor.method == "normVariogram")  
+    lagCor <- sapply(lagData, function(x) 1-cor(x,method="pearson")[1,2])
+  if(cor.method == "variogram")  
+    lagCor <- sapply(lagData, function(x) 0.5*mean((x[,1]-x[,2])^2,na.rm=T))
+    
   if(plot) { 
     plot(mDists, lagCor, xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
          ylim=1.05*c(-abs(min(lagCor)),max(lagCor)), xlim=c(0,max(mDists)))
     abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
   }
   
-  res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags)
+  res <- list(np=np, meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags)
   attr(res,"cor.method") <- cor.method
   return(res)
 }

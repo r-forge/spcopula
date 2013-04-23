@@ -8,7 +8,7 @@ spatial prediction based on a spatial vine copula
 A spatial vine copula is used to predict values at unobserved locations conditioned on observations of a local neighbourhood.
 }
 \usage{
-spCopPredict(predNeigh, spVine, margin, method = "quantile", p = 0.5)
+spCopPredict(predNeigh, spVine, margin, method = "quantile", p = 0.5, range = NULL)
 }
 \arguments{
   \item{predNeigh}{
@@ -26,6 +26,9 @@ one of \code{"quantile"} or \code{"expectation"} denoting the type of predictor.
   \item{p}{
 only used for the quantile predictor indicating the desired fraction the quantile should correspond to.
 }
+  \item{range}{
+  the range of integartion to be used in the numerical integration in \code{"expectation"} by \code{\link{integrate}}.
+  }
 }
 \details{
 Predictions are done based on \code{\link{condSpVine}} through numerical integration/optimisation.

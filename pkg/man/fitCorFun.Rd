@@ -8,7 +8,7 @@ Automated fitting of a correlation function to the correlogram
 Polynomials of different degrees can be fitted to the correlogram calculated using \code{\link{calcBins}}. This function will be used to adjust the copula parameter in the spatial/spatio-temporal copula.
 }
 \usage{
-fitCorFun(bins, degree = 3, cutoff = NA, bounds = c(0, 1), cor.method = NULL)
+fitCorFun(bins, degree = 3, cutoff = NA, bounds = c(0, 1), cor.method = NULL, weighted = FALSE)
 }
 \arguments{
   \item{bins}{
@@ -26,6 +26,9 @@ Bounds of the correlation values. The default is set [0,1] not allowing any nega
   \item{cor.method}{
 The output of \code{\link{calcBins}} has an attribute \code{cor.method}, in case this is not present the parameter \code{cor.method} will be used. In case the parameter \code{cor.method} is not \code{NULL} and the attribute \code{cor.method} is present, they will be compared.
 }
+  \item{weighted}{
+  shall the residulas be weighted by the number of points in the lag class?
+  }
 }
 \value{
 Returns a function that provides correlation estimate for every separating distance.

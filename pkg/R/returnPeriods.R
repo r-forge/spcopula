@@ -123,4 +123,4 @@ qCopula_u.def <- function(copula,p,u, tol=.Machine$double.eps^.5) { # sample=NUL
   return(cbind(u,params))
 }
 
-setMethod("qCopula_u",signature("copula"),qCopula_u.def)
+setMethod("qCopula_u", signature("copula"), qCopula_u.def)
