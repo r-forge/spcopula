@@ -25,7 +25,7 @@ setClass("joeBiCopula",
 )
 
 # constructor
-joeBiCopula <- function (param) {
+joeBiCopula <- function (param=2) {
   if (any(is.na(param) | param >= Inf | param <= 1 ))
     stop("Parameter is outside of the allowed interval (1,Inf).")
   new("joeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
@@ -104,7 +104,7 @@ setClass("surJoeBiCopula",
 )
 
 # constructor
-surJoeBiCopula <- function (param) {
+surJoeBiCopula <- function (param=2) {
   if (any(is.na(param) | param >= Inf | param <= 1 ))
     stop("Parameter is outside of the allowed interval (1,Inf).")
   new("surJoeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
@@ -181,7 +181,7 @@ setClass("r90JoeBiCopula",
 )
 
 # constructor
-r90JoeBiCopula <- function (param) {
+r90JoeBiCopula <- function (param=-2) {
   if (any(is.na(param) | param >= -1 | param <= -Inf ))
     stop("Parameter is outside of the allowed interval (-Inf,-1).")
   new("r90JoeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
@@ -243,7 +243,7 @@ setClass("r270JoeBiCopula",
 )
 
 # constructor
-r270JoeBiCopula <- function (param) {
+r270JoeBiCopula <- function (param=-2) {
   if (any(is.na(param) | param >= -1 | param <= -Inf ))
     stop("Parameter is outside of the allowed interval (-Inf,-1).")
   new("r270JoeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 

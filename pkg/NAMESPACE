@@ -27,6 +27,7 @@ export(condSpVine,spCopPredict)
 # spatial
 export(getNeighbours)
 export(calcBins)
+export(calcSpTreeDists, dropSpTree)
 
 # fitting
 export(fitCorFun, loglikByCopulasLags, fitSpCopula, composeSpCopula)

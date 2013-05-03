@@ -27,7 +27,7 @@ setClass("BB8Copula",
 )
 
 # constructor
-BB8Copula <- function (param) {
+BB8Copula <- function (param=c(1,1)) {
   if (any(is.na(param)) | param[1] >= Inf | param[2] > 1 | param[1] < 1 | param[2] <= 0)
     stop("Parameter value out of bound: theta: [1,Inf), delta: (0,1].")
   new("BB8Copula", dimension = as.integer(2), parameters = param, 
@@ -98,7 +98,7 @@ setClass("surBB8Copula",
 )
 
 # constructor
-surBB8Copula <- function (param) {
+surBB8Copula <- function (param=c(1,1)) {
   if (any(is.na(param)) | param[1] >= Inf | param[2] > 1 | param[1] < 1 | param[2] <= 0)
     stop("Parameter value out of bound: theta: [1,Inf), delta: (0,1].")
   new("surBB8Copula", dimension = as.integer(2), parameters = param,
@@ -165,7 +165,7 @@ setClass("r90BB8Copula",
 )
 
 # constructor
-r90BB8Copula <- function (param) {
+r90BB8Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param[1] > -1 | param[2] >= 0 | param[1] <= -Inf | param[2] < -1))
     stop("Parameter value out of bound: theta: (-Inf,-1], delta: [-1,0).")
   new("r90BB8Copula", dimension = as.integer(2), parameters = param, 
@@ -219,7 +219,7 @@ setClass("r270BB8Copula",
 )
 
 # constructor
-r270BB8Copula <- function (param) {
+r270BB8Copula <- function (param=c(-1,-1)) {
   val <- new("r270BB8Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=40, fullname = "270 deg rotated BB8 copula family. Number 40 in CDVine.")
   val
 }
@@ -258,3 +258,31 @@ setMethod("rCopula", signature("numeric","r270BB8Copula"), linkVineCop.r)
 
 setMethod("tau",signature("r270BB8Copula"),linkVineCop.tau)
 setMethod("tailIndex",signature("r270BB8Copula"),linkVineCop.tailIndex)
+
+### et union
+
+setClassUnion("twoParamBiCop",c("BB1Copula","BB6Copula","BB7Copula","BB8Copula",
+                                "surBB1Copula","surBB6Copula","surBB7Copula","surBB8Copula",
+                                "r90BB1Copula","r90BB6Copula","r90BB7Copula","r90BB8Copula",
+                                "r270BB1Copula","r270BB6Copula","r270BB7Copula","r270BB8Copula"))
+
+fitCopula.twoParamBiCop <- function(copula, data, method = "mpl", 
+                                    estimate.variance = FALSE) {
+  stopifnot(method=="mpl")
+  fit <- BiCopEst(data[,1], data[,2], copula@family, "mle",
+                  se=estimate.variance)
+  
+  if(!estimate.variance) {
+    fit$se <- NA
+    fit$se2 <- NA
+  }
+  
+  copFit <- copulaFromFamilyIndex(copula@family, fit$par, fit$par2)
+  new("fitCopula", estimate = c(fit$par, fit$par2), var.est = cbind(fit$se, fit$se2), 
+      method = "estimation based on 'maximum pseudo-likelihood' via BiCopEst", 
+      loglik = sum(dCopula(data, copFit, log=T)),
+      fitting.stats=list(convergence = as.integer(NA)), nsample = nrow(data),
+      copula=copFit)
+}
+
+setMethod("fitCopula", signature("twoParamBiCop"), fitCopula.twoParamBiCop)

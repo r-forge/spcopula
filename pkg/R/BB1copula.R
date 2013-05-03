@@ -25,7 +25,7 @@ setClass("BB1Copula",
 )
 
 # constructor
-BB1Copula <- function (param) {
+BB1Copula <- function (param=c(1,1)) {
   if (any(is.na(param) | param >= c(Inf,Inf) | param[1] <= 0 | param[2] < 1))
     stop(paste("Parameter values out of bounds: theta: (0,Inf), delta: [1,Inf)."))
   new("BB1Copula", dimension = as.integer(2), parameters = param, 
@@ -38,7 +38,8 @@ setMethod("dCopula", signature("numeric","BB1Copula"),
           function(u, copula, log) {
             linkVineCop.PDF(matrix(u,ncol=copula@dimension),copula, log)
           })
-setMethod("dCopula", signature("matrix","BB1Copula"), function(u, copula, log) linkVineCop.PDF(u, copula, log))
+setMethod("dCopula", signature("matrix","BB1Copula"), 
+          function(u, copula, log) linkVineCop.PDF(u, copula, log))
 
 ## jcdf ##
 setMethod("pCopula", signature("numeric","BB1Copula"), 
@@ -95,7 +96,7 @@ setClass("surBB1Copula",
 )
 
 # constructor
-surBB1Copula <- function (param) {
+surBB1Copula <- function (param=c(1,1)) {
   if (any(is.na(param) | param >= c(Inf,Inf) | param[1] <= 0 | param[2] < 1))
     stop(paste("Parameter values out of bounds: theta: (0,Inf), delta: [1,Inf)."))
   new("surBB1Copula", dimension = as.integer(2), parameters = param, 
@@ -162,7 +163,7 @@ setClass("r90BB1Copula",
 )
 
 # constructor
-r90BB1Copula <- function (param) {
+r90BB1Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param[1] >= 0 | param[2] > -1 | param <= c(-Inf,-Inf)))
     stop(paste("Parameter values out of bounds: theta: (-Inf,0), delta: (-Inf,-1]."))
   new("r90BB1Copula", dimension = as.integer(2), parameters = param, 
@@ -216,7 +217,7 @@ setClass("r270BB1Copula",
 )
 
 # constructor
-r270BB1Copula <- function (param) {
+r270BB1Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param[1] >= 0 | param[2] > -1 | param <= c(-Inf,-Inf)))
     stop(paste("Parameter values out of bounds: theta: (-Inf,0), delta: (-Inf,-1]."))
   new("r270BB1Copula", dimension = as.integer(2), parameters = param, 

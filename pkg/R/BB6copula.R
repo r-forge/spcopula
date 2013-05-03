@@ -27,7 +27,7 @@ setClass("BB6Copula",
 )
 
 # constructor
-BB6Copula <- function (param) {
+BB6Copula <- function (param=c(1,1)) {
   if (any(is.na(param) | param >= c(Inf, Inf) | param < c(1,1)))
     stop("Parameter value(s) out of bound(s): theta: [1,Inf), delta: [1,Inf).")
   new("BB6Copula", dimension = as.integer(2), parameters = param, 
@@ -98,7 +98,7 @@ setClass("surBB6Copula",
 )
 
 # constructor
-surBB6Copula <- function (param) {
+surBB6Copula <- function (param=c(1,1)) {
   if (any(is.na(param) | param >= c(Inf, Inf) | param < c(1,1)))
     stop("Parameter value(s) out of bound(s): theta: [1,Inf), delta: [1,Inf).")
   new("surBB6Copula", dimension = as.integer(2), parameters = param, 
@@ -165,7 +165,7 @@ setClass("r90BB6Copula",
 )
 
 # constructor
-r90BB6Copula <- function (param) {
+r90BB6Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param > c(-1,-1) | param <= c(-Inf,-Inf)))
     stop("Parameter value out of bound: theta: (-Inf,1], delta: (-Inf,1].")
   new("r90BB6Copula", dimension = as.integer(2), parameters = param, 
@@ -219,7 +219,7 @@ setClass("r270BB6Copula",
 )
 
 # constructor
-r270BB6Copula <- function (param) {
+r270BB6Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param > c(-1,-1) | param <= c(-Inf,-Inf)))
     stop("Parameter value out of bound: theta: (-Inf,1], delta: (-Inf,1].")
   new("r270BB6Copula", dimension = as.integer(2), parameters = param, 

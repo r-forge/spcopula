@@ -148,6 +148,9 @@ setMethod("invddvCopula", signature("numeric","indepCopula", "numeric"), invddvI
 dduClayton <- function(u, copula){
   rho <- copula@parameters
 
+  if (rho==0)
+    return(u[,2])
+  
   u1 <- u[,1]
   u2 <- u[,2]
 
@@ -179,6 +182,9 @@ ddvClayton <- function(u, copula){
   rho <- copula@parameters
   if (!is.matrix(u)) u <- matrix(u, ncol=2)
 
+  if (rho==0)
+    return(u[,1])
+  
   u1 <- u[,1]
   u2 <- u[,2]
 

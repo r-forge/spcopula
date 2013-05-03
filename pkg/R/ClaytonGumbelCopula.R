@@ -30,7 +30,7 @@ setClass("surClaytonCopula",
 )
 
 # constructor
-surClaytonCopula <- function (param) {
+surClaytonCopula <- function (param=1) {
   new("surClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
       param.lowbnd = 0, param.upbnd = Inf, family=13, 
       fullname = "Survival Clayton copula family. Number 13 in CDVine.")
@@ -54,14 +54,14 @@ setMethod("pCopula", signature("matrix","surClaytonCopula"), linkVineCop.surCDF)
 # ddu
 setMethod("dduCopula", signature("numeric","surClaytonCopula"), 
           function(u, copula, log) {
-            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.ddu(matrix(u,ncol=copula@dimension),copula)
           })
 setMethod("dduCopula", signature("matrix","surClaytonCopula"), linkVineCop.ddu)
 
 # ddv
 setMethod("ddvCopula", signature("numeric","surClaytonCopula"), 
           function(u, copula, log) {
-            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula, log)
+            linkVineCop.ddv(matrix(u,ncol=copula@dimension),copula)
           })
 setMethod("ddvCopula", signature("matrix","surClaytonCopula"), linkVineCop.ddv)
 
@@ -104,7 +104,7 @@ setClass("r90ClaytonCopula",
 )
 
 # constructor
-r90ClaytonCopula <- function (param) {
+r90ClaytonCopula <- function (param=-1) {
   new("r90ClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = 0, family=23, 
       fullname = "90 deg rotated Clayton copula family. Number 23 in CDVine.")
@@ -164,7 +164,7 @@ setClass("r270ClaytonCopula",
 )
 
 # constructor
-r270ClaytonCopula <- function (param) {
+r270ClaytonCopula <- function (param=-1) {
   new("r270ClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = 0, family=33, 
       fullname = "270 deg rotated Clayton copula family. Number 33 in CDVine.")
@@ -245,7 +245,7 @@ setClass("surGumbelCopula",
          )
 
 # constructor
-surGumbelCopula <- function (param) {
+surGumbelCopula <- function (param=1) {
   new("surGumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
       param.lowbnd = 1, param.upbnd = Inf, family=14, 
       fullname = "Survival Gumbel copula family. Number 14 in CDVine.")
@@ -320,7 +320,7 @@ setClass("r90GumbelCopula",
          )
 
 # constructor
-r90GumbelCopula <- function (param) {
+r90GumbelCopula <- function (param=-1) {
   new("r90GumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = -1, family=24, 
       fullname = "90 deg rotated Gumbel copula family. Number 24 in CDVine.")
@@ -380,7 +380,7 @@ setClass("r270GumbelCopula",
          )
 
 # constructor
-r270GumbelCopula <- function (param) {
+r270GumbelCopula <- function (param=-1) {
   new("r270GumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = -1, family=34, 
       fullname = "270 deg rotated Gumbel copula family. Number 34 in CDVine.")

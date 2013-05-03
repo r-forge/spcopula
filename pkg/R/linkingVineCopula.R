@@ -1,7 +1,27 @@
+copulaFromFamilyIndex <- function(family, par, par2=0) {
+  constr <- switch(family+1, function(par) indepCopula(), 
+                   function(par) normalCopula(par[1]), function(par) tCopula(par[1],df=par[2]),
+                   function(par) claytonCopula(par[1]), function(par) gumbelCopula(par[1]),
+                   function(par) frankCopula(par[1]), function(par) joeBiCopula(par[1]),
+                   BB1Copula, BB6Copula, BB7Copula, BB8Copula, 
+                   NULL, NULL,
+                   function(par) surClaytonCopula(par[1]), function(par) surGumbelCopula(par[1]),
+                   NULL, function(par) surJoeBiCopula(par[1]),
+                   surBB1Copula, surBB6Copula, surBB7Copula, surBB8Copula, 
+                   NULL, NULL,
+                   function(par) r90ClaytonCopula(par[1]), function(par) r90GumbelCopula(par[1]),
+                   NULL, function(par) r90JoeBiCopula(par[1]),
+                   r90BB1Copula, r90BB6Copula, r90BB7Copula, r90BB8Copula, 
+                   NULL, NULL,
+                   function(par) r270ClaytonCopula(par[1]), function(par) r270GumbelCopula(par[1]),
+                   NULL, function(par) r270JoeBiCopula(par[1]),
+                   r270BB1Copula, r270BB6Copula, r270BB7Copula, r270BB8Copula)
+  constr(c(par,par2))
+}
+
 #####################################################
 ## generic wrapper functions to the CDVine package ##
 #####################################################
-
 
 # density from BiCopPDF
 linkVineCop.PDF <- function (u, copula, log=FALSE) {
@@ -123,6 +143,12 @@ linkVineCop.r <- function (n, copula){
 #             PACKAGE = "CDVine")[[7]]
   return(matrix(tmp, ncol = 2))
 }
+
+## fit a Copula through fitCopula with BiCopEst
+## -> BB8Copula (collate issues)
+
+
+
 
 # ## transform a fit from CDVine to a list of copula objects
 # castCDvine <- function(cdvEst) {

@@ -25,7 +25,7 @@ setClass("BB7Copula",
 )
 
 # constructor
-BB7Copula <- function (param) {
+BB7Copula <- function (param=c(1,1)) {
   if (any(is.na(param) | param >= c(Inf, Inf) | param[1] < 1 | param[2] <= 0))
     stop(paste("Parameter values out of bounds: theta: [1,Inf), delta: (0,Inf)."))
   new("BB7Copula", dimension = as.integer(2), parameters = param,
@@ -98,7 +98,7 @@ setClass("surBB7Copula",
 )
 
 # constructor
-surBB7Copula <- function (param) {
+surBB7Copula <- function (param=c(1,1)) {
   if (any(is.na(param) | param >= c(Inf, Inf) | param[1] < 1 | param[2] <= 0))
     stop(paste("Parameter values out of bounds: theta: [1,Inf), delta: (0,Inf)."))
   new("surBB7Copula", dimension = as.integer(2), parameters = param, 
@@ -167,7 +167,7 @@ setClass("r90BB7Copula",
 )
 
 # constructor
-r90BB7Copula <- function (param) {
+r90BB7Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param[1] > -1 | param[2] >= 0 | param <= c(-Inf,-Inf)))
     stop(paste("Parameter values out of bounds: theta: (-Inf,-1], delta: (-Inf,0)."))
   new("r90BB7Copula", dimension = as.integer(2), parameters = param, 
@@ -221,7 +221,7 @@ setClass("r270BB7Copula",
 )
 
 # constructor
-r270BB7Copula <- function (param) {
+r270BB7Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param[1] > -1 | param[2] >= 0 | param <= c(-Inf,-Inf)))
     stop(paste("Parameter values out of bounds: theta: (-Inf,-1], delta: (-Inf,0)."))
   new("r270BB7Copula", dimension = as.integer(2), parameters = param, 

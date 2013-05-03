@@ -3,6 +3,7 @@
 \docType{class}
 \alias{neighbourhood-class}
 \alias{names,neighbourhood-method}
+\alias{[,neighbourhood-method}
 
 \title{Class \code{neighbourhood}}
 \description{A class representing a local spatial neighbourhood.}
@@ -14,6 +15,7 @@ Objects can be created by calls of the form \code{new("neighbourhood", ...)}, fr
   \describe{
     \item{data}{Object of class \code{data.frame} holding the data for each local neighbourhood.}
     \item{distances}{Object of class \code{matrix} providing the separating distances per neighbourhood.}
+    \item{dataLocs}{The locations holding the data for the prediction. May be left empty (NULL) for estimation of the spatial (vine) copula.}
     \item{index}{Object of class \code{matrix} pointing to the IDs of the underlying \code{\link[sp:Spatial-class]{Spatial}} object.}
     \item{locations}{Object of class \code{\link[sp:Spatial-class]{Spatial}} denoting the central locations of the neighbourhoods.}
     \item{var}{Object of class \code{character} giving the variable names of interest.}

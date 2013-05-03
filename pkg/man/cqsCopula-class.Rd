@@ -23,6 +23,7 @@ Objects can be created by calls of the form \code{new("cqsCopula", ...)} or by t
     \item{\code{param.lowbnd}:}{Object of class \code{"numeric"} giving the lower bounds of the parameters. }
     \item{\code{param.upbnd}:}{Object of class \code{"numeric"} giving the upper bounds of the parameters. }
     \item{\code{fullname}:}{Object of class \code{"character"} the descriptive full name of the copula }
+    \item{\code{fixed}:}{Object of class \code{"character"}: denoting whether parameter "a" or "b" shall be kept fixed an empty character otherwise.}
   }
 }
 \section{Extends}{

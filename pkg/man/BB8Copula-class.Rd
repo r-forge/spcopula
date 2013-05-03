@@ -28,6 +28,8 @@
 \alias{dduCopula,matrix,r270BB8Copula-method}
 \alias{ddvCopula,matrix,r270BB8Copula-method}
 
+\alias{fitCopula,twoParamBiCop-method}
+
 \title{Classes \code{"BB8Copula"}, \code{"surBB8Copula"}, \code{"r90BB8Copula"} and \code{"r270BB8Copula"}}
 \description{
 Wrapper classes representing the BB8, survival BB8, 90 degree and 270 degree rotated BB8 copula families (Joe 1997) from the \code{\link{VineCopula-package}} package.

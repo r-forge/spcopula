@@ -31,7 +31,7 @@ spCopula <- function(components, distances, spDepFun, unit="m") {
       if(class(components[[i]]) != "indepCopula")
         param <- try(calibMoa(components[[i]], distances[i]),T)
       if (class(param) == "numeric")
-        components[[i]]@parameters[1] <- param # take care of non single parameter copulas
+        components[[i]]@parameters[1:length(param)] <- param
     }
   }
 
@@ -103,7 +103,8 @@ spDepFunCop <- function(fun, copula, pairs, h, do.logs=F, ...) {
       res <- fun(tmpPairs, tmpCop, ...)
     else {
       for (j in 1:length(tmpH)) {
-        tmpCop@parameters[1] <- calibPar(tmpCop, tmpH[j])
+        tmpParam <- calibPar(tmpCop, tmpH[j])
+        tmpCop@parameters[1:length(tmpParam)] <- tmpParam
         res <- c(res, fun(tmpPairs[j,], tmpCop, ...))
       }
     }
@@ -123,10 +124,15 @@ spDepFunCop <- function(fun, copula, pairs, h, do.logs=F, ...) {
           lowerVals <- numeric(0)
           upperVals <- numeric(0)
           for (j in 1:length(tmpH)) {
-            if (class(lowerCop) != "indepCopula")
-              lowerCop@parameters[1] <- calibPar(lowerCop,  tmpH[j])
-            if (class(upperCop) != "indepCopula")
-              upperCop@parameters[1] <- calibPar(upperCop, tmpH[j])
+            if (class(lowerCop) != "indepCopula") {
+              lowerParam <- calibPar(lowerCop,  tmpH[j])
+              lowerCop@parameters[1:length(lowerParam)] <- lowerParam
+            }
+              
+            if (class(upperCop) != "indepCopula") {
+              upperParam <- calibPar(upperCop, tmpH[j])
+              upperCop@parameters[1:length(upperParam)] <- upperParam
+            }
             lowerVals <- c(lowerVals, fun(tmpPairs[j,], lowerCop))
             upperVals <- c(upperVals, fun(tmpPairs[j,], upperCop))
           }
@@ -141,7 +147,8 @@ spDepFunCop <- function(fun, copula, pairs, h, do.logs=F, ...) {
           else {
             newVals <- numeric(0)
             for (j in 1:length(tmpH)) {
-              lowerCop@parameters <- calibPar(lowerCop, tmpH[j])
+              lowerParam <- calibPar(lowerCop, tmpH[j])
+              lowerCop@parameters[1:length(lowerParam)] <- lowerParam
               newVals <- c(newVals, fun(tmpPairs[j,], lowerCop, ...))
             }
           }
@@ -168,8 +175,11 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h, do.logs=F, ...) {
 
   if(h < dists[1]) {
     tmpCop <- copula@components[[1]]
-    if(class(tmpCop) != "indepCopula")
-      tmpCop@parameters[1] <- calibPar(tmpCop, h)
+    if(class(tmpCop) != "indepCopula") {
+      tmpParam <- calibPar(tmpCop, h)
+      tmpCop@parameters[1:length(tmpParam)] <- tmpParam
+    }
+      
     return(fun(pairs, tmpCop, ...))
   }
   
@@ -184,10 +194,14 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h, do.logs=F, ...) {
       lowerCop <- copula@components[[i-1]]
       upperCop <- copula@components[[i]]
       if (class(lowerCop) != class(upperCop)) {
-        if(class(lowerCop) != "indepCopula")
-          lowerCop@parameters[1] <- calibPar(lowerCop, h)
-        if(class(upperCop) != "indepCopula")
-          upperCop@parameters[1] <- calibPar(upperCop, h)
+        if (class(lowerCop) != "indepCopula") {
+          lowerParam <- calibPar(lowerCop,  h)
+          lowerCop@parameters[1:length(lowerParam)] <- lowerParam
+        }
+        if (class(upperCop) != "indepCopula") {
+          upperParam <- calibPar(upperCop, h)
+          upperCop@parameters[1:length(upperParam)] <- upperParam
+        }
 
         lowerVals <- fun(pairs, lowerCop)
         upperVals <- fun(pairs, upperCop)
@@ -197,8 +211,10 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h, do.logs=F, ...) {
           return(log(res))
         return(res)
       } else {
-        if(class(lowerCop) != "indepCopula")
-          lowerCop@parameters <- calibPar(lowerCop, h)
+        if(class(lowerCop) != "indepCopula") {
+          lowerParam <- calibPar(lowerCop, h)
+          lowerCop@parameters <- lowerParam
+        }
         return(fun(pairs, lowerCop, ...))
       }
     }
@@ -442,35 +458,89 @@ fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1),
 
 
 # towards b)
-# bins     -> typically output from calcBins
-# calcTau  -> a function on distance providing Kendall's tau estimates, 
-# families -> a vector of dummy copula objects of each family to be considered
-#             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
-loglikByCopulasLags <- function(bins, calcCor, 
-                                families=c(normalCopula(0), 
-                                           tCopula(0,dispstr="un"),
-                                           claytonCopula(0), frankCopula(1), 
-                                           gumbelCopula(1))) {
+  
+## loglikelihoods for a dynamic spatial copula
+loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
   moa <- switch(calcCor(NULL),
                 kendall=function(copula, h) iTau(copula, calcCor(h)),
                 spearman=function(copula, h) iRho(copula, calcCor(h)),
                 id=function(copula, h) calcCor(h))
+  
   loglik <- NULL
+  copulas <- list()
   for (cop in families) {
     print(cop)
     tmploglik <- NULL
+    tmpCop <- list()
     for(i in 1:length(bins$meanDists)) {
-      if(class(cop)!="indepCopula")
-        cop@parameters[1] <- moa(cop, bins$meanDists[i])
+      if(class(cop)!="indepCopula") {
+        param <- moa(cop, bins$meanDists[i])
+        cop@parameters[1:length(param)] <- param
+      }
+      
       tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]],cop, log=T)))
+      tmpCop <- append(tmpCop, cop)
     }
     loglik <- cbind(loglik, tmploglik)
+    copulas <- append(copulas,tmpCop)
   }
 
   colnames(loglik) <- sapply(families, function(x) class(x)[1])
+  names(copulas) <- colnames(loglik)
 
-  return(loglik)
+  return(list(loglik=loglik, copulas=copulas))
 }
+
+## loglikelihoods for a static spatial copula
+loglikByCopulasLags.static <- function(bins, families) {
+  
+  fits <-lapply(families, 
+                function(cop) {
+                  print(cop)
+                  lapply(bins$lagData,
+                         function(x) {
+                           tryCatch(fitCopula(cop, x, estimate.variance = FALSE),
+                                    error=function(e) return(NA))
+                         })
+                })
+  
+  loglik <- lapply(fits, function(x) sapply(x, function(fit) {
+    if(class(fit)=="fitCopula")
+      return(fit@loglik)
+    else
+      return(NA)
+  }))
+  
+  loglik <- matrix(unlist(loglik),ncol=length(loglik),byrow=F)
+  colnames(loglik) <- sapply(families, function(x) class(x)[1])
+  
+  copulas <- lapply(fits, function(x) sapply(x, function(fit) {
+    if(class(fit)=="fitCopula")
+      return(fit@copula)
+    else
+      return(NULL)
+  }))
+
+  names(copulas) <- colnames(loglik)
+  
+  return(list(loglik=loglik, copulas=copulas))
+}
+
+# bins     -> typically output from calcBins
+# calcTau  -> a function on distance providing Kendall's tau estimates, 
+# families -> a vector of dummy copula objects of each family to be considered
+#             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
+loglikByCopulasLags <- function(bins, families=c(normalCopula(0), 
+                                                 tCopula(0,dispstr="un"),
+                                                 claytonCopula(0), frankCopula(1), 
+                                                 gumbelCopula(1)),
+                                calcCor) {
+  if(missing(calcCor))
+    return(loglikByCopulasLags.static(bins, families))
+  else
+    return(loglikByCopulasLags.dyn(bins, families, calcCor))
+}
+
 
 # towards d)
 composeSpCopula <- function(bestFit, families, bins, calcCor, range=max(bins$meanDists)) {
@@ -510,10 +580,33 @@ fitSpCopula <- function(bins, cutoff=NA,
                                    tCopula(0,dispstr="un"), claytonCopula(0), 
                                    frankCopula(1), gumbelCopula(1)), ...) {
   calcCor <- fitCorFun(bins, cutoff=cutoff, ...)
-  loglik <- loglikByCopulasLags(bins, calcCor, families)
+  loglik <- loglikByCopulasLags(bins, families, calcCor)
   
-  bestFit <- apply(apply(loglik, 1, rank),2, 
+  bestFit <- apply(apply(loglik$loglik, 1, rank),2, 
                    function(x) which(x==length(families)))
   
   return(composeSpCopula(bestFit, families, bins, calcCor, range=cutoff))
+}
+
+## dropping a spatial tree, returning a conditional neighbourhood
+dropSpTree <- function(neigh, spCop) {
+  u1 <- NULL
+  h1 <- NULL
+  for(i in 1:ncol(neigh@distances)) {
+    u1 <- cbind(u1, dduCopula(as.matrix(neigh@data[,c(1,1+i)]), spCop,
+                              neigh@distances[,i]))
+    if (i < ncol(neigh@distances)) {
+      h1 <- cbind(h1, apply(neigh@index[,c(1,i+1)],1, 
+                            function(x) spDists(neigh@locations[x,])[1,2]))
+    }
+  }
+  
+  varSplit <- strsplit(neigh@var,"|",fixed=TRUE)[[1]]
+  cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
+  if(is.na(cond))
+    cond <- paste(neigh@var,"|0",sep="")
+  else
+    cond <- paste(neigh@var,cond+1,sep="")
+  return(neighbourhood(u1, h1, neigh@locations, neigh@dataLocs, neigh@index[,-1], neigh@prediction,
+                       cond))
 }

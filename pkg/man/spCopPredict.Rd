@@ -8,27 +8,15 @@ spatial prediction based on a spatial vine copula
 A spatial vine copula is used to predict values at unobserved locations conditioned on observations of a local neighbourhood.
 }
 \usage{
-spCopPredict(predNeigh, spVine, margin, method = "quantile", p = 0.5, range = NULL)
+spCopPredict(predNeigh, spVine, margin, method = "quantile", p = 0.5, ...)
 }
 \arguments{
-  \item{predNeigh}{
-the \code{\linkS4class{neighbourhood}} used for prediction, its slot \code{prediction} must be \code{TRUE}.
-}
-  \item{spVine}{
-the spatial vine copula describing the spatial dependence
-}
-  \item{margin}{
-the marginal distribution as a list with entries named "d" for the density function (PDF), "q" for the quantile function and "p" for cumulative distribution function (CDF).
-}
-  \item{method}{
-one of \code{"quantile"} or \code{"expectation"} denoting the type of predictor.
-}
-  \item{p}{
-only used for the quantile predictor indicating the desired fraction the quantile should correspond to.
-}
-  \item{range}{
-  the range of integartion to be used in the numerical integration in \code{"expectation"} by \code{\link{integrate}}.
-  }
+  \item{predNeigh}{the \code{\linkS4class{neighbourhood}} used for prediction, its slot \code{prediction} must be \code{TRUE}.}
+  \item{spVine}{the spatial vine copula describing the spatial dependence}
+  \item{margin}{the marginal distribution as a list with entries named "d" for the density function (PDF), "q" for the quantile function and "p" for cumulative distribution function (CDF).}
+  \item{method}{one of \code{"quantile"} or \code{"expectation"} denoting the type of predictor.}
+  \item{p}{only used for the quantile predictor indicating the desired fraction the quantile should correspond to.}
+  \item{...}{Further arguments passed to \code{\link{integrate}}.}
 }
 \details{
 Predictions are done based on \code{\link{condSpVine}} through numerical integration/optimisation.

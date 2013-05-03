@@ -17,7 +17,16 @@ validAsCopula = function(object) {
 
 # the lower bound of the parameter a dependening on the parameter b
 limA <- function (b) {
-  (b-3-sqrt(9+6*b-3*b^2))/2
+  stopifnot(abs(b) <= 1)
+  0.5*(-sqrt(-3*b^2+6*b+9)+b-3)
+}
+
+# the lower and upper bound of the parameter b dependening on the parameter a
+limB <- function (a) {
+  stopifnot(a <=1 & a >= -3)
+  if(a>-2)
+    return(c(-1,1))
+  pmax(pmin(0.5*(c(-1,1)*(sqrt(3)*sqrt(-a^2-2*a+3))+a+3),1),-1)
 }
 
 setClass("asCopula",
@@ -29,10 +38,29 @@ setClass("asCopula",
 ####
 ## a symmetric copula with cubic and quadratic sections
 
-validCqsCopula <- validAsCopula
+validCqsCopula <- function(object) {
+  if (object@dimension != 2)
+    return("Only copulas with cubic quadratic sections of dimension 2 are supported.")
+  param <- object@parameters
+  upper <- object@param.upbnd
+  lower <- object@param.lowbnd
+  if (length(param) != length(upper))
+    return("Parameter and upper bound have non-equal length")
+  if (length(param) != length(lower))
+    return("Parameter and lower bound have non-equal length")
+  if (any(is.na(param) | param > upper | param < lower))
+    return("Parameter value out of bound")
+  if (length(object@fixed >0)){
+    if(!("a" %in% object@fixed | "b" %in% object@fixed))
+      return("The slot fixed may only refer to \"a\" or \"b\".")
+    if ("a" %in% object@fixed & "b" %in% object@fixed)
+      return("Only one of the parameters may be kept fixed.")
+  }
+  else return (TRUE)
+}
 
 setClass("cqsCopula",
-  representation = representation("copula"),
+  representation = representation("copula",fixed="character"),
   validity = validCqsCopula,
   contains = list("copula")
 )
@@ -91,7 +119,8 @@ setClass("leafCopula",
 #                             assings valid parameters to the copulas involved
 
 validSpCopula <- function(object) {
-  if (length(object@components) != length(object@distances)) return("Length of components does not equal length of distances. \n Note: The last distance must give the range and it is automatically associated with the indepenence copula.")
+  if (length(object@components) != length(object@distances)) 
+    return("Length of components does not equal length of distances. \n Note: The last distance must give the range and it is automatically associated with the indepenence copula.")
   check.upper <- NULL
   check.lower <- NULL
   
@@ -146,7 +175,7 @@ validVineCopula = function(object) {
     return("Number of provided copulas does not match given dimension.")
   if(!any(unlist(lapply(object@copulas,function(x) is(x,"copula")))))
     return("Not all provided copulas in your list are indeed copulas.")
-  else return (TRUE)
+  return (TRUE)
 }
 
 setOldClass("RVineMatrix")
@@ -163,12 +192,21 @@ setClass("vineCopula",
 ## Spatial Vine Copula ##
 #########################
 
-validSpVineCopula <- function(object) {
-  return(validObject(object@spCop)&validObject(object@vineCop))
+validMixedSpVineCopula <- function(object) {
+  return(all(sapply(object@spCop,validSpCopula) & validObject(object@topCop)))
 }
 
-setClass("spVineCopula", representation("copula",spCop="spCopula",vineCop="vineCopula"),
-         validity = validSpVineCopula, contains=list("copula"))
+setClass("mixedSpVineCopula", representation("copula", spCop="list", topCop="copula"),
+         validity = validMixedSpVineCopula, contains=list("copula"))
+
+validPureSpVineCopula <- function(object) {
+  return(all(sapply(object@spCop,validSpCopula)))
+}
+
+setClass("pureSpVineCopula", representation("copula", spCop="list"),
+         validity = validPureSpVineCopula, contains=list("copula"))
+
+setClassUnion("spVineCopula",c("mixedSpVineCopula","pureSpVineCopula"))
 
 ########################################
 ## spatial classes providing the data ##
@@ -193,19 +231,30 @@ sizeLim <- 25 #  a constant
 validNeighbourhood <- function(object) {
   sizeN <- ncol(object@distances)+1
   nVars <- length(object@var)
-  if (nrow(object@data) != nrow(object@distances)) return("Data and distances have unequal number of rows.")
-  if (ncol(object@data) %% (sizeN-object@prediction) != 0) return("Data and distances have non matching number of columns.")
-  if (nrow(object@data) != nrow(object@index)) return("Data and index have unequal number of rows.")
-  if (ncol(object@distances) != ncol(object@index)) return("Data and index have unequal number of columns.")
-  if (ncol(object@data) != (sizeN-object@prediction) * nVars) return(paste("Number of columns in data does not equal the product of the neighbourhood's size (",sizeN,") with number of variables (",nVars,").",sep=""))
-  else return(TRUE)
+  if (object@prediction & is.null(object@dataLocs))
+    return("The locations of the data have to provided for the estimation procedure.")
+  if (nrow(object@data) != nrow(object@distances)) 
+    return("Data and distances have unequal number of rows.")
+  if (ncol(object@data) %% (sizeN-object@prediction) != 0) 
+    return("Data and distances have non matching number of columns.")
+  if (nrow(object@data) != nrow(object@index)) 
+    return("Data and index have unequal number of rows.")
+  if (ncol(object@distances) != ncol(object@index)) 
+    return("Data and index have unequal number of columns.")
+  if (ncol(object@data) != (sizeN-object@prediction) * nVars) 
+    return(paste("Number of columns in data does not equal the product of the neighbourhood's size (",sizeN,") with number of variables (",nVars,").",sep=""))
+  else 
+    return(TRUE)
 }
+
+setClassUnion("optionalDataLocs",c("NULL","Spatial"))
 
 setClass("neighbourhood",
          representation = representation(data = "data.frame", 
                                          distances="matrix", 
                                          index="matrix",
-                                         locations="Spatial", 
+                                         locations="Spatial",
+                                         dataLocs="optionalDataLocs",
                                          var="character", 
                                          prediction="logical"),
          validity = validNeighbourhood, contains = list("Spatial"))

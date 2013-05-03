@@ -2,11 +2,13 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{spVineCopula-class}
+\alias{mixedSpVineCopula-class}
+\alias{pureSpVineCopula-class}
 \alias{fitCopula,spVineCopula-method}
 
 \title{Class \code{"spVineCopula"}}
 \description{
-A S4-class representing a spatial vine copula structure to model spatial processes.
+A S4-class representing a spatial vine copula structure to model spatial processes. This spatial vine might be composed out of purely spatial trees or being mixed as lower spatail trees with an upper non-spatially variing joined copula.
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("spVineCopula", ...)} or to the constructor \code{\link{spVineCopula}}.
@@ -14,7 +16,7 @@ Objects can be created by calls of the form \code{new("spVineCopula", ...)} or t
 \section{Slots}{
   \describe{
     \item{\code{spCop}:}{Object of class \code{\linkS4class{spCopula}} A bivariate spatially varying copula. }
-    \item{\code{vineCop}:}{Object of class \code{\linkS4class{vineCopula}} A R-Vine joining the spatial components (neighbours).}
+    \item{\code{topCop}:}{Object of class \code{\linkS4class{vineCopula}}, \code{\linkS4class{copula}} or \code{NULL}. The top copula being constant over space. It is either a R-Vine (\code{\linkS4class{vineCopula}}) or a bivariate copula (\code{\linkS4class{copula}}) joining the spatial components (neighbours) or all trees of the vine are spatial bivariate copulas (\code{NULL}).}
     \item{\code{dimension}:}{Object of class \code{"integer"} giving the dimension of the spVineCopula (neighbourhood). }
     \item{\code{parameters}:}{Object of class \code{"numeric"} empty }
     \item{\code{param.names}:}{Object of class \code{"character"} empty }

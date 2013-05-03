@@ -48,12 +48,12 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
 
 spVineCop <- spVineCopula(spCop, vineCopula(4L))
 
-dists <- c(473, 124, 116, 649)
+dists <- list(c(473, 124, 116, 649))
 condVar <- c(0.29, 0.55, 0.05, 0.41)
 condDensity <- condSpVine(condVar,dists,spVineCop)
 
 curve(condDensity)
-mtext(paste("Dists:",paste(round(dists,0),collapse=", ")),line=0)
+mtext(paste("Dists:",paste(round(dists[[1]],0),collapse=", ")),line=0)
 mtext(paste("Cond.:",paste(round(condVar,2),collapse=", ")),line=1)
 }
 

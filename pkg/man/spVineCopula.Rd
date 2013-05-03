@@ -1,20 +1,20 @@
 \name{spVineCopula}
 \alias{spVineCopula}
 \title{
-Constructor of the class \code{\linkS4class{spVineCopula}}.
+Constructor of the virtual super class \code{\linkS4class{spVineCopula}}.
 }
 \description{
-Construct an instance of the \code{\linkS4class{spVineCopula}} class.
+Construct an instance of the \code{\linkS4class{mixedSpVineCopula}} or \code{\linkS4class{pureSpVineCopula}} grouped as the \code{\linkS4class{spVineCopula}} super class.
 }
 \usage{
-spVineCopula(spCop, vineCop)
+spVineCopula(spCop, topCop=NULL)
 }
 \arguments{
-  \item{spCop}{Object of class \code{\linkS4class{spCopula}} A bivariate spatially varying copula. }
-  \item{vineCop}{Object of class \code{\linkS4class{vineCopula}} A R-Vine joining the spatial components (neighbours).}
+  \item{spCop}{Object of class \code{\linkS4class{spCopula}}. A bivariate spatially varying copula. }
+  \item{topCop}{Object of class \code{\linkS4class{copula}}. A bivariate, multivariate or R-Vine copula joining the spatial components (neighbours). In case all trees are spatila copulas, this argument might be \code{NULL}.}
 }
 \value{
-An instance of the \code{\linkS4class{spVineCopula}} class.
+An instance of the \code{\linkS4class{spVineCopula}} class (either \code{\linkS4class{mixedSpVineCopula}} or \code{\linkS4class{pureSpVineCopula}}).
 }
 \references{
 Graeler, B. and E. Pebesma (2011): The pair-copula construction for spatial data: a new approach to model spatial dependency. Procedia Environmental Sciences (Vol. 7, pp. 206 - 211), Elsevier.

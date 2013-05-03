@@ -6,7 +6,7 @@
 # (see Example 3.16 in: Nelsen, Roger B. (2006): An Introduction to Copulas, second edition, Springer)
 
 # constructor
-asCopula <- function (param) {
+asCopula <- function (param=c(0,0)) {
   val <- new("asCopula", dimension = as.integer(2), parameters = param, 
              param.names = c("a", "b"), param.lowbnd = c(limA(param[2]), -1),
              param.upbnd = c(1, 1), fullname = "asymmetric copula family with cubic and quadratic sections")

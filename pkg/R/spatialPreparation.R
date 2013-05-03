@@ -7,14 +7,18 @@
 ## neighbourhood constructor
 ############################
 
-neighbourhood <- function(data, distances, sp, index, prediction, var){
+neighbourhood <- function(data, distances, sp, dataLocs=NULL, index, 
+                          prediction, var) {
   sizeN <- ncol(distances)+1
   data <- as.data.frame(data)
-  colnames(data) <- paste(paste("N", rep((0+prediction):(sizeN-1), each=length(var)), sep=""),
+  colnames(data) <- paste(paste("N", rep((0+as.numeric(prediction)):(sizeN-1), 
+                                         each=length(var)), sep=""),
                           rep(var,(sizeN-prediction)),sep=".")
+  if (anyDuplicated(rownames(data))>0)
+    rownames <- 1:length(rownames)
   new("neighbourhood", data=data, distances=distances, locations=sp, 
-      bbox=sp@bbox, proj4string=sp@proj4string, index=index, var=var, 
-      prediction=prediction)
+      dataLocs=dataLocs, bbox=sp@bbox, proj4string=sp@proj4string, index=index,
+      var=var, prediction=prediction)
 }
 
 ## show
@@ -40,6 +44,17 @@ spplotNeighbourhood <- function(obj, zcol=names(obj), ..., column=0) {
 }
 
 setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
+
+selectFromNeighbourhood <- function(x, i) {
+  newSp <- x@locations[i,]
+  new("neighbourhood", data=x@data[i,,drop=F], 
+      distances=x@distances[i,,drop=F], 
+      locations=newSp, dataLocs=x@dataLocs, bbox=newSp@bbox, 
+      proj4string=x@proj4string, index=x@index[i,,drop=F], var=x@var, 
+      prediction=x@prediction)
+}
+
+setMethod("[", signature("neighbourhood"), selectFromNeighbourhood) 
 
 ## calculate neighbourhood from SpatialPointsDataFrame
 
@@ -79,8 +94,11 @@ getNeighbours <- function(spData, locations, var=names(spData)[1], size=5,
       spLocs <- c(i,spLocs)
     allData <- rbind(allData, as.vector(spData[spLocs, var, drop=F]@data[[1]]))
   }
-  
-  return(neighbourhood(allData, allDists, locations, 
+  if (prediction)
+    dataLocs <- spData
+  else 
+    dataLocs <- NULL
+  return(neighbourhood(allData, allDists, locations, dataLocs,
                        allLocs, prediction, var))
 }
 
@@ -114,7 +132,7 @@ calcSpLagInd <- function(data, boundaries) {
 
 # the generic calcBins, calculates bins for spatial and spatio-temporal data
 setGeneric("calcBins", function(data, var, nbins=15, boundaries=NA, cutoff=NA,
-                                cor.method="kendall", plot=T, ...) {
+                                cor.method="kendall", plot=TRUE, ...) {
                          standardGeneric("calcBins") 
                          })
 
@@ -127,7 +145,7 @@ calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA,
   if(is.na(cutoff)) {
     cutoff <- spDists(coordinates(t(data@bbox)))[1,2]/3
   }
-  if(is.na(boundaries)) {
+  if(any(is.na(boundaries))) {
     boundaries <- ((1:nbins) * cutoff/nbins)
   }
   
@@ -158,6 +176,59 @@ calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA,
 }
 
 setMethod(calcBins, signature("Spatial"), calcSpBins)
+
+# calc bins from a (conditional) neighbourhood
+
+calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA, 
+                          cutoff=NA, cor.method="kendall", plot=TRUE) {
+  dists <- data@distances
+  
+  corFun <- switch(cor.method,
+                   fasttau=function(x) VineCopula:::fasttau(x[,1],x[,2]),
+                   function(x) cor(x,method=cor.method)[1,2])
+  
+  if (any(is.na(boundaries))) 
+    boundaries <- quantile(as.vector(dists), probs=c(1:nbins/nbins))
+  if(!is.na(cutoff)) {
+    boundaries <- boundaries[boundaries < cutoff]
+    boundaries <- unique(c(0,boundaries,cutoff))
+  } else {
+    boundaries <- unique(c(0,boundaries))
+  }
+  
+  np <- numeric(0)
+  moa <- numeric(0)
+  lagData <- NULL
+  meanDists <- numeric(0)
+
+  data <- as.matrix(data@data)
+  
+  for ( i in 1:nbins) {
+    bools <- (dists <= boundaries[i+1] & dists > boundaries[i])
+    
+    pairs <- NULL
+    for(col in 1:(dim(bools)[2])) {
+      pairs <- rbind(pairs, data[bools[,col],c(1,1+col)])
+    }
+    
+    lagData <- append(lagData, list(pairs))
+    moa <- c(moa, corFun(pairs))
+    meanDists <- c(meanDists, mean(dists[bools]))
+    np <- c(np, sum(bools))
+  }
+  
+  if(plot) { 
+    plot(meanDists, moa, xlab="distance", ylab=paste("correlation [",cor.method,"]",sep=""), 
+         ylim=1.05*c(-abs(min(moa)),max(moa)), xlim=c(0,max(meanDists)))
+    abline(h=c(-min(moa),0,min(moa)),col="grey")
+  }
+  
+  res <- list(np=np, meanDists = meanDists, lagCor=moa, lagData=lagData)
+  attr(res,"cor.method") <- switch(cor.method, fasttau="kendall", cor.method)
+  return(res)
+}
+  
+setMethod(calcBins, signature="neighbourhood", calcNeighBins)
 
 # instances: number  -> number of randomly choosen temporal intances
 #            NA      -> all observations
