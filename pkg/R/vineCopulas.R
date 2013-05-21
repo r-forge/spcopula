@@ -77,9 +77,10 @@ setMethod("pCopula", signature("data.frame","vineCopula"),
           function(u,copula) pvineCopula(as.matrix(u),copula))
 setMethod("pCopula", signature("matrix","vineCopula"), pvineCopula)
 
+## simulation
+
 rRVine <- function(n, copula) {
   RVM <- copula@RVM
-#   class(RVM) <- "RVineMatrix"
   RVineSim(n, RVM)
 }
 

@@ -3,7 +3,7 @@
 \docType{class}
 \alias{neighbourhood-class}
 \alias{names,neighbourhood-method}
-\alias{[,neighbourhood-method}
+\alias{[[,neighbourhood,ANY,ANY-method}
 
 \title{Class \code{neighbourhood}}
 \description{A class representing a local spatial neighbourhood.}
@@ -32,6 +32,7 @@ Class \code{\link[sp:Spatial-class]{Spatial}}, directly.
     \item{names}{\code{signature(x = "neighbourhood")}: provides the variable names of the neighbourhood. }
     \item{show}{\code{signature(object = "neighbourhood")}: a brief description of the characteristics of the neighbourhood.}
     \item{spplot}{\code{signature(obj = "neighbourhood")}: plots the values of the one or more selected columns (0="central location", 1="closest neighbours", ...) at the coordinates of the central location.}
+    \item{[[}{subsets the selection of neighbourhoods returning a subset of these ("columnwise")}
 	 }
 }
 \author{

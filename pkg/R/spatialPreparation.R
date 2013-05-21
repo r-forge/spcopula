@@ -54,7 +54,7 @@ selectFromNeighbourhood <- function(x, i) {
       prediction=x@prediction)
 }
 
-setMethod("[", signature("neighbourhood"), selectFromNeighbourhood) 
+setMethod("[[", "neighbourhood", selectFromNeighbourhood) 
 
 ## calculate neighbourhood from SpatialPointsDataFrame
 

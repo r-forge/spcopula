@@ -238,7 +238,7 @@ spCopPredict.quantile <- function(predNeigh, spVine, margin, p=0.5) {
     xVals <- attr(condSecVine,"xVals")
     density <- condSecVine(xVals)
     nx <- length(xVals)
-    int <- cumsum(c(0,diff(xVals)*(p*diff(density)+density[-nx])))
+    int <- cumsum(c(0,diff(xVals)*(0.5*diff(density)+density[-nx])))
     lower <- max(which(int <= p))
     m <- (density[lower+1]-density[lower])/(xVals[lower+1]-xVals[lower])
     b <- density[lower]
@@ -269,3 +269,40 @@ spCopPredict <- function(predNeigh, spVine, margin, method="quantile", p=0.5, ..
          quantile=spCopPredict.quantile(predNeigh, spVine, margin, p),
          expectation=spCopPredict.expectation(predNeigh, spVine, margin, ...))
 }
+
+# draw from a spatial vine
+# Algorithm 1 from Aas et al. (2006): Pair-copula constructions of multiple dependence
+
+r.spVineCop <- function(n, spVine, h) {
+  spVineDim <- spVine@dimension
+  
+  sims <- NULL
+  for(runs in 1:n) {
+    init <- runif(spVineDim)
+    res <- init[1]
+    v <- matrix(NA,spVineDim,spVineDim)
+    v[1,1] <- init[1]
+    for (i in 2:spVineDim) { # i <- 2
+      v[i,1] <- init[i]
+      for (k in (i-1):1) { # k <- i-1
+        v[i,1] <- uniroot(function(u) {
+                            v[i,1] - ddvCopula(cbind(u,v[k,k]), spVine@spCop[[k]],
+                                               h=h[[k]][i-k])
+                          }, c(0,1))$root
+      }  
+      res <- c(res,v[i,1])
+      if(i==spVineDim)
+        break()
+      for(j in 1:(i-1)) {
+        v[i,j+1] <- ddvCopula(cbind(v[i,j],v[j,j]),spVine@spCop[[k]], h=h[[j]][i-j])
+      }
+    }
+    sims <- rbind(sims,res)
+  }
+  
+  rownames(sims) <- NULL
+  sims
+}
+
+setMethod("rCopula", signature("numeric","spVineCopula"), 
+          function(n, copula, ...) r.spVineCop(n, copula, ...))

@@ -22,7 +22,7 @@ The tuning function for the copulas' parameters. Typically, the output of the \c
 }
 }
 \value{
-A matrix of spatial lags (rows) and copula family names (columns) holding the calculated log-likelihood values.
+A list containing a matrix (\code{loglik}) of spatial lags (rows) and copula family names (columns) holding the calculated log-likelihood value and a list o the corresponding copula fits.
 }
 \author{
 Benedikt Graeler
@@ -38,7 +38,7 @@ data(spCopDemo) # load the workspace from demo(spcopula_estimation)
 calcKTauPol <- fitCorFun(bins, degree=3)
 
 loglikTau <- loglikByCopulasLags(bins, calcKTauPol)
-loglikTau
+loglikTau$loglik
 }
 
 \keyword{spcopula}

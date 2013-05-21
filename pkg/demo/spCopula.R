@@ -47,14 +47,14 @@ loglikTau <- loglikByCopulasLags(bins, calcKTauPol,
                                             claytonCopula(0), frankCopula(1), 
                                             gumbelCopula(1), joeBiCopula(1.5),
                                             indepCopula()))
-bestFitTau <- apply(apply(loglikTau, 1, rank, na.last=T), 2, 
+bestFitTau <- apply(apply(loglikTau$loglik, 1, rank, na.last=T), 2, 
                     function(x) which(x==7))
-bestFitTau
+colnames(loglikTau$loglik)[bestFitTau]
 
 ## set-up a spatial Copula ##
 spCop <- spCopula(components=list(normalCopula(0), tCopula(0),
                                   frankCopula(1), normalCopula(0), 
-                                  claytonCopula(0), claytonCopula(0), 
+                                  claytonCopula(0), claytonCopula(0),
                                   claytonCopula(0), claytonCopula(0),
                                   claytonCopula(0), indepCopula()),
                   distances=bins$meanDists,
@@ -62,15 +62,16 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0),
 
 ## compare spatial copula loglik by lag:
 spLoglik <- NULL
-for(i in 1:length(bins$lags)) { # i <- 8
+for(i in 1:length(bins$lags)) { # i <- 7
+  cat("Lag",i,"\n")
   spLoglik <- c(spLoglik,
-                sum(dCopula(u=bins$lagData[[i]], spCop,log=T,
-                            h=bins$lags[[i]][,3])))
+                sum((dCopula(u=bins$lagData[[i]], spCop,log=T,
+                            h=bins$lags[[i]][,3]))))
 }
 
 plot(spLoglik, ylab="log-likelihood", xlim=c(1,11)) 
-points(loglikTau[cbind(1:10,bestFitTau)], col="green", pch=16)
-points(loglikTau[,1], col="red", pch=5)
+points(loglikTau$loglik[cbind(1:10,bestFitTau)], col="green", pch=16)
+points(loglikTau$loglik[,1], col="red", pch=5)
 legend(6, 50,c("Spatial Copula", "best copula per lag", "Gaussian Copula",
                "number of pairs"), 
        pch=c(1,16,5,50), col=c("black", "green", "red"))
@@ -90,27 +91,14 @@ meuseSpVine <- meuseSpVine@copula
 ##
 # leave-one-out x-validation
 
-condVine <- function(condVar, dists, n=100) {
-  rat <- 0.2/(1:(n/2))-(0.1/((n+1)/2))
-  xVals <- unique(sort(c(rat,1-rat,1:(n-1)/(n))))
-  xLength <- length(xVals)
-  repCondVar <- matrix(condVar, ncol=length(condVar), nrow=xLength, byrow=T)
-  density <- dCopula(cbind(xVals, repCondVar), meuseSpVine, h=dists)
-  
-  linAppr <- approxfun(c(0,xVals,1), density[c(1,1:xLength,xLength)] ,yleft=0, yright=0)
-  int <- integrate(linAppr,lower=0, upper=1)$value
-  
-  return(function(u) linAppr(u)/int)
-}
-
-time <- proc.time()  # ~30 s
+time <- proc.time()  # ~60 s
 predMedian <- NULL
 predMean <- NULL
-for(loc in 1:nrow(meuseNeigh@data)) { # loc <- 429  predNeigh$data[loc,1]
+for(loc in 1:nrow(meuseNeigh@data)) { # loc <- 145
   cat("Location:",loc,"\n")
-  condSecVine <- condVine(condVar=as.numeric(meuseNeigh@data[loc,-1]), 
-                          dists=meuseNeigh@distances[loc,,drop=F])
-  
+  condSecVine <- condSpVine(condVar=as.numeric(meuseNeigh@data[loc,-1]), 
+                          dists=list(meuseNeigh@distances[loc,,drop=F]),meuseSpVine)
+
   predMedian <- c(predMedian, qMar(optimise(function(x) abs(integrate(condSecVine,0,x)$value-0.5),c(0,1))$minimum))
   
   condExp <-  function(x) {

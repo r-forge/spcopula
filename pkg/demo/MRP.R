@@ -10,7 +10,7 @@ plot(peakVol, asp=1)
 cor(triples,method="kendall")
 
 # estiamte the BB7 copula by means of maximum likelihood
-copQV <- fitCopula(BB7Copula(param=c(2,14)), peakVol, method="ml", 
+copQV <- fitCopula(BB7Copula(param=c(2,14)), peakVol, method="mpl", 
                    start=c(2,14), estimate.variance=F)@copula
 copQV
 
