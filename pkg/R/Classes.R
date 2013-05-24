@@ -50,7 +50,7 @@ validCqsCopula <- function(object) {
     return("Parameter and lower bound have non-equal length")
   if (any(is.na(param) | param > upper | param < lower))
     return("Parameter value out of bound")
-  if (length(object@fixed >0)){
+  if (object@fixed != ""){
     if(!("a" %in% object@fixed | "b" %in% object@fixed))
       return("The slot fixed may only refer to \"a\" or \"b\".")
     if ("a" %in% object@fixed & "b" %in% object@fixed)
@@ -208,6 +208,17 @@ setClass("pureSpVineCopula", representation("copula", spCop="list"),
 
 setClassUnion("spVineCopula",c("mixedSpVineCopula","pureSpVineCopula"))
 
+#################################
+## Spatio-temporal Vine Copula ##
+#################################
+
+validStVineCopula <- function(object) {
+  return(validStCopula(object@stCop) & validObject(object@topCop))
+}
+
+setClass("stVineCopula", representation("copula", stCop="stCopula", topCop="copula"),
+         validity = validStVineCopula, contains=list("copula"))
+
 ########################################
 ## spatial classes providing the data ##
 ########################################
@@ -259,3 +270,32 @@ setClass("neighbourhood",
                                          prediction="logical"),
          validity = validNeighbourhood, contains = list("Spatial"))
 
+## ST neighbourhood
+
+validStNeighbourhood <- function(object) {
+  sizeN <- nrow(object@data)
+  if (object@prediction & is.null(object@dataLocs))
+    return("The spatio-temporal locations of the data have to be provided for the estimation procedure.")
+  dimDists <- dim(object@distances)
+  if (nrow(object@data) != dimDists[1]) 
+    return("Data and distances have unequal number of rows.")
+  dimInd <- dim(object@index)
+  if (nrow(object@data) != dimInd[1]) 
+    return("Data and index have unequal number of rows.")
+  if (dimDists[2] != dimInd[2]) 
+    return("Data and index have unequal number of columns.")
+  else 
+    return(TRUE)
+}
+
+setClassUnion("optionalST",c("NULL","ST"))
+
+setClass("stNeighbourhood",
+         representation = representation(data = "data.frame", 
+                                         distances="array", 
+                                         index="array",
+                                         locations="ST",
+                                         dataLocs="optionalST",
+                                         var="character", 
+                                         prediction="logical"),
+         validity = validStNeighbourhood, contains = list("ST"))

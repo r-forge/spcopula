@@ -1,14 +1,14 @@
-\name{condSpVine}
-\alias{condSpVine}
+\name{condStVine}
+\alias{condStVine}
 
 \title{
-Conditions a spatial vine copula for conditional prediction
+Conditions a spatio-temporal vine copula for conditional prediction
 }
 \description{
-A spatial vine copula is conditioned under the observations of all but one neighbour generating a conditional univariate distribution used for prediction.
+A spatio-temporal vine copula is conditioned under the observations of all but one neighbour generating a conditional univariate distribution used for prediction.
 }
 \usage{
-condSpVine(condVar, dists, spVine, n = 1000)
+condStVine(condVar, dists, stVine, n = 1000)
 }
 \arguments{
   \item{condVar}{
@@ -17,11 +17,11 @@ the conditional variables
   \item{dists}{
 the distances between the neighbours to adjust the spatial vine copula parameters.
 }
-  \item{spVine}{
-the spatial vine copula
+  \item{stVine}{
+the spatio-temporal vine copula
 }
   \item{n}{
-a proxy to the number of intervals to be used in the numerical integration. The intervals will not be split uniform with a shorter intervals at the corners of the copula.
+a proxy to the number of intervals to be used in the numerical integration. The intervals will not be split uniform with shorter intervals at the corners of the copula.
 }
 }
 \value{
@@ -32,9 +32,10 @@ Benedikt Graeler
 }
 
 \seealso{
-\code{\linkS4class{spVineCopula}}
+\code{\linkS4class{stVineCopula}}, \code{\link{condSpVine}}
 }
 \examples{
+## the spatial version
 data(spCopDemo)
 
 calcKTauPol <- fitCorFun(bins, degree=3)

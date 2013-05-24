@@ -4,8 +4,8 @@
 ##                                                    ##
 ########################################################
 
-## neighbourhood constructor
-############################
+## spatial neighbourhood constructor
+####################################
 
 neighbourhood <- function(data, distances, sp, dataLocs=NULL, index, 
                           prediction, var) {
@@ -54,7 +54,7 @@ selectFromNeighbourhood <- function(x, i) {
       prediction=x@prediction)
 }
 
-setMethod("[[", "neighbourhood", selectFromNeighbourhood) 
+setMethod("[[", signature("neighbourhood","numeric","missing"), selectFromNeighbourhood) 
 
 ## calculate neighbourhood from SpatialPointsDataFrame
 
@@ -84,7 +84,7 @@ getNeighbours <- function(spData, locations, var=names(spData)[1], size=5,
   allData <- NULL
   
   for(i in 1:length(locations)) { # i <- 1
-    tempDists <- spDistsN1(spData,locations[i,])
+    tempDists <- spDists(spData,locations[i,])
     tempDists[tempDists < min.dist] <- Inf
     spLocs <- order(tempDists)[1:(size-1)]
     allLocs <- rbind(allLocs, spLocs)

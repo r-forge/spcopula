@@ -7,7 +7,7 @@ Constructor of a symmetric copula with cubic quadratic sections.
 A copula from the copula family of a symmetric copula with cubic and quadratic sections (\code{\linkS4class{cqsCopula}}) for a given pair of parameters \code{param} (Nelsen 2006).
 }
 \usage{
-cqsCopula(param=c(0,0), fixed=character(0))
+cqsCopula(param=c(0,0), fixed="")
 }
 
 \arguments{

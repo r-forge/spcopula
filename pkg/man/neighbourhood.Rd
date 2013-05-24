@@ -11,7 +11,7 @@ Constructor of the \code{\linkS4class{neighbourhood}} class.
   \item{data}{A data.frame that contains the variables of interest for each local neighbourhood.}
   \item{distances}{A matrix with all the separating distances per local neighbourhood.}
   \item{sp}{A \code{\link[sp:Spatial-class]{Spatial}} object describing the central locations the neighbourhood; must be of same length as rows in \code{data} and \code{distances}.}
-  \item{dataLocs}{The locations holding the data for the prediction. May be left empty (NULL) for estimation of the spatial (vine) copula.}
+  \item{dataLocs}{The locations used for the prediction. May be left empty (NULL) for estimation of the spatial (vine) copula.}
   \item{index}{An index pointing from each neighbourhood to the corresponding spatial IDs.}
   \item{prediction}{whether this neighbourhood is intended to be used for prediction or fitting purpose.}
   \item{var}{The variable name(s).}

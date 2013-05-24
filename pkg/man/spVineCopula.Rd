@@ -11,7 +11,7 @@ spVineCopula(spCop, topCop=NULL)
 }
 \arguments{
   \item{spCop}{Object of class \code{\linkS4class{spCopula}}. A bivariate spatially varying copula. }
-  \item{topCop}{Object of class \code{\linkS4class{copula}}. A bivariate, multivariate or R-Vine copula joining the spatial components (neighbours). In case all trees are spatila copulas, this argument might be \code{NULL}.}
+  \item{topCop}{Object of class \code{\linkS4class{copula}}. A bivariate, multivariate or R-Vine copula joining the spatial components (neighbours). In case all trees are spatial copulas, this argument might be \code{NULL}.}
 }
 \value{
 An instance of the \code{\linkS4class{spVineCopula}} class (either \code{\linkS4class{mixedSpVineCopula}} or \code{\linkS4class{pureSpVineCopula}}).

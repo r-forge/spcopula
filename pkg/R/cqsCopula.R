@@ -7,7 +7,7 @@ setGeneric("fitCopula")
 ##                                                  ##
 ######################################################
 
-cqsCopula <- function (param=c(0,0), fixed=character(0)) {
+cqsCopula <- function (param=c(0,0), fixed="") {
   new("cqsCopula", dimension = as.integer(2), parameters = param, 
       param.names = c("a", "b"), param.lowbnd = c(limA(param[2]),-1),
       param.upbnd = c(1, 1), 
@@ -272,8 +272,6 @@ fitCQSec.irho <- function(copula, data, estimate.variance, rho=NULL){
       copula=copula)
 }
 
-
-
 fitCQSec.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
   smpl <- as.matrix(data)
 
@@ -298,9 +296,7 @@ fitCQSec.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
 
   b <- optimize(sec,c(-1,1), tol=tol)$minimum
 
-  param <- c(iFun(b),b)
-
-  return(param)
+  return(c(iFun(b),b))
 }
 
 # maximum log-likelihood estimation of a and b using optim

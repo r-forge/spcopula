@@ -422,18 +422,7 @@ setMethod("ddvCopula", signature("numeric","spCopula"),
 # cutoff -> maximal distance that should be considered for fitting
 # bounds -> the bounds of the correlation function (typically c(0,1))
 # method -> the measure of association, either "kendall" or "spearman"
-fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1), 
-                      cor.method=NULL, weighted=FALSE) {
-  if(is.null(cor.method)) {
-    if(is.null(attr(bins,"cor.method")))
-      stop("Neither the bins arguments has an attribute cor.method nor is the parameter cor.method provided.") 
-    else 
-      cor.method <- attr(bins,"cor.method")
-  } else {
-    if(!is.null(attr(bins,"cor.method")) && cor.method != attr(bins,"cor.method"))
-      stop("The cor.method attribute of the bins argument and the argument cor.method do not match.")
-  }
-
+fitCorFunSng <- function(bins, degree, cutoff, bounds, cor.method, weighted) {
   if (weighted) {
     bins <- as.data.frame(bins[c("np","meanDists","lagCor")])
     if(!is.na(cutoff)) 
@@ -449,11 +438,40 @@ fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1),
   print(fitCor)
   cat("Sum of squared residuals:",sum(fitCor$residuals^2),"\n")
   
+  if(cor.method=="fasttau") 
+    cor.method <- "kendall"
+  
   function(x) {
     if (is.null(x)) return(cor.method)
     return(pmin(bounds[2], pmax(bounds[1], 
                                 eval(predict(fitCor, data.frame(meanDists=x))))))
   }
+}
+
+fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1), 
+                      cor.method=NULL, weighted=FALSE){
+  if(is.null(cor.method)) {
+    if(is.null(attr(bins,"cor.method")))
+      stop("Neither the bins arguments has an attribute cor.method nor is the parameter cor.method provided.") 
+    else 
+      cor.method <- attr(bins,"cor.method")
+  } else {
+    if(!is.null(attr(bins,"cor.method")) && cor.method != attr(bins,"cor.method"))
+      stop("The cor.method attribute of the bins argument and the argument cor.method do not match.")
+  }
+  
+  if(is.null(nrow(bins$lagCor)))
+    return(fitCorFunSng(bins, degree, cutoff, bounds, cor.method, weighted))
+  
+  degree <- rep(degree,length.out=nrow(bins$lagCor))
+  calcKTau <- list()
+  for(j in 1:nrow(bins$lagCor)) {
+    calcKTau[[paste("fun",j,sep="")]] <- fitCorFunSng(data.frame(meanDists=bins$meanDists, 
+                                                                 lagCor=bins$lagCor[j,]),
+                                                      degree[j], cutoff, bounds, 
+                                                      cor.method, weighted)
+  }
+  return(calcKTau)
 }
 
 

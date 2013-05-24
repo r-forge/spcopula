@@ -184,46 +184,35 @@ setMethod("fitCopula", signature("asCopula"), fitCopulaASC2)
 # method
 #  one of kendall or spearman according to the calculation of moa
 
-fitASC2.itau <- function(copula, data, estimate.variance) {
-tau <- cor(data,method="kendall")[1,2]
-esti <- fitASC2.moa(tau, data, method="itau")
-copula <- asCopula(esti)
-return(new("fitCopula",
-           estimate = esti, 
-           var.est = matrix(NA), 
-           loglik = sum(log(dCopula(data, copula))),
-           nsample = nrow(data),
-           method = "Inversion of Kendall's tau and MLE",
-           fitting.stats = list(convergence=as.integer(NA)),
-           copula = copula))
+fitASC2.itau <- function(copula, data, estimate.variance, tau=NULL) {
+  if(is.null(tau))
+    tau <- VineCopula:::fasttau(data[,1],data[,2])
+  esti <- fitASC2.moa(tau, data, method="itau")
+  copula <- asCopula(esti)
+  
+  new("fitCopula", estimate = esti, var.est = matrix(NA), 
+      loglik = sum(log(dCopula(data, copula))), nsample = nrow(data),
+      method = "Inversion of Kendall's tau and MLE", 
+      fitting.stats = list(convergence=as.integer(NA)), copula = copula)
 }
 
-fitASC2.irho <- function(copula, data, estimate.variance){
-rho <- cor(data,method="spearman")[1,2]
-esti <- fitASC2.moa(rho, data, method="itau")
-copula <- asCopula(esti)
-return(new("fitCopula",
-           estimate = esti, 
-           var.est = matrix(NA), 
-           loglik = sum(log(dCopula(data, copula))),
-           nsample = nrow(data),
-           method = "Inversion of Spearman's rho and MLE",
-           fitting.stats = list(convergence=as.integer(NA)),
-           copula = copula))
+fitASC2.irho <- function(copula, data, estimate.variance, rho=NULL){
+  if(is.null(rho))
+    rho <- cor(data,method="spearman")[1,2]
+  esti <- fitASC2.moa(rho, data, method="irho")
+  copula <- asCopula(esti)
+  
+  new("fitCopula", estimate = esti, var.est = matrix(NA), 
+      loglik = sum(log(dCopula(data, copula))), nsample = nrow(data),
+      method = "Inversion of Spearman's rho and MLE",
+      fitting.stats = list(convergence=as.integer(NA)), copula = copula)
 }
 
 fitASC2.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
   smpl <- as.matrix(data)
-
-  iTau <- function(p) {
-    iTauASC2(p,moa)
-  }
-
-  iRho <- function(p) {
-    iRhoASC2(p,moa)
-  }
-
-  iFun <- switch(method, itau=iTau, irho=iRho)
+  iFun <- switch(method, 
+                 itau=function(p) iTauASC2(p,moa),
+                 irho=function(p) iRhoASC2(p,moa))
 
   sec <- function (parameters) {
     res <- NULL
@@ -235,9 +224,7 @@ fitASC2.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
 
   b <- optimize(sec,c(-1,1), tol=tol)$minimum
 
-  param <- c(iFun(b),b)
-
-  return(param)
+  return(c(iFun(b),b))
 }
 
 # maximum log-likelihood estimation of a and b using optim
