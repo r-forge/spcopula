@@ -234,11 +234,16 @@ setMethod(calcBins, signature="neighbourhood", calcNeighBins)
 #            NA      -> all observations
 #            other   -> temporal indexing as in spacetime/xts, the parameter t.lags is set to 0 in this case.
 # t.lags:    numeric -> temporal shifts between obs
-calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, instances=10, t.lags=c(0), cor.method="kendall", plot=TRUE) {
+calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, 
+                       instances=10, t.lags=-(0:2), cor.method="fasttau", 
+                       plot=FALSE) {
 
-  if(is.na(cutoff)) cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
-  if(is.na(boundaries)) boundaries <- ((1:nbins) * cutoff / nbins)
-  if(is.na(instances)) instances=length(data@time)
+  if(is.na(cutoff)) 
+    cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
+  if(is.na(boundaries)) 
+    boundaries <- ((1:nbins) * cutoff / nbins)
+  if(is.na(instances)) 
+    instances=length(data@time)
   
   spIndices <- calcSpLagInd(data@sp, boundaries)
     
@@ -251,9 +256,10 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, instances=
   else {
     tempIndices <- NULL
     for (t.lag in rev(t.lags)) {
-      smplInd <- sample(x=max(1,1-t.lag):min(lengthTime,lengthTime-t.lag), size=min(instances,lengthTime-max(abs(t.lags))))
+      smplInd <- sample(x=max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags)),
+                        size=min(instances,lengthTime-max(abs(t.lags))))
       tempIndices <- cbind(smplInd+t.lag, tempIndices)
-      tempIndices <- cbind(tempIndices[,1]-t.lag, tempIndices)
+      tempIndices <- cbind(smplInd, tempIndices)
     }
   }
     
@@ -290,7 +296,7 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, instances=
   lagCor <- sapply(lagData, calcCor)
   
   if(plot) { 
-    plot(mDists, as.matrix(lagCor)[,1], xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
+    plot(mDists, as.matrix(lagCor)[1,], xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
          ylim=1.05*c(-abs(min(lagCor)),max(lagCor)), xlim=c(0,max(mDists)))
     abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
   }

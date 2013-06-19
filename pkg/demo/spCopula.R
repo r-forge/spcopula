@@ -1,6 +1,6 @@
 ## librarys ##
 library(spcopula)
-library(evd)
+# library(evd)
 
 ## meuse - spatial poionts data.frame ##
 data(meuse)
@@ -12,10 +12,10 @@ spplot(meuse,"zinc", col.regions=bpy.colors(5))
 hist(meuse[["zinc"]],freq=F,n=30,ylim=c(0,0.0035), 
      main="Histogram of zinc", xlab="zinc concentration")
 
-gevEsti <- fgev(meuse[["zinc"]])$estimate
+# gevEsti <- fgev(meuse[["zinc"]])$estimate
 meanLog <- mean(log(meuse[["zinc"]]))
 sdLog <- sd(log(meuse[["zinc"]]))
-curve(dgev(x,gevEsti[1], gevEsti[2], gevEsti[3]),add=T,col="red")
+# curve(dgev(x,gevEsti[1], gevEsti[2], gevEsti[3]),add=T,col="red")
 curve(dlnorm(x,meanLog,sdLog),add=T,col="green")
 
 pMar <- function(q) plnorm(q, meanLog, sdLog)
@@ -26,11 +26,10 @@ dMar <- function(x) dlnorm(x, meanLog, sdLog)
 # qMar <- function(p) qgev(p, gevEsti[1], gevEsti[2], gevEsti[3])
 # dMar <- function(x) dgev(x, gevEsti[1], gevEsti[2], gevEsti[3])
 
-## lag classes ##
-bins <- calcBins(meuse,var="zinc",nbins=10,cutoff=800)
+meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 
-# transform data to the unit interval
-bins$lagData <- lapply(bins$lagData, rankTransform)
+## lag classes ##
+bins <- calcBins(meuse,var="rtZinc",nbins=10,cutoff=800)
 
 ## calculate parameters for Kendall's tau function ##
 # either linear
@@ -53,7 +52,7 @@ colnames(loglikTau$loglik)[bestFitTau]
 
 ## set-up a spatial Copula ##
 spCop <- spCopula(components=list(normalCopula(0), tCopula(0),
-                                  frankCopula(1), normalCopula(0), 
+                                  normalCopula(1), tCopula(0), 
                                   claytonCopula(0), claytonCopula(0),
                                   claytonCopula(0), claytonCopula(0),
                                   claytonCopula(0), indepCopula()),
@@ -80,8 +79,7 @@ text(x=(1:10+0.5),y=spLoglik,lapply(bins$lagData,length))
 ##
 # spatial vine
 vineDim <- 5L
-meuseNeigh <- getNeighbours(meuse,var="zinc",size=vineDim)
-meuseNeigh@data <- rankTransform(meuseNeigh@data)
+meuseNeigh <- getNeighbours(meuse,var="rtZinc",size=vineDim)
 
 meuseSpVine <- fitCopula(spVineCopula(spCop, vineCopula(as.integer(vineDim-1))),
                          meuseNeigh)
