@@ -7,18 +7,15 @@
 ## spatial neighbourhood constructor
 ####################################
 
-neighbourhood <- function(data, distances, sp, dataLocs=NULL, index, 
+neighbourhood <- function(data, distances, index, dataLocs, predLocs=NULL, 
                           prediction, var) {
   sizeN <- ncol(distances)+1
   data <- as.data.frame(data)
-  colnames(data) <- paste(paste("N", rep((0+as.numeric(prediction)):(sizeN-1), 
-                                         each=length(var)), sep=""),
-                          rep(var,(sizeN-prediction)),sep=".")
   if (anyDuplicated(rownames(data))>0)
     rownames <- 1:length(rownames)
-  new("neighbourhood", data=data, distances=distances, locations=sp, 
-      dataLocs=dataLocs, bbox=sp@bbox, proj4string=sp@proj4string, index=index,
-      var=var, prediction=prediction)
+  new("neighbourhood", data=data, distances=distances, index=index,
+      dataLocs=dataLocs, predLocs=predLocs, prediction=prediction, var=var,
+      bbox=dataLocs@bbox, proj4string=dataLocs@proj4string)
 }
 
 ## show
@@ -31,13 +28,13 @@ showNeighbourhood <- function(object){
 setMethod(show,signature("neighbourhood"),showNeighbourhood)
 
 ## names (from sp)
-setMethod(names, signature("neighbourhood"), namesNeighbourhood <- function(x) x@var)
+setMethod(names, signature("neighbourhood"), function(x) x@var)
 
 ## spplot ##
 spplotNeighbourhood <- function(obj, zcol=names(obj), ..., column=0) {
   stopifnot(all(column<ncol(obj@data)))
   pattern <- paste(paste("N", column, ".", sep=""), zcol, sep="")
-  spdf <- SpatialPointsDataFrame(coords=obj@locations, 
+  spdf <- SpatialPointsDataFrame(coords=obj@dataLocs, 
                                  data=obj@data[,pattern,drop=FALSE], 
                                  proj4string=obj@proj4string, bbox=obj@bbox)
   spplot(spdf, ...)
@@ -49,7 +46,7 @@ selectFromNeighbourhood <- function(x, i) {
   newSp <- x@locations[i,]
   new("neighbourhood", data=x@data[i,,drop=F], 
       distances=x@distances[i,,drop=F], 
-      locations=newSp, dataLocs=x@dataLocs, bbox=newSp@bbox, 
+      dataLocs=newSp, predLocs=x@predLocs, bbox=newSp@bbox, 
       proj4string=x@proj4string, index=x@index[i,,drop=F], var=x@var, 
       prediction=x@prediction)
 }
@@ -61,45 +58,44 @@ setMethod("[[", signature("neighbourhood","numeric","missing"), selectFromNeighb
 # returns an neighbourhood object
 ##################################
 
-getNeighbours <- function(spData, locations, var=names(spData)[1], size=5, 
+getNeighbours <- function(dataLocs, predLocs, var=names(dataLocs)[1], size=5, 
                           prediction=FALSE, min.dist=0.01) {
   
-  stopifnot((!prediction && missing(locations)) || (prediction && !missing(locations)))
+  stopifnot((!prediction && missing(predLocs)) || (prediction && !missing(predLocs)))
   stopifnot(min.dist>0 || prediction)
   
-  if(missing(locations) && !prediction)
-    locations=spData
+  if(missing(predLocs) && !prediction)
+    predLocs=dataLocs
   
-  stopifnot(is(locations,"Spatial"))
+  stopifnot(is(predLocs,"Spatial"))
   
-  nLocs <- length(locations)
-  
-  if(any(is.na(match(var,names(spData)))))
+  if(any(is.na(match(var,names(dataLocs)))))
     stop("At least one of the variables is unkown or is not part of the data.")
 
-  size <- min(size,length(spData)+prediction)
-
-  allDists <- NULL
-  allLocs <- NULL
-  allData <- NULL
+  nLocs <- length(predLocs)
+  size <- min(size, length(dataLocs)+prediction)
   
-  for(i in 1:length(locations)) { # i <- 1
-    tempDists <- spDists(spData,locations[i,])
+  allLocs <- matrix(NA,nLocs,size)
+  allDists <- matrix(NA,nLocs,size-1)
+  allData <- matrix(NA,nLocs,size)
+  for (i in 1:nLocs) {
+    tempDists <- spDists(dataLocs, predLocs[i, ])
     tempDists[tempDists < min.dist] <- Inf
-    spLocs <- order(tempDists)[1:(size-1)]
-    allLocs <- rbind(allLocs, spLocs)
-    allDists <- rbind(allDists, tempDists[spLocs])
+    spLocs <- order(tempDists)[1:(size - 1)]
     
-    if(!prediction)
-      spLocs <- c(i,spLocs)
-    allData <- rbind(allData, as.vector(spData[spLocs, var, drop=F]@data[[1]]))
+    allLocs[i,] <- c(i, spLocs)
+    allDists[i,] <- tempDists[spLocs]
+    allData[i,(prediction+1):size] <- dataLocs[c(i[!prediction],spLocs),
+                                               var, drop = F]@data[[1]]
   }
-  if (prediction)
-    dataLocs <- spData
-  else 
-    dataLocs <- NULL
-  return(neighbourhood(allData, allDists, locations, dataLocs,
-                       allLocs, prediction, var))
+  
+  if (!prediction)
+    predLocs <- NULL
+  colnames(allData) <- paste(paste("N", rep(0:(size-1), 
+                                            each=length(var)), sep=""),
+                             rep(var,size),sep=".")
+  return(neighbourhood(allData, allDists, allLocs, dataLocs,
+                       predLocs, prediction, var))
 }
 
 #############
@@ -148,6 +144,8 @@ calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA,
   if(any(is.na(boundaries))) {
     boundaries <- ((1:nbins) * cutoff/nbins)
   }
+    
+  nbins <- length(boundaries)-1
   
   lags <- calcSpLagInd(data, boundaries)
     
@@ -196,14 +194,16 @@ calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA,
     boundaries <- unique(c(0,boundaries))
   }
   
-  np <- numeric(0)
-  moa <- numeric(0)
+  nbins <- length(boundaries)-1
+  
+  np <- numeric(nbins)
+  moa <- numeric(nbins)
+  meanDists <- numeric(nbins)
   lagData <- NULL
-  meanDists <- numeric(0)
 
   data <- as.matrix(data@data)
   
-  for ( i in 1:nbins) {
+  for (i in 1:nbins) {
     bools <- (dists <= boundaries[i+1] & dists > boundaries[i])
     
     pairs <- NULL
@@ -212,14 +212,14 @@ calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA,
     }
     
     lagData <- append(lagData, list(pairs))
-    moa <- c(moa, corFun(pairs))
-    meanDists <- c(meanDists, mean(dists[bools]))
-    np <- c(np, sum(bools))
+    moa[i] <- corFun(pairs)
+    meanDists[i] <- mean(dists[bools])
+    np[i] <- sum(bools)
   }
   
   if(plot) { 
     plot(meanDists, moa, xlab="distance", ylab=paste("correlation [",cor.method,"]",sep=""), 
-         ylim=1.05*c(-abs(min(moa)),max(moa)), xlim=c(0,max(meanDists)))
+         ylim=1.05*c(-abs(min(moa, na.rm=T)),max(moa, na.rm=T)), xlim=c(0,max(meanDists,na.rm=T)))
     abline(h=c(-min(moa),0,min(moa)),col="grey")
   }
   

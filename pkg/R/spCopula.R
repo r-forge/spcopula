@@ -213,7 +213,7 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h, do.logs=F, ...) {
       } else {
         if(class(lowerCop) != "indepCopula") {
           lowerParam <- calibPar(lowerCop, h)
-          lowerCop@parameters <- lowerParam
+          lowerCop@parameters[length(lowerParam)] <- lowerParam
         }
         return(fun(pairs, lowerCop, ...))
       }
@@ -608,23 +608,31 @@ fitSpCopula <- function(bins, cutoff=NA,
 
 ## dropping a spatial tree, returning a conditional neighbourhood
 dropSpTree <- function(neigh, spCop) {
-  u1 <- NULL
-  h1 <- NULL
+  u1 <- matrix(NA,nrow(neigh@data),ncol(neigh@data)-1)
+  h1 <- matrix(NA,nrow(neigh@distances),ncol(neigh@distances)-1)
+
   for(i in 1:ncol(neigh@distances)) {
-    u1 <- cbind(u1, dduCopula(as.matrix(neigh@data[,c(1,1+i)]), spCop,
-                              neigh@distances[,i]))
+    u1[,i] <- dduCopula(as.matrix(neigh@data[,c(1,1+i)]), spCop, 
+                     neigh@distances[,i])
     if (i < ncol(neigh@distances)) {
-      h1 <- cbind(h1, apply(neigh@index[,c(1,i+1)],1, 
-                            function(x) spDists(neigh@locations[x,])[1,2]))
+      h1[,i] <- apply(neigh@index[,c(2,2+i)],1, 
+                   function(x) spDists(neigh@dataLocs[x,])[1,2])
     }
   }
   
   varSplit <- strsplit(neigh@var,"|",fixed=TRUE)[[1]]
   cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
-  if(is.na(cond))
-    cond <- paste(neigh@var,"|0",sep="")
-  else
-    cond <- paste(neigh@var,cond+1,sep="")
-  return(neighbourhood(u1, h1, neigh@locations, neigh@dataLocs, neigh@index[,-1], neigh@prediction,
-                       cond))
+  if(is.na(cond)) {
+    var <- paste(neigh@var,"|0",sep="")
+    colnames(u1) <- paste(paste("N", rep(1:(ncol(u1)), each=length(var)), sep=""),
+                          rep(var,ncol(u1)),sep=".")
+  } else {
+    var <- paste(neigh@var,cond+1,sep="")
+    colnames(u1) <- paste(paste("N", rep(cond:(ncol(u1)+cond-1)+2,
+                                         each=length(var)), sep=""),
+                          rep(var,ncol(u1)),sep=".")
+  }
+  return(neighbourhood(data=u1, distances=h1, index=neigh@index[,-1],
+                       dataLocs=neigh@dataLocs, predLocs=neigh@predLocs,
+                       prediction=neigh@prediction, var=var))
 }

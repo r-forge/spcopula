@@ -68,7 +68,7 @@ pStCopula <- function (u, copula, h) {
     for(t in tDist) {
       tmpInd <- h[,2]==t
       tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
-      res[tmpInd] <- pSpCopula(u[tmpInd,], tmpCop, h[tmpInd,1])
+      res[tmpInd] <- pSpCopula(u[tmpInd,,drop=F], tmpCop, h[tmpInd,1])
     }
   }
   res
@@ -98,7 +98,7 @@ dStCopula <- function (u, copula, log, h) {
     for(t in tDist) {
       tmpInd <- h[,2]==t
       tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
-      res[tmpInd] <- dSpCopula(u[tmpInd,], tmpCop, log, h[tmpInd,1])
+      res[tmpInd] <- dSpCopula(u[tmpInd,,drop=F], tmpCop, log, h[tmpInd,1])
     }
   }
   res
@@ -131,7 +131,7 @@ dduStCopula <- function (u, copula, h) {
     for(t in tDist) {
       tmpInd <- h[,2]==t
       tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
-      res[tmpInd] <- dduSpCopula(u[tmpInd,], tmpCop, h[tmpInd,1])
+      res[tmpInd] <- dduSpCopula(u[tmpInd,,drop=F], tmpCop, h[tmpInd,1])
     }
   }
   res
@@ -162,7 +162,7 @@ ddvStCopula <- function (u, copula, h) {
     for(t in tDist) {
       tmpInd <- h[,2]==t
       tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
-      res[tmpInd] <- ddvSpCopula(u[tmpInd,], tmpCop, h[tmpInd,1])
+      res[tmpInd] <- ddvSpCopula(u[tmpInd,,drop=F], tmpCop, h[tmpInd,1])
     }
   }
   res

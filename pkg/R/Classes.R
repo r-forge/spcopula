@@ -240,34 +240,34 @@ sizeLim <- 25 #  a constant
 # sp: an optional slot providing the coordinates of locations
 # index: a matrix linking the data entries with the coordinates of the locations
 validNeighbourhood <- function(object) {
-  sizeN <- ncol(object@distances)+1
-  nVars <- length(object@var)
-  if (object@prediction & is.null(object@dataLocs))
-    return("The locations of the data have to provided for the estimation procedure.")
+  if(length(var)>1)
+    return("Only a single variable name is supported.")
+  if (object@prediction & is.null(object@predLocs))
+    return("The prediction locations have to be provided for the prediction procedure.")
+  # check for number of rows
   if (nrow(object@data) != nrow(object@distances)) 
     return("Data and distances have unequal number of rows.")
-  if (ncol(object@data) %% (sizeN-object@prediction) != 0) 
-    return("Data and distances have non matching number of columns.")
   if (nrow(object@data) != nrow(object@index)) 
     return("Data and index have unequal number of rows.")
-  if (ncol(object@distances) != ncol(object@index)) 
+  # check for columns
+  if (ncol(object@data) != ncol(object@distances)+1)
+    return("Data and distances have non matching number of columns.")
+  if (ncol(object@data) != ncol(object@index)) 
     return("Data and index have unequal number of columns.")
-  if (ncol(object@data) != (sizeN-object@prediction) * nVars) 
-    return(paste("Number of columns in data does not equal the product of the neighbourhood's size (",sizeN,") with number of variables (",nVars,").",sep=""))
   else 
     return(TRUE)
 }
 
-setClassUnion("optionalDataLocs",c("NULL","Spatial"))
+setClassUnion("optionalLocs",c("NULL","Spatial"))
 
 setClass("neighbourhood",
          representation = representation(data = "data.frame", 
                                          distances="matrix", 
                                          index="matrix",
-                                         locations="Spatial",
-                                         dataLocs="optionalDataLocs",
-                                         var="character", 
-                                         prediction="logical"),
+                                         dataLocs="Spatial",
+                                         predLocs="optionalLocs",
+                                         prediction="logical",
+                                         var="character"),         
          validity = validNeighbourhood, contains = list("Spatial"))
 
 ## ST neighbourhood

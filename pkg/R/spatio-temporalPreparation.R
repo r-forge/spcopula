@@ -35,7 +35,7 @@ showStNeighbourhood <- function(object){
 setMethod(show,signature("stNeighbourhood"),showStNeighbourhood)
 
 
-## calculate neighbourhood from SpatialPointsDataFrame
+## calculate neighbourhood from ST
 
 # returns an neighbourhood object
 ##################################
@@ -78,13 +78,13 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
     }
     stNeighData <- rbind(stNeighData, tmpData) # bind data row-wise
     stDists[(i-1)*timeSteps+1:timeSteps,,1] <- matrix(rep(nghbrs@distances[i,],
-                                                          timeSteps*(spSize-1)),
-                                                      byrow=T, ncol=length(t.lags)*(spSize-1))  # store sp distances
+                                                          timeSteps*length(t.lags)),
+                                                      byrow=T, ncol=length(t.lags)*(spSize-1))   # store sp distances
     stDists[(i-1)*timeSteps+1:timeSteps,,2] <- matrix(rep(rep(t.lags,each=spSize-1),
                                                           timeSteps),
                                                       byrow=T, ncol=length(t.lags)*(spSize-1))  # store tmp distances
     stInd[(i-1)*timeSteps+1:timeSteps,,1] <- matrix(rep(nghbrs@index[i,],
-                                                    timeSteps*(spSize-1)),
+                                                    timeSteps*length(t.lags)),
                                                     byrow=T, ncol=length(t.lags)*(spSize-1))
     stInd[(i-1)*timeSteps+1:timeSteps,,2] <- tmpInd
   }
@@ -96,3 +96,111 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
   return(stNeighbourhood(as.data.frame(stNeighData), stDists, stData, ST, 
                          stInd, prediction, var))
 }
+
+calcStNeighBins <- function(data, var="uniPM10", nbins=9, t.lags=-(0:2),
+                            boundaries=NA, cutoff=NA, cor.method="fasttau") {
+#   dists <- data@distances[,,1]
+#   
+#   corFun <- switch(cor.method,
+#                    fasttau=function(x) VineCopula:::fasttau(x[,1],x[,2]),
+#                    function(x) cor(x,method=cor.method)[1,2])
+#   
+#   if (any(is.na(boundaries))) 
+#     boundaries <- quantile(as.vector(dists), probs=c(1:nbins/nbins))
+#   if(!is.na(cutoff)) {
+#     boundaries <- boundaries[boundaries < cutoff]
+#     boundaries <- unique(c(0,boundaries,cutoff))
+#   } else {
+#     boundaries <- unique(c(0,boundaries))
+#   }
+#   
+#   lagData <- NULL
+#   for(t.lag in t.lags) { # t.lag <- 0
+#     tBool <- data@distances[,,2]==t.lag
+#     tmpLagData <- NULL
+#     for(i in 1:nbins) { # i <- 1
+#       sBool <- (dists <= boundaries[i + 1] & dists > boundaries[i])
+#       bool <- tBool & sBool
+#       pairs <- NULL
+#       for (col in 1:(dim(tBool)[2])) { # col <- 1
+#         if(!any(bool[, col]))
+#           next
+#         sInd <- data@index[bool[, col], c(1, 1 + col),1]
+#         tInd <- data@index[bool[, col], c(1, 1 + col),2]
+#         p1 <- apply(cbind(sInd[,1], tInd[,1]),1,
+#                     function(x) data@locations[x[1], x[2],var])
+#         p2 <- apply(cbind(sInd[,2], tInd[,2]),1,
+#                     function(x) data@locations[x[1], x[2],var])
+#         pairs <- rbind(pairs, cbind(p1,p2))
+#       }
+#       tmpLagData <- append(tmpLagData,list(pairs))
+#     }
+#     lagData <- append(lagData,list(tmpLagData))
+#     
+#   }
+#   
+#   lagData <- lapply(spIndices, retrieveData, tempIndices = tempIndices)
+#   calcStats <- function(binnedData) {
+#     cors <- NULL
+#     for (i in 1:(ncol(binnedData)/2)) {
+#       cors <- c(cors, cor(binnedData[, 2 * i - 1], binnedData[, 2 * i], method = cor.method, use = "pairwise.complete.obs"))
+#     }
+#     return(cors)
+#   }
+#   calcTau <- function(binnedData) {
+#     cors <- NULL
+#     for (i in 1:(ncol(binnedData)/2)) {
+#       cors <- c(cors, VineCopula:::fasttau(binnedData[, 2 * i - 1], binnedData[, 2 * i]))
+#     }
+#     return(cors)
+#   }
+#   calcCor <- switch(cor.method, fasttau = calcTau, calcStats)
+#   lagCor <- sapply(lagData, calcCor)
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   
+#   np <- numeric(0)
+#   moa <- numeric(0)
+#   lagData <- NULL
+#   meanDists <- numeric(0)
+#   
+#   data <- as.matrix(data@data)
+#   
+#   for ( i in 1:nbins) {
+#     bools <- (dists <= boundaries[i+1] & dists > boundaries[i])
+#     
+#     pairs <- NULL
+#     for(col in 1:(dim(bools)[2])) {
+#       pairs <- rbind(pairs, data[bools[,col],c(1,1+col)])
+#     }
+#     
+#     lagData <- append(lagData, list(pairs))
+#     moa <- c(moa, corFun(pairs))
+#     meanDists <- c(meanDists, mean(dists[bools]))
+#     np <- c(np, sum(bools))
+#   }
+#   
+#   if(plot) { 
+#     plot(meanDists, moa, xlab="distance", ylab=paste("correlation [",cor.method,"]",sep=""), 
+#          ylim=1.05*c(-abs(min(moa)),max(moa)), xlim=c(0,max(meanDists)))
+#     abline(h=c(-min(moa),0,min(moa)),col="grey")
+#   }
+#   
+#   res <- list(np=np, meanDists = meanDists, lagCor=moa, lagData=lagData)
+#   attr(res,"cor.method") <- switch(cor.method, fasttau="kendall", cor.method)
+#   return(res)
+}
+
+setMethod(calcBins, signature="stNeighbourhood", calcStNeighBins)

@@ -81,15 +81,18 @@ fitStVine <- function(copula, data, method, estimate.variance=F) {
   stopifnot(class(data)=="stNeighbourhood")
   stopifnot(copula@dimension == ncol(data@data))
   
-  u0 <- as.matrix(data@data) # previous level's (contitional) data
+  u0 <- as.matrix(data@data) # previous level's (conditional) data
   h0 <- data@distances # previous level's distances
   l0 <- rep(0,nrow(u0)) # spatial density
   u1 <- NULL # current level of conditional data
+  cat("[Margin ")
   for(i in 1:dim(h0)[2]) { # i <- 1
     l0 <- l0 + dCopula(u0[,c(1,i+1)], copula@stCop, h=h0[,i,], log=T)
+    cat(i,", ")
     u1 <- cbind(u1, dduCopula(u0[,c(1,i+1)], copula@stCop, h=h0[,i,]))
   }
   u0 <- u1
+  cat(".]\n")
   
   cat("[Estimating a",ncol(u0),"dimensional copula at the top.]\n")
   vineCopFit <- fitCopula(copula@topCop, u0, method, estimate.variance) 
@@ -199,4 +202,37 @@ stCopPredict <- function(predNeigh, stVine, margin, method="quantile", p=0.5, ..
   switch(method,
          quantile=stCopPredict.quantile(predNeigh, stVine, margin, p),
          expectation=stCopPredict.expectation(predNeigh, stVine, margin, ...))
+}
+
+dropStTree <- function(neigh, stCop) {
+    stopifnot(class(neigh)=="stNeighbourhood")
+    
+    u0 <- as.matrix(neigh@data) # previous level's (conditional) data
+    h0 <- neigh@distances # previous level's distances
+    u1 <- NULL # current level of conditional data
+    h1s <- NULL # upcoming distances
+    h1t <- NULL # upcoming distances
+    cat("[Margin ")
+    for(i in 1:dim(h0)[2]) { # i <- 1
+      cat(i,", ")
+      u1 <- cbind(u1, dduCopula(u0[,c(1,i+1)], stCop, h=h0[,i,]))
+      if (i < ncol(neigh@distances)) {
+        h1s <- cbind(h1s, apply(neigh@index[, c(1, i + 1),1], 1, 
+                                function(x) spDists(neigh@locations@sp[x, ])[1, 2]))
+        h1t <- cbind(h1t, apply(neigh@index[, c(1, i + 1),2], 1, 
+                                function(x) diff(x)))
+      }
+    }
+    h1 <- array(dim=c(dim(h1s),2))
+    h1[,,1] <- h1s
+    h1[,,2] <- h1t
+    
+    varSplit <- strsplit(neigh@var, "|", fixed = TRUE)[[1]]
+    cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
+    if (is.na(cond)) 
+      cond <- paste(neigh@var, "|0", sep = "")
+    else cond <- paste(neigh@var, cond + 1, sep = "")
+    return(stNeighbourhood(data=u1, distances=h1, STxDF=neigh@locations, 
+                           ST=neigh@dataLocs, index=neigh@index[, -1,], 
+                           prediction=neigh@prediction, var=cond))
 }

@@ -8,13 +8,13 @@ Creating Local Neighbourhoods
 This function calculates a local neighbourhood to be used for fitting of spatial/spatio-temporal vine copulas and for prediction using spatial/spatio-temporal vine copulas.
 }
 \usage{
-getNeighbours(spData, locations, var = names(spData)[1], size = 5, prediction=FALSE, min.dist = 0.01)
+getNeighbours(dataLocs, predLocs, var = names(dataLocs)[1], size = 5, prediction=FALSE, min.dist = 0.01)
 }
 \arguments{
-  \item{spData}{
+  \item{dataLocs}{
 some spatial data frame holding the data used for estimation/prediction
 }
-  \item{locations}{
+  \item{predLocs}{
 A spatial object defining the prediction locations, might be missing if the neighbourhood is used for fitting.
 }
   \item{var}{

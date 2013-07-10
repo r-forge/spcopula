@@ -103,7 +103,7 @@ fitSpVine <- function(copula, data, method, estimate.variance=F) {
       u1 <- cbind(u1, dduCopula(u0[,c(1,i+1)], copula@spCop[[spTree]], h=h0[,i]))
       if (i < ncol(h0)) {
         h1 <- cbind(h1,apply(data@index[,c(spTree,spTree+i)],1, 
-                             function(x) spDists(data@locations[x,])[1,2]))
+                             function(x) spDists(data@dataLocs[x,])[1,2]))
       }
     }
     u0 <- u1
@@ -142,11 +142,6 @@ setMethod("fitCopula",signature=signature("spVineCopula"),fitSpVine)
 
 # deriving all spatial tree distances
 calcSpTreeDists <- function(neigh, n.trees) {
-  if(!neigh@prediction)
-    data <- neigh@locations
-  else
-    data <- neigh@dataLocs
-  
   condDists <- list(n.trees)
   condDists[[1]] <- neigh@distances
   if(n.trees==1)
@@ -154,8 +149,8 @@ calcSpTreeDists <- function(neigh, n.trees) {
   for (spTree in 1:(n.trees-1)) {
     h1 <- NULL
     for(i in 1:(ncol(neigh@distances)-spTree)) {
-      h1 <- cbind(h1,apply(neigh@index[,c(spTree,i+spTree),drop=F],1, 
-                           function(x) spDists(data[x,])[1,2]))
+      h1 <- cbind(h1,apply(neigh@index[,c(spTree+1,spTree+i+1),drop=F],1, 
+                           function(x) spDists(neigh@dataLocs[x,])[1,2]))
       dimnames(h1) <- NULL
     }
     condDists[[spTree+1]] <- h1
@@ -201,7 +196,7 @@ spCopPredict.expectation <- function(predNeigh, spVine, margin, ..., stop.on.err
   predMean <- NULL
   for(i in 1:nrow(predNeigh@data)) { # i <-1
     cat("[Predicting location ",i,".]\n", sep="")
-    condSecVine <- condSpVine(as.numeric(predNeigh@data[i,]), 
+    condSecVine <- condSpVine(as.numeric(predNeigh@data[i,-1]), 
                               lapply(dists,function(x) x[i,]), spVine)
     
     condExp <-  function(x) {
@@ -214,14 +209,14 @@ spCopPredict.expectation <- function(predNeigh, spVine, margin, ..., stop.on.err
                     ePred$abs.error, " for location ",i,".")
     predMean <- c(predMean, ePred$value)
   }
-  if ("data" %in% slotNames(predNeigh@locations)) {
-    res <- predNeigh@locations
+  if ("data" %in% slotNames(predNeigh@predLocs)) {
+    res <- predNeigh@predLocs
     res@data[["expect"]] <- predMean
     return(res)
   } else {
     predMean <- data.frame(predMean)
     colnames(predMean) <- "expect"
-    return(addAttrToGeom(predNeigh@locations, predMean, match.ID=FALSE))
+    return(addAttrToGeom(predNeigh@predLocs, predMean, match.ID=FALSE))
   }
 }
 
@@ -232,7 +227,7 @@ spCopPredict.quantile <- function(predNeigh, spVine, margin, p=0.5) {
   predQuantile <- NULL
   for(i in 1:nrow(predNeigh@data)) { # i <-1
     cat("[Predicting location ",i,".]\n", sep="")
-    condSecVine <- condSpVine(as.numeric(predNeigh@data[i,]), 
+    condSecVine <- condSpVine(as.numeric(predNeigh@data[i,-1]), 
                               lapply(dists,function(x) x[i,]), spVine)
     
     xVals <- attr(condSecVine,"xVals")
@@ -253,14 +248,14 @@ spCopPredict.quantile <- function(predNeigh, spVine, margin, p=0.5) {
     predQuantile <- c(predQuantile, margin$q(xVals[lower]+xRes))
   }
   
-  if ("data" %in% slotNames(predNeigh@locations)) {
-    res <- predNeigh@locations
+  if ("data" %in% slotNames(predNeigh@predLocs)) {
+    res <- predNeigh@predLocs
     res@data[[paste("quantile.",p,sep="")]] <- predQuantile
     return(res)
   } else {
     predQuantile <- data.frame(predQuantile)
     colnames(predQuantile) <- paste("quantile.",p,sep="")
-    return(addAttrToGeom(predNeigh@locations, predQuantile, match.ID=FALSE))
+    return(addAttrToGeom(predNeigh@predLocs, predQuantile, match.ID=FALSE))
   }
 }
 

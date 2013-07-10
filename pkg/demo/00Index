@@ -1,2 +1,3 @@
 MRP		The MRP demo gives insight in the code used in the paper: Multivariate return periods in hydrology: a critical and practical review focusing on synthetic design hydrograph estimation, by Gräler et al. (2013), HESS-17-1281-2013.
-spCopula		A demo illustrating the estiamtion of a spatial copula for a SpatialPointsDataFrame.
+spCopula		A demo illustrating the estiamtion of a single spatial tree vine copula for a SpatialPointsDataFrame.
+pureSpVineCopula  	A demo illustrating the estiamtion of a pure spatial vine copula for a SpatialPointsDataFrame.

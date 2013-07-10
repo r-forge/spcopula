@@ -89,7 +89,7 @@ meuseSpVine <- meuseSpVine@copula
 ##
 # leave-one-out x-validation
 
-time <- proc.time()  # ~60 s
+time <- proc.time()  # ~100 s
 predMedian <- NULL
 predMean <- NULL
 for(loc in 1:nrow(meuseNeigh@data)) { # loc <- 145

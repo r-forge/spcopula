@@ -5,6 +5,7 @@
 \alias{calcBins,Spatial-method}
 \alias{calcBins,STFDF-method}
 \alias{calcBins,neighbourhood-method}
+\alias{calcBins,stNeighbourhood-method}
 
 \title{
 A function calculating the spatial/spatio-temporal bins

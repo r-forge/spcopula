@@ -18,7 +18,7 @@ Objects can be created by calls of the form \code{new("neighbourhood", ...)}, fr
     \item{distances}{Object of class \code{matrix} providing the separating distances per neighbourhood.}
     \item{dataLocs}{The locations holding the data for the prediction. May be left empty (NULL) for estimation of the spatial (vine) copula.}
     \item{index}{Object of class \code{matrix} pointing to the IDs of the underlying \code{\link[sp:Spatial-class]{Spatial}} object.}
-    \item{locations}{Object of class \code{\link[sp:Spatial-class]{Spatial}} denoting the central locations of the neighbourhoods.}
+    \item{predLocs}{Object of class \code{\link[sp:Spatial-class]{Spatial}} denoting the central locations of the predictive neighbourhoods.}
     \item{var}{Object of class \code{character} giving the variable names of interest.}
     \item{prediction}{of class \code{logical}, whether this neighbourhood is suited for fitting or prediction purposes.}
     \item{bbox}{Object of class \code{matrix} the bounding box of the central neighbourhood locations.}

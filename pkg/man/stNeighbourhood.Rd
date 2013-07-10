@@ -26,7 +26,6 @@ Constructor of the \code{\linkS4class{stNeighbourhood}} class.
 }
 \examples{
 ## the spatial version
-
 spdf <- data.frame(x=c(112,154,212,289),y=c(124,198,85,168),measure=rlnorm(4))
 coordinates(spdf) <- ~x+y
 
@@ -34,7 +33,7 @@ neigh <- getNeighbours(spdf,size=4)
 neigh
 
 # rebuilding neigh
-neighbourhood(neigh@data, neigh@distances, spdf, NULL, neigh@index, neigh@prediction, neigh@var)
+neighbourhood(neigh@data, neigh@distances, neigh@index, spdf, NULL, neigh@prediction, neigh@var)
 }
 
 \keyword{spatio-temporal}
