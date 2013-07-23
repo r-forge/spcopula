@@ -33,7 +33,7 @@ bins <- calcBins(meuse,var="rtZinc", nbins=10, cutoff=800)
 
 ## calculate parameters for Kendall's tau function ##
 calcKTau <- fitCorFun(bins, degree=2)
-curve(calcKTau,0, 1000, col="purple",add=TRUE)
+curve(calcKTau,0, 1000, col="purple",add=T)
 
 families <- list(normalCopula(0), tCopula(0,df=2.15), claytonCopula(0),
                  gumbelCopula(1), frankCopula(1), joeBiCopula(1.5),
@@ -47,8 +47,8 @@ colnames(loglikTau$loglik)[bestFitTau]
 
 ## set up a first bivariate spatial Copula
 ###########################################
-spCop <- spCopula(c(families[bestFitTau[1:7]],indepCopula()),
-                  distances=bins$meanDists[1:8],
+spCop <- spCopula(c(families[bestFitTau[1:8]],indepCopula()),
+                  distances=bins$meanDists[1:9],
                   spDepFun=calcKTau, unit="m")
 
 ## estimation neighbourhood for the pure spatial vine copula
@@ -61,12 +61,10 @@ meuseNeigh1 <- getNeighbours(dataLocs=meuse,var="rtZinc",size=vineDim)
 meuseNeigh2 <- dropSpTree(meuseNeigh1, spCop)
 bins2 <- calcBins(meuseNeigh2, boundaries=c(0,2:15)*50, plot=F)
 points(bins2$meanDists, bins2$lagCor, pch=2)
-bins2$np
 calcKTau2 <- fitCorFun(bins2, degree=3,cutoff=500)
 curve(calcKTau2,0, 800, col="green",add=TRUE)
-curve(calcKTau, 0, 800, col="purple",add=TRUE)
 
-loglikTau2 <- loglikByCopulasLags(bins2, families) #, calcKTau2)
+loglikTau2 <- loglikByCopulasLags(bins2, families, calcKTau2)
 bestFitTau2 <- apply(apply(loglikTau2$loglik, 1, rank, na.last=T), 2, 
                     function(x) which(x==9))
 
@@ -74,16 +72,17 @@ colnames(loglikTau2$loglik)[bestFitTau2]
 
 ## set up the second bivariate spatial Copula
 ##############################################
-spCop2 <- spCopula(c(families[bestFitTau2[1:5]],indepCopula()),
-                   distances=bins2$meanDists[1:6],
+spCop2 <- spCopula(c(families[bestFitTau2[1:6]], indepCopula()),
+                   distances=bins2$meanDists[1:7],
                    spDepFun=calcKTau2, unit="m")
 
 ## third spatial tree
 ######################
 meuseNeigh3 <- dropSpTree(meuseNeigh2, spCop2)
-bins3 <- calcBins(meuseNeigh3)
-calcKTau3 <- fitCorFun(bins3, degree=1,cutoff=400)
-curve(calcKTau3,0, 500, col="purple",add=TRUE)
+bins3 <- calcBins(meuseNeigh3, plot=F)
+points(bins3$meanDists, bins3$lagCor, pch=3)
+calcKTau3 <- fitCorFun(bins3, degree=1, cutoff=400)
+curve(calcKTau3, 0, 500, col="red", add=TRUE)
 
 loglikTau3 <- loglikByCopulasLags(bins3, families, calcKTau3)
 bestFitTau3 <- apply(apply(loglikTau3$loglik, 1, rank, na.last=T), 2, 
@@ -92,16 +91,21 @@ colnames(loglikTau3$loglik)[bestFitTau3]
 
 ## set up the third bivariate spatial Copula
 #############################################
-spCop3 <- spCopula(c(families[bestFitTau3[1:6]],indepCopula()),
-                   distances=bins3$meanDists[1:7],
+spCop3 <- spCopula(c(families[bestFitTau3[1:5]],indepCopula()),
+                   distances=bins3$meanDists[1:6],
                    spDepFun=calcKTau3, unit="m")
 
 ## fourth spatial tree
 #######################
 meuseNeigh4 <- dropSpTree(meuseNeigh3, spCop3)
-bins4 <- calcBins(meuseNeigh4)
+bins4 <- calcBins(meuseNeigh4, plot=F)
+points(bins4$meanDists, bins4$lagCor, pch=4)
 calcKTau4 <- fitCorFun(bins4, degree=1,cutoff=400)
-curve(calcKTau4,0, 500, col="purple",add=TRUE)
+curve(calcKTau4,0, 500, col="blue",add=TRUE)
+
+legend("topright",c("1. spatial cop.", "2. spatial cop.",
+                    "3. spatial cop.", "4. spatial cop."),
+       pch=1:4,col=c("purple","green","red","blue"),lty=1)
 
 loglikTau4 <- loglikByCopulasLags(bins4, families, calcKTau4)
 bestFitTau4 <- apply(apply(loglikTau4$loglik, 1, rank, na.last=T), 2, 
@@ -110,7 +114,7 @@ colnames(loglikTau4$loglik)[bestFitTau4]
 
 ## set up the third bivariate spatial Copula
 #############################################
-spCop4 <- spCopula(c(families[bestFitTau4[1:4]],indepCopula()),
+spCop4 <- spCopula(c(families[bestFitTau4[1:3]], normalCopula(0),indepCopula()),
                    distances=bins4$meanDists[1:5],
                    spDepFun=calcKTau4, unit="m")
 
@@ -130,13 +134,13 @@ meuseNeigh <- getNeighbours(dataLocs=meuse, predLocs=meuse, prediction=T,
 # meuseNeigh <- getNeighbours(dataLocs=meuse, predLocs=meuse, prediction=T, 
 #                             min.dist=10, var="evZinc", size=vineDim)
 
-meuseNeigh <- getNeighbours(dataLocs=meuse, predLocs=meuse, prediction=T, 
-                            min.dist=10, var="rtZinc", size=vineDim)
+# meuseNeigh <- getNeighbours(dataLocs=meuse, predLocs=meuse, prediction=T, 
+#                             min.dist=10, var="rtZinc", size=vineDim)
 
 ## leave-one-out x-validation
 ##############################
 
-time <- proc.time()  # ~240 s
+time <- proc.time()  # ~160 s
 predMedian <- spCopPredict(meuseNeigh, meuseSpVine, list(q=qMar), "quantile")
 predMean <- spCopPredict(meuseNeigh, meuseSpVine, list(q=qMar), "expectation")
 proc.time() - time
@@ -149,42 +153,12 @@ c(mean(abs(predMedian$quantile.0.5-meuse$zinc)),
   mean(predMedian$quantile.0.5-meuse$zinc),
   sqrt(mean((predMedian$quantile.0.5-meuse$zinc)^2)))
 
+par(mfrow=c(1,2))
 plot(predMean$expect, meuse$zinc,asp=1)
 abline(0,1)
 
 plot(predMedian$quantile.0.5, meuse$zinc,asp=1)
 abline(0,1)
-
-## copula, evd:
-# Median:
-# MAE:  164
-# ME:   -82
-# RMSE: 265
-# Mean:
-# MAE:  278
-# ME:   196
-# RMSE: 507
-
-## copula, lnorm, rt:
-# Median:
-# MAE:  167
-# ME:   -61
-# RMSE: 263
-# Mean:
-# MAE:  171
-# ME:     0
-# RMSE: 247
-
-## copula, lnorm, pMar:
-# Median:
-# MAE:  163
-# ME:   -60
-# RMSE: 263
-# Mean:
-# MAE:  167
-# ME:     2
-# RMSE: 248
-
 
 ## kriging results:
 # same neighbourhood size 5L:

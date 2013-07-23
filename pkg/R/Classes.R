@@ -109,7 +109,7 @@ setClass("leafCopula",
 # param.names = "character" appropriate names
 # param.lowbnd = "numeric"  appropriate lower bounds
 # param.upbnd = "numeric"   appropriate upper bounds
-# message = "character"     messgae printed with "show"
+# fullname = "character"    name printed with "show"
 # components="list"         list of copulas 
 # distances="numeric"       the linking distances
 # unit="character"          measurement unit of distance
@@ -128,14 +128,24 @@ validSpCopula <- function(object) {
   if(!is.null(object@calibMoa(normalCopula(0),0))) {
     nonIndep <- sapply(object@components[-nComp], function(x) class(x) != "indepCopula")
     for (i in (1:(nComp-1))[nonIndep]) {
-      check.upper <- c(check.upper, is.na(object@calibMoa(object@components[[i]], object@distances[i+1])))
+      upParam <- object@calibMoa(object@components[[i]], object@distances[i+1])
+      if(is.na(upParam)) {
+        check.upper <- c(check.upper, TRUE)
+      } else {
+        if (class(object@components[[i]]) == "frankCopula" && upParam == 0) {
+          check.upper <- c(check.upper, TRUE)
+        } else {
+          check.upper <- c(check.upper, FALSE)
+        }
+      }
+        
       check.lower <- c(check.lower, is.na(object@calibMoa(object@components[[i]], c(0,object@distances)[i])))
     }
     if(sum(check.upper>0)) return(paste("Reconsider the upper boundary conditions of the following copula(s): \n",
-                                        paste(sapply(object@components[check.upper], function(x) x@message), 
+                                        paste(sapply(object@components[check.upper], function(x) x@fullname), 
                                               "at", object@distances[check.upper],collapse="\n")))
     if(sum(check.lower>0)) return(paste("Reconsider the lower boundary conditions of the following copula(s): \n",
-                                        paste(sapply(object@components[check.lower], function(x) x@message), 
+                                        paste(sapply(object@components[check.lower], function(x) x@fullname), 
                                               "at", object@distances[check.lower],collapse="\n")))
   }
   return(TRUE)
