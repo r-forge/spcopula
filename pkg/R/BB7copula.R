@@ -30,7 +30,7 @@ BB7Copula <- function (param=c(1,1)) {
     stop(paste("Parameter values out of bounds: theta: [1,Inf), delta: (0,Inf)."))
   new("BB7Copula", dimension = as.integer(2), parameters = param,
       param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, Inf),
-      family=9, fullname = "BB7 copula family. Number 9 in CDVine.")
+      family=9, fullname = "BB7 copula family. Number 9 in VineCopula.")
 }
 
 ## density ##
@@ -65,7 +65,7 @@ setMethod("ddvCopula", signature("matrix","BB7Copula"), linkVineCop.ddv)
 ## random number generator
 setMethod("rCopula", signature("numeric","BB7Copula"), linkVineCop.r)
 
-## kendall distribution/measure, taken from CDVine:::obs.stat
+## kendall distribution/measure, taken from VineCopula:::obs.stat
 kendall.BB7 <- function(copula, t){
   theta = copula@parameters[1]
   delta = copula@parameters[2]
@@ -103,7 +103,7 @@ surBB7Copula <- function (param=c(1,1)) {
     stop(paste("Parameter values out of bounds: theta: [1,Inf), delta: (0,Inf)."))
   new("surBB7Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, Inf),
-      family= 19, fullname = "Survival BB7 copula family. Number 19 in CDVine.")
+      family= 19, fullname = "Survival BB7 copula family. Number 19 in VineCopula.")
 }
 
 ## density ##
@@ -172,7 +172,7 @@ r90BB7Copula <- function (param=c(-1,-1)) {
     stop(paste("Parameter values out of bounds: theta: (-Inf,-1], delta: (-Inf,0)."))
   new("r90BB7Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, 0),
-      family=29, fullname = "90 deg rotated BB7 copula family. Number 29 in CDVine.")
+      family=29, fullname = "90 deg rotated BB7 copula family. Number 29 in VineCopula.")
 }
 
 ## density ##
@@ -226,7 +226,7 @@ r270BB7Copula <- function (param=c(-1,-1)) {
     stop(paste("Parameter values out of bounds: theta: (-Inf,-1], delta: (-Inf,0)."))
   new("r270BB7Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), 
-      family=39, fullname = "270 deg rotated BB7 copula family. Number 39 in CDVine.")
+      family=39, fullname = "270 deg rotated BB7 copula family. Number 39 in VineCopula.")
 }
 
 ## density ##

@@ -30,7 +30,7 @@ joeBiCopula <- function (param=2) {
     stop("Parameter is outside of the allowed interval (1,Inf).")
   new("joeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
       param.lowbnd = 1, param.upbnd = Inf, family=6, 
-      fullname = "Joe copula family. Number 6 in CDVine.")
+      fullname = "Joe copula family. Number 6 in VineCopula.")
 }
 
 ## density ##
@@ -77,7 +77,7 @@ setMethod("tau",signature("joeBiCopula"),linkVineCop.tau)
 setMethod("tailIndex",signature("joeBiCopula"),linkVineCop.tailIndex)
 
 
-## kendall distribution/measure, taken from CDVine:::obs.stat
+## kendall distribution/measure, taken from VineCopula:::obs.stat
 kendall.Joe <- function(copula, t){
   par = copula@parameters[1]
   
@@ -109,7 +109,7 @@ surJoeBiCopula <- function (param=2) {
     stop("Parameter is outside of the allowed interval (1,Inf).")
   new("surJoeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = 1, param.upbnd = Inf, family=16, 
-      fullname = "Survival Joe copula family. Number 16 in CDVine.")
+      fullname = "Survival Joe copula family. Number 16 in VineCopula.")
 }
 
 ## density ##
@@ -186,7 +186,7 @@ r90JoeBiCopula <- function (param=-2) {
     stop("Parameter is outside of the allowed interval (-Inf,-1).")
   new("r90JoeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = -1, family=26, 
-      fullname = "90 deg rotated Joe copula family. Number 26 in CDVine.")
+      fullname = "90 deg rotated Joe copula family. Number 26 in VineCopula.")
 }
 
 ## density ##
@@ -248,7 +248,7 @@ r270JoeBiCopula <- function (param=-2) {
     stop("Parameter is outside of the allowed interval (-Inf,-1).")
   new("r270JoeBiCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = -1, family=36, 
-      fullname = "270 deg rotated Joe copula family. Number 36 in CDVine.")
+      fullname = "270 deg rotated Joe copula family. Number 36 in VineCopula.")
 }
 
 ## density ##

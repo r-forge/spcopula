@@ -32,7 +32,7 @@ BB8Copula <- function (param=c(1,1)) {
     stop("Parameter value out of bound: theta: [1,Inf), delta: (0,1].")
   new("BB8Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, 1),
-      family=10, fullname = "BB8 copula family. Number 10 in CDVine.")
+      family=10, fullname = "BB8 copula family. Number 10 in VineCopula.")
 }
 
 ## density ##
@@ -67,7 +67,7 @@ setMethod("ddvCopula", signature("matrix","BB8Copula"), linkVineCop.ddv)
 ## random number generator
 setMethod("rCopula", signature("numeric","BB8Copula"),linkVineCop.r)
 
-## kendall distribution/measure, taken from CDVine:::obs.stat
+## kendall distribution/measure, taken from VineCopula:::obs.stat
 kendall.BB8 <- function(copula, t){
   theta = copula@parameters[1]
   delta = copula@parameters[2]
@@ -103,7 +103,7 @@ surBB8Copula <- function (param=c(1,1)) {
     stop("Parameter value out of bound: theta: [1,Inf), delta: (0,1].")
   new("surBB8Copula", dimension = as.integer(2), parameters = param,
       param.names = c("theta", "delta"), param.lowbnd = c(1, 0), param.upbnd = c(Inf, 1),
-      family=20, fullname = "Survival BB8 copula family. Number 20 in CDVine.")
+      family=20, fullname = "Survival BB8 copula family. Number 20 in VineCopula.")
 }
 
 ## density ##
@@ -170,7 +170,7 @@ r90BB8Copula <- function (param=c(-1,-1)) {
     stop("Parameter value out of bound: theta: (-Inf,-1], delta: [-1,0).")
   new("r90BB8Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0),
-      family=30, fullname = "90 deg rotated BB8 copula family. Number 30 in CDVine.")
+      family=30, fullname = "90 deg rotated BB8 copula family. Number 30 in VineCopula.")
 }
 
 ## density ##
@@ -220,7 +220,7 @@ setClass("r270BB8Copula",
 
 # constructor
 r270BB8Copula <- function (param=c(-1,-1)) {
-  val <- new("r270BB8Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=40, fullname = "270 deg rotated BB8 copula family. Number 40 in CDVine.")
+  val <- new("r270BB8Copula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -1), param.upbnd = c(-1, 0), family=40, fullname = "270 deg rotated BB8 copula family. Number 40 in VineCopula.")
   val
 }
 

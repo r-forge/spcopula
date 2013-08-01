@@ -30,7 +30,7 @@ BB1Copula <- function (param=c(1,1)) {
     stop(paste("Parameter values out of bounds: theta: (0,Inf), delta: [1,Inf)."))
   new("BB1Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(0, 1), param.upbnd = c(Inf, Inf),
-      family=7, fullname = "BB1 copula family. Number 7 in CDVine.")
+      family=7, fullname = "BB1 copula family. Number 7 in VineCopula.")
 }
 
 ## density ##
@@ -101,7 +101,7 @@ surBB1Copula <- function (param=c(1,1)) {
     stop(paste("Parameter values out of bounds: theta: (0,Inf), delta: [1,Inf)."))
   new("surBB1Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(0, 1), param.upbnd = c(Inf, Inf),
-      family=17, fullname = "Survival BB1 copula family. Number 17 in CDVine.")
+      family=17, fullname = "Survival BB1 copula family. Number 17 in VineCopula.")
 }
 
 ## density ##
@@ -168,7 +168,7 @@ r90BB1Copula <- function (param=c(-1,-1)) {
     stop(paste("Parameter values out of bounds: theta: (-Inf,0), delta: (-Inf,-1]."))
   new("r90BB1Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(0, -1),
-      family=27, fullname = "90 deg rotated BB1 copula family. Number 27 in CDVine.")
+      family=27, fullname = "90 deg rotated BB1 copula family. Number 27 in VineCopula.")
 }
 BiCopCDF
 ## density ##
@@ -222,7 +222,7 @@ r270BB1Copula <- function (param=c(-1,-1)) {
     stop(paste("Parameter values out of bounds: theta: (-Inf,0), delta: (-Inf,-1]."))
   new("r270BB1Copula", dimension = as.integer(2), parameters = param, 
       param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(0, -1),
-      family=37, fullname = "270 deg rotated BB1 copula family. Number 37 in CDVine.")
+      family=37, fullname = "270 deg rotated BB1 copula family. Number 37 in VineCopula.")
 }
 
 ## density ##

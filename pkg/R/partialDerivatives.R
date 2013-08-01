@@ -393,7 +393,7 @@ kendallDistribution <- function(copula, t) {
 setGeneric("kendallDistribution")
 
 ## Clayton
-## kendall distribution/measure, taken from CDVine:::obs.stat
+## kendall distribution/measure, taken from VineCopula:::obs.stat
 kendall.Clayton <- function(copula, t){
   par = copula@parameters
     
@@ -410,7 +410,7 @@ setMethod("getKendallDistr", signature("claytonCopula"),
           function(copula) return(function(t) kendall.Clayton(copula, t)))
 
 ## Gumbel
-## kendall distribution/measure, taken from CDVine:::obs.stat
+## kendall distribution/measure, taken from VineCopula:::obs.stat
 kendall.Gumbel <- function(copula, t){
   par = copula@parameters
     
@@ -427,7 +427,7 @@ setMethod("getKendallDistr", signature("gumbelCopula"),
           function(copula) return(function(t) kendall.Gumbel(copula, t)))
 
 ## Frank
-## kendall distribution/measure, taken from CDVine:::obs.stat
+## kendall distribution/measure, taken from VineCopula:::obs.stat
 kendall.Frank <- function(copula, t){
   par = copula@parameters
     

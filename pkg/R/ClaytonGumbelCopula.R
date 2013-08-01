@@ -33,7 +33,7 @@ setClass("surClaytonCopula",
 surClaytonCopula <- function (param=1) {
   new("surClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
       param.lowbnd = 0, param.upbnd = Inf, family=13, 
-      fullname = "Survival Clayton copula family. Number 13 in CDVine.")
+      fullname = "Survival Clayton copula family. Number 13 in VineCopula.")
 }
 
 ## density ##
@@ -107,7 +107,7 @@ setClass("r90ClaytonCopula",
 r90ClaytonCopula <- function (param=-1) {
   new("r90ClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = 0, family=23, 
-      fullname = "90 deg rotated Clayton copula family. Number 23 in CDVine.")
+      fullname = "90 deg rotated Clayton copula family. Number 23 in VineCopula.")
 }
 
 ## density ##
@@ -167,7 +167,7 @@ setClass("r270ClaytonCopula",
 r270ClaytonCopula <- function (param=-1) {
   new("r270ClaytonCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = 0, family=33, 
-      fullname = "270 deg rotated Clayton copula family. Number 33 in CDVine.")
+      fullname = "270 deg rotated Clayton copula family. Number 33 in VineCopula.")
 }
 
 ## density ##
@@ -248,7 +248,7 @@ setClass("surGumbelCopula",
 surGumbelCopula <- function (param=1) {
   new("surGumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta"),
       param.lowbnd = 1, param.upbnd = Inf, family=14, 
-      fullname = "Survival Gumbel copula family. Number 14 in CDVine.")
+      fullname = "Survival Gumbel copula family. Number 14 in VineCopula.")
 }
 
 ## density ##
@@ -323,7 +323,7 @@ setClass("r90GumbelCopula",
 r90GumbelCopula <- function (param=-1) {
   new("r90GumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"),
       param.lowbnd = -Inf, param.upbnd = -1, family=24, 
-      fullname = "90 deg rotated Gumbel copula family. Number 24 in CDVine.")
+      fullname = "90 deg rotated Gumbel copula family. Number 24 in VineCopula.")
 }
 
 ## density ##
@@ -383,7 +383,7 @@ setClass("r270GumbelCopula",
 r270GumbelCopula <- function (param=-1) {
   new("r270GumbelCopula", dimension = as.integer(2), parameters = param, param.names = c("theta", "delta"), 
       param.lowbnd = -Inf, param.upbnd = -1, family=34, 
-      fullname = "270 deg rotated Gumbel copula family. Number 34 in CDVine.")
+      fullname = "270 deg rotated Gumbel copula family. Number 34 in VineCopula.")
 }
 
 ## density ##
