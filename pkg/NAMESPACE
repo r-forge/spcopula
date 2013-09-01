@@ -27,7 +27,7 @@ export(condStVine,stCopPredict)
 # export(setSizeLim)
 
 # spatial
-export(getNeighbours,getStNeighbours)
+export(getNeighbours,getNeighbours.experimental, getStNeighbours)
 export(calcBins)
 export(calcSpTreeDists, dropSpTree)
 

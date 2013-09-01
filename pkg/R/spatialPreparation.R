@@ -98,6 +98,60 @@ getNeighbours <- function(dataLocs, predLocs, var=names(dataLocs)[1], size=5,
                        predLocs, prediction, var))
 }
 
+
+
+getNeighbours.experimental = function (dataLocs, predLocs, var = names(dataLocs)[1], size = 5, 
+									   prediction = FALSE, min.dist = 0.01) 
+{
+  stopifnot((!prediction && missing(predLocs)) || (prediction && 
+                                                     !missing(predLocs)))
+  stopifnot(min.dist > 0 || prediction)
+  if (missing(predLocs) && !prediction) 
+    predLocs = dataLocs
+  stopifnot(is(predLocs, "Spatial"))
+  if (any(is.na(match(var, names(dataLocs))))) 
+    stop("At least one of the variables is unkown or is not part of the data.")
+  nLocs <- length(predLocs)
+  size <- min(size, length(dataLocs) + prediction)
+  
+  allLocs <- matrix(0, nLocs, size)
+  allDists <- matrix(0, nLocs, size - 1)
+  result = .C("getNeighbours_2d", 
+     allLocs = as.double(allLocs),
+     allDists = as.double(allDists),
+     as.double(coordinates(dataLocs)),
+     as.double(coordinates(predLocs)),
+     as.integer(length(dataLocs)),
+     as.integer(length(predLocs)),
+     as.double(min.dist),
+     as.integer(size), 
+     as.integer(prediction),
+     PACKAGE="spcopula")
+  
+  if (!prediction) allData <- matrix(dataLocs[result$allLocs, var, drop = F]@data[[1]], nLocs, size)
+  else allData <- matrix(c(rep(NA,nLocs),dataLocs[result$allLocs[(nLocs+1):(nLocs*size)], var, drop = F]@data[[1]]), nLocs, size)
+  
+  if (!prediction) 
+    predLocs <- NULL
+  
+  colnames(allData) <- paste(paste("N", rep(0:(size - 1), each = length(var)), 
+                                   sep = ""), rep(var, size), sep = ".")
+  
+  
+  return(neighbourhood(allData, matrix(result$allDists,nLocs, size - 1), matrix(result$allLocs, nLocs, size), dataLocs, 
+                        predLocs, prediction, var))
+}
+
+
+
+
+
+
+
+
+
+
+
 #############
 ## BINNING ##
 #############
