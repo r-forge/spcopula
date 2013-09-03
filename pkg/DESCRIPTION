@@ -34,3 +34,4 @@ Collate:
   stVineCopula.R
   utilities.R
   returnPeriods.R
+  zzz.R
