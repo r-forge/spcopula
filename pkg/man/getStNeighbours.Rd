@@ -8,7 +8,8 @@ Creating Local Spatio-Temporal Neighbourhoods
 This function calculates local spatio-temporal neighbourhoods to be used for fitting of spatio-temporal vine copulas and for prediction using spatio-temporal vine copulas.
 }
 \usage{
-getStNeighbours(stData, ST, var = names(stData@data)[1], spSize = 4, t.lags=-(0:2), timeSteps=NA, prediction=FALSE, min.dist = 0.01)
+getStNeighbours(stData, ST, var = names(stData@data)[1], spSize = 4, t.lags=-(0:2),
+                timeSteps=NA, prediction=FALSE, min.dist = 0.01)
 }
 \arguments{
   \item{stData}{

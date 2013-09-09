@@ -7,7 +7,8 @@ Log-likelihood per lag class
 This function calculates the log-likelihood for a set of provided copula families per lag class. The copulas' parameters are either fitted by a provided distance dependent function, or through the function \code{\link{fitCopula}} per lag and copula family. 
 }
 \usage{
-loglikByCopulasLags(bins, families = c(normalCopula(0), tCopula(0, dispstr = "un"), claytonCopula(0), frankCopula(1), gumbelCopula(1)), calcCor)
+loglikByCopulasLags(bins, families = c(normalCopula(0), tCopula(0, dispstr = "un"),
+                    claytonCopula(0), frankCopula(1), gumbelCopula(1)), calcCor)
 }
 
 \arguments{

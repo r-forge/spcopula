@@ -57,7 +57,8 @@ coordinates(meuse) <- ~x+y
 
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 
-predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,15:19,24:28,34:38),],"rtZinc",5L,TRUE,-1)
+predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,15:19,24:28,34:38),],
+                                "rtZinc", 5L, TRUE, -1)
 
 qMar <- function(x) {
   qlnorm(x,mean(log(meuse$zinc)),sd(log(meuse$zinc)))

@@ -14,7 +14,8 @@ A function calculating the spatial/spatio-temporal bins
 The (spatio-temporal) space is subdivided into pairs of observations that belong to certain spatial/spatio-temporal distance classes. For each distance class, the mean separating distance of all pairs involved is calculated alongside a correlation measure. The spatial/spatio-temporal correlogram is plotted by default.
 }
 \usage{
-calcBins(data, var, nbins = 15, boundaries = NA, cutoff = NA, cor.method="kendall", plot=TRUE, ...)
+calcBins(data, var, nbins = 15, boundaries = NA, cutoff = NA, cor.method="kendall",
+         plot=TRUE, ...)
 }
 
 \arguments{
