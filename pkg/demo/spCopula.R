@@ -1,5 +1,6 @@
 ## librarys ##
 library(spcopula)
+library(sp)
 # library(evd)
 
 ## meuse - spatial poionts data.frame ##

@@ -26,6 +26,7 @@ Constructor of the \code{\linkS4class{stNeighbourhood}} class.
 }
 \examples{
 ## the spatial version
+library(sp)
 spdf <- data.frame(x=c(112,154,212,289),y=c(124,198,85,168),measure=rlnorm(4))
 coordinates(spdf) <- ~x+y
 

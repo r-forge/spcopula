@@ -39,6 +39,7 @@ Benedikt Graeler
 See \code{\link{neighbourhood}} for the native constructor of a \code{\linkS4class{neighbourhood}} class.
 }
 \examples{
+library(sp)
 spdf <- data.frame(x=c(112,154,212,289,345),y=c(124,198,85,168,346),measure=rlnorm(5))
 coordinates(spdf) <- ~x+y
 

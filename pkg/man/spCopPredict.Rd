@@ -48,6 +48,7 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
 
 spVineCop <- spVineCopula(spCop, vineCopula(4L))
 
+library(sp)
 data(meuse.grid)
 coordinates(meuse.grid) <- ~x+y
 gridded(meuse.grid) <- TRUE
