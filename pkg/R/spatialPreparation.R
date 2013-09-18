@@ -43,7 +43,7 @@ spplotNeighbourhood <- function(obj, zcol=names(obj), ..., column=0) {
 setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
 
 selectFromNeighbourhood <- function(x, i) {
-  newSp <- x@locations[i,]
+  newSp <- x@dataLocs[i,]
   new("neighbourhood", data=x@data[i,,drop=F], 
       distances=x@distances[i,,drop=F], 
       dataLocs=newSp, predLocs=x@predLocs, bbox=newSp@bbox, 
