@@ -39,6 +39,7 @@ setMethod(show,signature("stNeighbourhood"),showStNeighbourhood)
 
 # returns an neighbourhood object
 ##################################
+
 getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4, 
                             t.lags=-(0:2), timeSteps=NA, prediction=FALSE, min.dist=0.01) {
   stopifnot((!prediction && missing(ST)) || (prediction && !missing(ST)))
@@ -67,11 +68,11 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
   stInd <- array(NA,c(nLocs,(spSize-1)*length(t.lags),2))
   for(i in 1:nrow(nghbrs@index)){ # i <- 1
     tmpInst <- sample((1-timeSpan):length(stData@time), timeSteps) # draw random time steps for each neighbourhood
-    tmpData <- matrix(stData[c(i, nghbrs@index[i,]),  tmpInst,  var]@data[[1]],
+    tmpData <- matrix(stData[nghbrs@index[i,],  tmpInst,  var]@data[[1]],
                       ncol=spSize, byrow=T) # retrieve the top level data
     tmpInd <- matrix(rep(tmpInst,spSize-1),ncol=spSize-1)
     for(t in t.lags[-1]) {
-      tmpData <- cbind(tmpData, matrix(stData[nghbrs@index[i,], 
+      tmpData <- cbind(tmpData, matrix(stData[nghbrs@index[i,][-1], 
                                               tmpInst+t,var]@data[[1]],
                                        ncol=spSize-1, byrow=T))
       tmpInd <- cbind(tmpInd, matrix(rep(tmpInst+t,spSize-1),ncol=spSize-1))
@@ -83,7 +84,7 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
     stDists[(i-1)*timeSteps+1:timeSteps,,2] <- matrix(rep(rep(t.lags,each=spSize-1),
                                                           timeSteps),
                                                       byrow=T, ncol=length(t.lags)*(spSize-1))  # store tmp distances
-    stInd[(i-1)*timeSteps+1:timeSteps,,1] <- matrix(rep(nghbrs@index[i,],
+    stInd[(i-1)*timeSteps+1:timeSteps,,1] <- matrix(rep(nghbrs@index[i,][-1],
                                                     timeSteps*length(t.lags)),
                                                     byrow=T, ncol=length(t.lags)*(spSize-1))
     stInd[(i-1)*timeSteps+1:timeSteps,,2] <- tmpInd

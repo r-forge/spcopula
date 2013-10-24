@@ -492,19 +492,36 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
     tmpCop <- list()
     for(i in 1:length(bins$meanDists)) {
       if(class(cop)!="indepCopula") {
-        param <- moa(cop, bins$meanDists[i])
-        cop@parameters[1:length(param)] <- param
+        if(class(cop) == "asCopula") {
+          cop <- switch(calcCor(NULL),
+                        kendall=fitASC2.itau(cop, bins$lagData[[i]], 
+                                              tau=calcCor(bins$meanDists[i]))@copula,
+                        spearman=fitASC2.irho(cop, bins$lagData[[i]],
+                                              rho=calcCor(bins$meanDists[i]))@copula,
+                        stop(paste(calcCor(NULL), "is not yet supported.")))
+        } else {
+          if(class(cop) == "cqsCopula") {
+            cop <- switch(calcCor(NULL),
+                          kendall=fitCQSec.itau(cop, bins$lagData[[i]], 
+                                                tau=calcCor(bins$meanDists[i]))@copula,
+                          spearman=fitCQSec.irho(cop, bins$lagData[[i]],
+                                                rho=calcCor(bins$meanDists[i]))@copula,
+                          stop(paste(calcCor(NULL), "is not yet supported.")))
+          } else {
+            param <- moa(cop, bins$meanDists[i])
+            cop@parameters[1:length(param)] <- param
+          }
+        }
       }
       
-      tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]],cop, log=T)))
+      tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]], cop, log=T)))
       tmpCop <- append(tmpCop, cop)
     }
     loglik <- cbind(loglik, tmploglik)
-    copulas <- append(copulas,tmpCop)
+    copulas[[class(cop)]] <- tmpCop
   }
 
   colnames(loglik) <- sapply(families, function(x) class(x)[1])
-  names(copulas) <- colnames(loglik)
 
   return(list(loglik=loglik, copulas=copulas))
 }

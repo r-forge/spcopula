@@ -88,11 +88,11 @@ fitStVine <- function(copula, data, method, estimate.variance=F) {
   cat("[Margin ")
   for(i in 1:dim(h0)[2]) { # i <- 1
     l0 <- l0 + dCopula(u0[,c(1,i+1)], copula@stCop, h=h0[,i,], log=T)
-    cat(i,", ")
+    cat(i,", ", sep="")
     u1 <- cbind(u1, dduCopula(u0[,c(1,i+1)], copula@stCop, h=h0[,i,]))
   }
   u0 <- u1
-  cat(".]\n")
+  cat("]\n")
   
   cat("[Estimating a",ncol(u0),"dimensional copula at the top.]\n")
   vineCopFit <- fitCopula(copula@topCop, u0, method, estimate.variance) 

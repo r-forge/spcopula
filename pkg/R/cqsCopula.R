@@ -1,5 +1,5 @@
 ## make fitCopula generic
-setGeneric("fitCopula")
+setGeneric("fitCopula",fitCopula)
 
 ######################################################
 ##                                                  ##
@@ -233,7 +233,7 @@ setMethod("fitCopula", signature("cqsCopula"), fitCopula.cqs)
 # method
 #  one of kendall or spearman according to the calculation of moa
 
-fitCQSec.itau <- function(copula, data, estimate.variance, tau=NULL) {
+fitCQSec.itau <- function(copula, data, estimate.variance=FALSE, tau=NULL) {
   if(is.null(tau))
     tau <- VineCopula:::fasttau(data[,1],data[,2])
   if(copula@fixed=="a")
@@ -253,7 +253,7 @@ fitCQSec.itau <- function(copula, data, estimate.variance, tau=NULL) {
 }
 
 
-fitCQSec.irho <- function(copula, data, estimate.variance, rho=NULL){
+fitCQSec.irho <- function(copula, data, estimate.variance=FALSE, rho=NULL){
   if(is.null(rho))
     rho <- cor(data,method="spearman")[1,2]
   if(copula@fixed=="a")

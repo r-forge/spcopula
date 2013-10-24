@@ -8,7 +8,8 @@ Creating Local Neighbourhoods
 This function calculates a local neighbourhood to be used for fitting of spatial/spatio-temporal vine copulas and for prediction using spatial/spatio-temporal vine copulas.
 }
 \usage{
-getNeighbours.experimental(dataLocs, predLocs, var = names(dataLocs)[1], size = 5, prediction=FALSE, min.dist = 0.01)
+getNeighbours.experimental(dataLocs, predLocs, var = names(dataLocs)[1], size = 5,
+prediction=FALSE, min.dist = 0.01)
 }
 \arguments{
   \item{dataLocs}{

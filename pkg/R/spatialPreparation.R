@@ -182,15 +182,15 @@ calcSpLagInd <- function(data, boundaries) {
 
 # the generic calcBins, calculates bins for spatial and spatio-temporal data
 setGeneric("calcBins", function(data, var, nbins=15, boundaries=NA, cutoff=NA,
-                                cor.method="kendall", plot=TRUE, ...) {
+                                ..., cor.method="fasttau", plot=TRUE) {
                          standardGeneric("calcBins") 
                          })
 
 ## calculating the spatial bins
 ################################
 
-calcSpBins <- function(data, var=names(data), nbins=15, boundaries=NA, 
-                       cutoff=NA, cor.method="kendall", plot=TRUE) {
+calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, ...,
+                       cor.method="fasttau", plot=TRUE) {
 
   if(is.na(cutoff)) {
     cutoff <- spDists(coordinates(t(data@bbox)))[1,2]/3
@@ -289,9 +289,8 @@ setMethod(calcBins, signature="neighbourhood", calcNeighBins)
 #            other   -> temporal indexing as in spacetime/xts, the parameter t.lags is set to 0 in this case.
 # t.lags:    numeric -> temporal shifts between obs
 calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, 
-                       instances=10, t.lags=-(0:2), cor.method="fasttau", 
-                       plot=FALSE) {
-
+                       instances=NA, t.lags=-(0:2), ...,
+                       cor.method="fasttau", plot=FALSE) {
   if(is.na(cutoff)) 
     cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
   if(is.na(boundaries)) 
@@ -360,4 +359,4 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
   return(res)
 }
 
-setMethod(calcBins, signature("STFDF"), calcStBins)
+setMethod(calcBins, signature(data="STFDF"), calcStBins)

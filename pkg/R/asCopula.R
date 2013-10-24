@@ -15,7 +15,7 @@ asCopula <- function (param=c(0,0)) {
 
 ## density ##
 
-dASC2 <- function (u, copula) {
+dASC2 <- function (u, copula, log=FALSE) {
   a <- copula@parameters[1]
   b <- copula@parameters[2]
   
@@ -24,12 +24,15 @@ dASC2 <- function (u, copula) {
   u1 <- u[, 1]
   u2 <- u[, 2]
   
-  return(pmax(a * u2 * (((12 - 9 * u1) * u1 - 3) * u2 + u1 * (6 * u1 - 8) + 2) + b * (u2 * ((u1 * (9 * u1 - 12) + 3) * u2 + (12 - 6 * u1) * u1 - 4) - 2 * u1 + 1) + 1,0))
+  if(log)
+    return(log(pmax(a * u2 * (((12 - 9 * u1) * u1 - 3) * u2 + u1 * (6 * u1 - 8) + 2) + b * (u2 * ((u1 * (9 * u1 - 12) + 3) * u2 + (12 - 6 * u1) * u1 - 4) - 2 * u1 + 1) + 1,0)))
+  else
+    return(pmax(a * u2 * (((12 - 9 * u1) * u1 - 3) * u2 + u1 * (6 * u1 - 8) + 2) + b * (u2 * ((u1 * (9 * u1 - 12) + 3) * u2 + (12 - 6 * u1) * u1 - 4) - 2 * u1 + 1) + 1,0))
 }
 
 setMethod("dCopula", signature("numeric","asCopula"), 
-          function(u, copula, ...) {
-            dASC2(matrix(u,ncol=copula@dimension),copula)
+          function(u, copula, log) {
+            dASC2(matrix(u,ncol=copula@dimension),copula, log)
           })
 setMethod("dCopula", signature("matrix","asCopula"), dASC2)
 
