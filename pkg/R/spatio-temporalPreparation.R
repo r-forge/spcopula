@@ -19,8 +19,8 @@ stNeighbourhood <- function(data, distances, STxDF, ST=NULL,index,
   colnames(data) <- paste(paste("N", (0+prediction):dimDists[2], sep=""),var,sep=".")
   if (anyDuplicated(rownames(data))>0)
     rownames <- 1:length(rownames)
-  new("stNeighbourhood", data=data, distances=distances, locations=STxDF, 
-      dataLocs=ST, index=index, prediction=prediction, var=var,
+  new("stNeighbourhood", data=data, distances=distances, locations=ST, 
+      dataLocs=STxDF, index=index, prediction=prediction, var=var,
       sp=as(STxDF@sp, "Spatial"), time=STxDF@time[1], 
       endTime=STxDF@endTime[length(STxDF@endTime)])
 }
@@ -48,36 +48,52 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
   timeSpan <- min(t.lags)
   if(missing(ST) && !prediction)
     ST=stData
-  if(is.na(timeSteps))
-    timeSteps <- length(stData@time)+timeSpan
   
   stopifnot(is(ST,"ST"))
   
-  nLocs <- length(ST@sp)*timeSteps
-  
   if(any(is.na(match(var,names(stData@data)))))
     stop("At least one of the variables is unkown or is not part of the data.")
-
-  if(prediction)
-    nghbrs <- getNeighbours(stData[,1], ST, var, spSize, prediction, min.dist)
-  else
-    nghbrs <- getNeighbours(stData[,1], var=var, size=spSize, min.dist=min.dist)
   
-  stNeighData <- NULL
+  if(!prediction) {
+    if(is.na(timeSteps)) {
+      timeSteps <- length(stData@time)+timeSpan
+      reSample <- function() (1-timeSpan):length(stData@time)
+    } else {
+      reSample <- function() sort(sample((1-timeSpan):length(stData@time), timeSteps))
+    }
+    nLocs <- length(ST@sp)*timeSteps
+    nghbrs <- getNeighbours(stData[,1], var=var, size=spSize, min.dist=min.dist)
+  } else {
+    nLocs <- length(ST)
+    nghbrs <- getNeighbours(stData[,1], ST@sp, var, spSize, prediction, min.dist)
+    timeNghbrs <- sapply(index(ST@time), function(x) which(x == index(stData@time)))
+    reSample <- function() timeNghbrs
+    timeSteps <- length(stData@time)+timeSpan
+  }
+  
+  stNeighData <- matrix(NA, nLocs, (spSize-1)*length(t.lags)+1)
   stDists <- array(NA,c(nLocs,(spSize-1)*length(t.lags),2))
   stInd <- array(NA,c(nLocs,(spSize-1)*length(t.lags),2))
+  
+  nTimeInst <- length(reSample())
+  
   for(i in 1:nrow(nghbrs@index)){ # i <- 1
-    tmpInst <- sample((1-timeSpan):length(stData@time), timeSteps) # draw random time steps for each neighbourhood
-    tmpData <- matrix(stData[nghbrs@index[i,],  tmpInst,  var]@data[[1]],
-                      ncol=spSize, byrow=T) # retrieve the top level data
-    tmpInd <- matrix(rep(tmpInst,spSize-1),ncol=spSize-1)
-    for(t in t.lags[-1]) {
-      tmpData <- cbind(tmpData, matrix(stData[nghbrs@index[i,][-1], 
-                                              tmpInst+t,var]@data[[1]],
-                                       ncol=spSize-1, byrow=T))
-      tmpInd <- cbind(tmpInd, matrix(rep(tmpInst+t,spSize-1),ncol=spSize-1))
+    timeInst <- reSample() # draw random time steps for each neighbourhood
+    stNeighData[(i-1)*timeSteps+(1:timeSteps),
+                1:spSize] <- matrix(stData[nghbrs@index[i,], timeInst,
+                                           var, drop=F]@data[[1]],
+                                    ncol=spSize, byrow=T) # retrieve the top level data
+    tmpInd <- matrix(rep(timeInst, spSize-1), ncol=spSize-1)
+    for(j in 2:length(t.lags)) {
+      t <- t.lags[j]
+      stNeighData[(i-1)*timeSteps+(1:timeSteps),
+                  (j-1)*(spSize-1)+2:(spSize)] <- matrix(stData[nghbrs@index[i,][-1],
+                                                                timeInst+t,
+                                                                var, drop=F]@data[[1]],
+                                                         ncol=spSize-1, byrow=T)
+      tmpInd <- cbind(tmpInd, matrix(rep(timeInst+t,spSize-1),ncol=spSize-1))
     }
-    stNeighData <- rbind(stNeighData, tmpData) # bind data row-wise
+
     stDists[(i-1)*timeSteps+1:timeSteps,,1] <- matrix(rep(nghbrs@distances[i,],
                                                           timeSteps*length(t.lags)),
                                                       byrow=T, ncol=length(t.lags)*(spSize-1))   # store sp distances
@@ -90,10 +106,12 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
     stInd[(i-1)*timeSteps+1:timeSteps,,2] <- tmpInd
   }
 
-  if (prediction)
+  if (prediction) {
     dataLocs <- stData
-  else 
+    stNeighData <- stNeighData[,-1]
+  } else {
     dataLocs <- NULL
+  }
   return(stNeighbourhood(as.data.frame(stNeighData), stDists, stData, ST, 
                          stInd, prediction, var))
 }

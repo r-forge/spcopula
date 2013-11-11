@@ -487,7 +487,7 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
   loglik <- NULL
   copulas <- list()
   for (cop in families) {
-    print(cop)
+    cat(cop@fullname,"\n")
     tmploglik <- NULL
     tmpCop <- list()
     for(i in 1:length(bins$meanDists)) {
@@ -509,12 +509,16 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
                           stop(paste(calcCor(NULL), "is not yet supported.")))
           } else {
             param <- moa(cop, bins$meanDists[i])
-            cop@parameters[1:length(param)] <- param
+            if(!is.na(param))
+              cop@parameters[1:length(param)] <- param
           }
         }
       }
       
-      tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]], cop, log=T)))
+      if(is.na(param))
+        tmploglik <- c(tmploglik, NA)
+      else 
+        tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]], cop, log=T)))
       tmpCop <- append(tmpCop, cop)
     }
     loglik <- cbind(loglik, tmploglik)
@@ -531,7 +535,7 @@ loglikByCopulasLags.static <- function(bins, families) {
   
   fits <-lapply(families, 
                 function(cop) {
-                  print(cop)
+                  cat(cop@fullname,"\n")
                   lapply(bins$lagData,
                          function(x) {
                            tryCatch(fitCopula(cop, x, estimate.variance = FALSE),

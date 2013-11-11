@@ -32,42 +32,37 @@ Benedikt Graeler
 \code{\link{condStVine}} and \code{\link{spCopPredict}} for the spatial version.
 }
 \examples{
-## the spatial version
-data(spCopDemo)
-
-calcKTauPol <- fitCorFun(bins, degree=3)
-
-spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
-                                  frankCopula(1), normalCopula(0), claytonCopula(0),
-                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
-                                  claytonCopula(0), indepCopula()),
-                  distances=bins$meanDists,
-                  spDepFun=calcKTauPol, unit="m")
-
-spVineCop <- spVineCopula(spCop, vineCopula(4L))
-
 library(sp)
-data(meuse.grid)
-coordinates(meuse.grid) <- ~x+y
-gridded(meuse.grid) <- TRUE
+library(spacetime)
 
-data(meuse)
-coordinates(meuse) <- ~x+y
+spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
+                                    claytonCopula(2), claytonCopula(1),
+                                    claytonCopula(0.5), indepCopula()),
+                    distances=c(100,200,300,400,500,600),
+                    unit="km")
+spCopT1 <- spCopula(components=list(claytonCopula(4), claytonCopula(2), 
+                                    claytonCopula(1), claytonCopula(0.5),
+                                    indepCopula()),
+                    distances=c(100,200,300,400,500),
+                    unit="km")
 
-meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
+stCop <- stCopula(components=list(spCopT0, spCopT1),
+                  t.lags=-(0:1))
 
-predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,15:19,24:28,34:38),],
-                                "rtZinc", 5L, TRUE, -1)
+stVineCop <- stVineCopula(stCop, vineCopula(4L))
 
-qMar <- function(x) {
-  qlnorm(x,mean(log(meuse$zinc)),sd(log(meuse$zinc)))
-}
+sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
+time <- Sys.time()+60*60*24*c(0,1,2)
+data <- data.frame(var1=runif(6))
 
-predMedian <- spCopPredict(predMeuseNeigh, spVineCop, list(q=qMar), "quantile", p=0.5)
+stData <- STFDF(sp, time, data)
+stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
+                time[2:3])
 
-spplot(predMedian,"quantile.0.5", 
-       sp.layout=list("sp.points", meuse, pch = 19, col = "red"),
-       col.regions=bpy.colors())
+stNeigh <- getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3,
+                           t.lags=-(0:1))
+
+stCopPredict(stNeigh, stVineCop, list(q=qunif), "quantile", 0.5)
 }
 
 \keyword{ distribution }

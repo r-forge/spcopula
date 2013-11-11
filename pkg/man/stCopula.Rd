@@ -7,24 +7,16 @@ Spatio-Temporal Copula
 Constructor of a bivariate spatio-temporal copula \code{\linkS4class{stCopula}}.
 }
 \usage{
-stCopula(components, distances, t.lags, stDepFun, unit="m", t.res="day")
+stCopula(components, t.lags, distances=NA, stDepFun, unit="m", t.res="day")
 }
 
 \arguments{
-  \item{components}{
-A list of bivariate spatial copulas (\code{\linkS4class{spCopula}}) to be used at each temporal lag.
-}
-  \item{distances}{
-A vector of the mean distances of the spatial lag classes.
-}
-\item{t.lags}{The temporal lags used in the spatio-temporal copula.}
-  \item{stDepFun}{
-A list of spatial dependence functions; one per temporal lag.
-}
-  \item{unit}{
-The spatial unit, default: m (meters)
-}
-\item{t.res}{The temporal resolution, default: day}
+  \item{components}{A list of bivariate spatial copulas (\code{\linkS4class{spCopula}}) to be used at each temporal lag. Or a list of with lists of the spatial components per temporal lag together with the argument \code{distances}.}
+  \item{t.lags}{The temporal lags used in the spatio-temporal copula.}
+  \item{distances}{This and the follwoing 2 argumewnts are only neccessary when the provided \code{components} argument is not yet a list of \code{\linkS4class{spCopula}}s: A vector of the mean distances of the spatial lag classes.}
+  \item{stDepFun}{A list of spatial dependence functions; one per temporal lag. This argument is only needed when components is not yet a list of \code{\linkS4class{spCopula}}s.}
+  \item{unit}{The spatial unit, default: m (meters). This argument is only needed when components is not yet a list of \code{\linkS4class{spCopula}}s.}
+  \item{t.res}{The temporal resolution, default: day}
 }
 \value{
 An instance of the spatio-temporal Copula class \code{\linkS4class{stCopula}}.
@@ -37,16 +29,23 @@ Benedikt Graeler
 \code{\link{spCopula}}
 }
 \examples{
-data(spCopDemo)
+spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
+                                    claytonCopula(2), claytonCopula(1),
+                                    claytonCopula(0.5), indepCopula()),
+                    distances=c(100,200,300,400,500,600),
+                    unit="km")
+spCopT1 <- spCopula(components=list(claytonCopula(4), claytonCopula(2), 
+                                    claytonCopula(1), claytonCopula(0.5),
+                                    indepCopula()),
+                    distances=c(100,200,300,400,500),
+                    unit="km")
+spCopT2 <- spCopula(components=list(claytonCopula(2), claytonCopula(1), 
+                                    claytonCopula(0.5), indepCopula()),
+                    distances=c(100,200,300,400),
+                    unit="km")
 
-calcKTauPol <- fitCorFun(bins, degree=3)
-
-spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
-                                  frankCopula(1), normalCopula(0), claytonCopula(0),
-                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
-                                  claytonCopula(0), indepCopula()),
-                  distances=bins$meanDists,
-                  spDepFun=calcKTauPol, unit="m")
+stCop <- stCopula(components=list(spCopT0, spCopT1, spCopT2),
+                  t.lags=-(0:2))
 }
 \keyword{spcopula}
 \keyword{copula}

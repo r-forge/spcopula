@@ -42,11 +42,18 @@ Benedikt Graeler
 See \code{\link{stNeighbourhood}} for the native constructor of a \code{\linkS4class{stNeighbourhood}} class. The pure spatial version can be found at \code{\link{getNeighbours}}.
 }
 \examples{
-## the spatial version:
 library(sp)
-spdf <- data.frame(x=c(112,154,212,289,345),y=c(124,198,85,168,346),measure=rlnorm(5))
-coordinates(spdf) <- ~x+y
+library(spacetime)
 
-getNeighbours(spdf,size=4)
+sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
+time <- Sys.time()+60*60*24*c(0,1,2)
+data <- data.frame(var1=runif(6))
+
+stData <- STFDF(sp, time, data)
+stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
+                time[2:3])
+
+getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3, 
+                t.lags=-(0:1))
 }
 \keyword{ spatial }

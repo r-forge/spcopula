@@ -58,7 +58,7 @@ coordinates(meuse) <- ~x+y
 
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 
-predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,15:19,24:28,34:38),],
+predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,16:19,25:28),],
                                 "rtZinc", 5L, TRUE, -1)
 
 qMar <- function(x) {
@@ -67,9 +67,11 @@ qMar <- function(x) {
 
 predMedian <- spCopPredict(predMeuseNeigh, spVineCop, list(q=qMar), "quantile", p=0.5)
 
+\dontrun{
 spplot(predMedian,"quantile.0.5", 
        sp.layout=list("sp.points", meuse, pch = 19, col = "red"),
        col.regions=bpy.colors())
+}
 }
 
 \keyword{ distribution }

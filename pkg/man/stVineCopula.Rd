@@ -20,21 +20,28 @@ An instance of the \code{\linkS4class{stVineCopula}} class.
 Benedikt Graeler
 }
 \examples{
-## the spatial version
-# a spatial C-vine copula (with independent dummy copulas in the upper vine)
-data(spCopDemo)
+# a spatio-temporal C-vine copula (with independent copulas in the upper vine)
 
-calcKTauPol <- fitCorFun(bins, degree=3)
+spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
+                                    claytonCopula(2), claytonCopula(1),
+                                    claytonCopula(0.5), indepCopula()),
+                    distances=c(100,200,300,400,500,600),
+                    unit="km")
+spCopT1 <- spCopula(components=list(claytonCopula(4), claytonCopula(2), 
+                                    claytonCopula(1), claytonCopula(0.5),
+                                    indepCopula()),
+                    distances=c(100,200,300,400,500),
+                    unit="km")
+spCopT2 <- spCopula(components=list(claytonCopula(2), claytonCopula(1), 
+                                    claytonCopula(0.5), indepCopula()),
+                    distances=c(100,200,300,400),
+                    unit="km")
 
-spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
-                                  frankCopula(1), normalCopula(0), claytonCopula(0),
-                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
-                                  claytonCopula(0), indepCopula()),
-                  distances=bins$meanDists,
-                  spDepFun=calcKTauPol, unit="m")
+stCop <- stCopula(components=list(spCopT0, spCopT1, spCopT2),
+                  t.lags=-(0:2))
 
-RVM <- RVineMatrix(matrix(c(1,0,0,2,2,0,3,3,3),3,byrow=TRUE))
-spVineCopula(spCop, vineCopula(RVM))
+library(VineCopula)
+stVineCopula(stCop, vineCopula(9L))
 }
 \keyword{ mulitvariate }
 \keyword{ distribution }

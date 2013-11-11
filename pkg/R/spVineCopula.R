@@ -204,7 +204,7 @@ spCopPredict.expectation <- function(predNeigh, spVine, margin, ..., stop.on.err
     }
     
     ePred <- integrate(condExp,0,1,subdivisions=10000L,stop.on.error=stop.on.error, ...)
-    if(ePred$abs.error > 0.01)
+    if(ePred$abs.error > 0.05)
             warning("Numerical integration in predExpectation performed at a level of absolute error of only ",
                     ePred$abs.error, " for location ",i,".")
     predMean <- c(predMean, ePred$value)

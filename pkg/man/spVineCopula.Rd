@@ -35,6 +35,7 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
                   distances=bins$meanDists,
                   spDepFun=calcKTauPol, unit="m")
 
+library(VineCopula)
 RVM <- RVineMatrix(matrix(c(1,0,0,2,2,0,3,3,3),3,byrow=TRUE))
 spVineCopula(spCop, vineCopula(RVM))
 }

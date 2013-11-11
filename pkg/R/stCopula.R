@@ -5,18 +5,25 @@
 ## constructor ##
 #################
 
-stCopula <- function(components, distances, t.lags, stDepFun, unit="m", t.res="day") {
-  spCopList <- list()
-  
-  if(!missing(stDepFun)) {
-    getSpCop <- function(comp,dist,time) spCopula(comp, dist,
-                                                  spDepFun=function(h) stDepFun(h,time), unit)
-    for(i in 1:length(t.lags)){
-      spCopList <- append(spCopList, getSpCop(components[[i]], distances[[i]], i))
-    }
+stCopula <- function(components, t.lags, distances=NA, stDepFun, unit="m", t.res="day") {
+  if(all(sapply(components, function(x) class(x)=="spCopula"))) {
+    if(length(unique(sapply(components, function(x) x@unit))) >1 )
+      stop("All spatial copulas need to have the same distance unit.")
+    stopifnot(length(t.lags) == length(components))
+    spCopList <- components
   } else {
-    for(i in 1:length(t.lags)){
-      spCopList <- append(spCopList, spCopula(components[[i]], distances[[i]], unit=unit))
+    spCopList <- list()
+    
+    if(!missing(stDepFun)) {
+      getSpCop <- function(comp,dist,time) spCopula(comp, dist,
+                                                    spDepFun=function(h) stDepFun(h,time), unit)
+      for(i in 1:length(t.lags)){
+        spCopList <- append(spCopList, getSpCop(components[[i]], distances[[i]], i))
+      }
+    } else {
+      for(i in 1:length(t.lags)){
+        spCopList <- append(spCopList, spCopula(components[[i]], distances[[i]], unit=unit))
+      }
     }
   }
   

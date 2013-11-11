@@ -38,7 +38,7 @@ data(spCopDemo) # load the workspace from demo(spcopula_estimation)
 
 calcKTauPol <- fitCorFun(bins, degree=3)
 
-loglikTau <- loglikByCopulasLags(bins, calcKTauPol)
+loglikTau <- loglikByCopulasLags(bins, calcCor=calcKTauPol)
 loglikTau$loglik
 }
 

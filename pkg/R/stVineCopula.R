@@ -173,7 +173,7 @@ stCopPredict.quantile <- function(predNeigh, stVine, margin, p=0.5) {
   predQuantile <- NULL
   for(i in 1:nrow(predNeigh@data)) { # i <-1
     cat("[Predicting location ",i,".]\n", sep="")
-    condSecVine <- condStVine(as.numeric(predNeigh@data[i,]), dists[i,], stVine)
+    condSecVine <- condStVine(as.numeric(predNeigh@data[i,]), dists[i,,,drop=F], stVine)
     
     xVals <- attr(condSecVine,"xVals")
     density <- condSecVine(xVals)

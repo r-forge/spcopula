@@ -25,16 +25,19 @@ Constructor of the \code{\linkS4class{stNeighbourhood}} class.
 \code{\linkS4class{stNeighbourhood}}, \code{\link{getStNeighbours}}
 }
 \examples{
-## the spatial version
 library(sp)
-spdf <- data.frame(x=c(112,154,212,289),y=c(124,198,85,168),measure=rlnorm(4))
-coordinates(spdf) <- ~x+y
+library(spacetime)
 
-neigh <- getNeighbours(spdf,size=4)
-neigh
+sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
+time <- Sys.time()+60*60*24*c(0,1,2)
+data <- data.frame(var1=runif(6))
 
-# rebuilding neigh
-neighbourhood(neigh@data, neigh@distances, neigh@index, spdf, NULL, neigh@prediction, neigh@var)
+stData <- STFDF(sp, time, data)
+stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
+                time[2:3])
+
+getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3,
+                t.lags=-(0:1))
 }
 
 \keyword{spatio-temporal}

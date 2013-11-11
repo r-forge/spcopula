@@ -68,7 +68,8 @@ setMethod("rCopula", signature("numeric","joeBiCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("joeBiCopula"), 
           function(copula, tau) {
-            if(tau <= 0) warning("The Joe copula can only represent positive dependence!")
+            if(tau <= 0) 
+              return(NA)
             linkVineCop.iTau(copula, max(1e-6,abs(tau)))
           })
 
@@ -147,7 +148,8 @@ setMethod("rCopula", signature("numeric","surJoeBiCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("surJoeBiCopula"), 
           function(copula, tau) {
-            if(tau <= 0) warning("The survival Joe copula can only represent positive dependence!")
+            if(tau <= 0) 
+              return(NA)
             linkVineCop.iTau(copula, max(1e-6,abs(tau)))
           })
 
@@ -224,7 +226,8 @@ setMethod("rCopula", signature("numeric","r90JoeBiCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r90JoeBiCopula"),
           function(copula, tau) {
-            if(tau >= 0) warning("The rotated Joe copula can only represent negative dependence!")
+            if(tau >= 0) 
+              return(NA)
             linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
@@ -286,7 +289,8 @@ setMethod("rCopula", signature("numeric","r270JoeBiCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r270JoeBiCopula"), 
           function(copula, tau) {
-            if(tau >= 0) warning("The rotated Joe copula can only represent negative dependence!")
+            if(tau >= 0) 
+              return(NA)
             linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 

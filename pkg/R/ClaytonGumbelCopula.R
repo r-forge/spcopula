@@ -71,7 +71,8 @@ setMethod("rCopula", signature("numeric","surClaytonCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("surClaytonCopula"), 
           function(copula, tau) {
-            if(tau <= 0) warning("The survival Clayton copula can only represent positive dependence!")
+            if(tau <= 0) 
+              return(NA)
             linkVineCop.iTau(copula, max(1e-6,abs(tau)))
           })
 
@@ -145,12 +146,12 @@ setMethod("rCopula", signature("numeric","r90ClaytonCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r90ClaytonCopula"),
           function(copula, tau) {
-            if(tau >= 0) warning("The rotated Clayton copula can only represent negative dependence!")
+            if(tau >= 0) 
+              return(NA)
             linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
 setMethod("tau",signature("r90ClaytonCopula"),linkVineCop.tau)
-
 setMethod("tailIndex",signature("r90ClaytonCopula"),linkVineCop.tailIndex)
 
 ########################
@@ -205,7 +206,8 @@ setMethod("rCopula", signature("numeric","r270ClaytonCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r270ClaytonCopula"), 
           function(copula, tau) {
-            if(tau >= 0) warning("The rotated Clayton copula can only represent negative dependence!")
+            if(tau >= 0) 
+              return(NA)
             linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 
@@ -286,7 +288,8 @@ setMethod("rCopula", signature("numeric","surGumbelCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("surGumbelCopula"), 
           function(copula, tau) {
-            if(tau < 0) warning("The survival Gumbel copula can only represent non-negative dependence!")
+            if(tau < 0) 
+              return(NA)
             linkVineCop.iTau(copula, max(0,abs(tau)))
           })
 
@@ -361,7 +364,8 @@ setMethod("rCopula", signature("numeric","r90GumbelCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r90GumbelCopula"),
           function(copula, tau) {
-            if(tau > 0) warning("The rotated Gumbel copula can only represent non-positive dependence!")
+            if(tau > 0) 
+              return(NA)
             linkVineCop.iTau(copula, min(0,-abs(tau)))
           })
 
@@ -421,7 +425,8 @@ setMethod("rCopula", signature("numeric","r270GumbelCopula"), linkVineCop.r)
 ## Kendalls tau to parameter conversion
 setMethod("iTau", signature("r270GumbelCopula"), 
           function(copula, tau) {
-            if(tau >= 0) warning("The rotated Gumbel copula can only represent negative dependence!")
+            if(tau >= 0)
+              return(NA)
             linkVineCop.iTau(copula, min(-1e-6,-abs(tau)))
           })
 

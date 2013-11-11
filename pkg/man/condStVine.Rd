@@ -35,27 +35,29 @@ Benedikt Graeler
 \code{\linkS4class{stVineCopula}}, \code{\link{condSpVine}}
 }
 \examples{
-## the spatial version
-data(spCopDemo)
+# a spatio-temporal C-vine copula (with independent copulas in the upper vine)
 
-calcKTauPol <- fitCorFun(bins, degree=3)
+spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
+                                    claytonCopula(2), claytonCopula(1),
+                                    claytonCopula(0.5), indepCopula()),
+                    distances=c(100,200,300,400,500,600),
+                    unit="km")
+spCopT1 <- spCopula(components=list(claytonCopula(4), claytonCopula(2), 
+                                    claytonCopula(1), claytonCopula(0.5),
+                                    indepCopula()),
+                    distances=c(100,200,300,400,500),
+                    unit="km")
 
-spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
-                                  frankCopula(1), normalCopula(0), claytonCopula(0),
-                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
-                                  claytonCopula(0), indepCopula()),
-                  distances=bins$meanDists,
-                  spDepFun=calcKTauPol, unit="m")
+stCop <- stCopula(components=list(spCopT0, spCopT1),
+                  t.lags=-(0:1))
 
-spVineCop <- spVineCopula(spCop, vineCopula(4L))
+stVineCop <- stVineCopula(stCop, vineCopula(4L))
 
-dists <- list(c(473, 124, 116, 649))
+dists <- array(c(150, 250, 150, 250,0,0,-1,-1),dim=c(1,4,2))
 condVar <- c(0.29, 0.55, 0.05, 0.41)
-condDensity <- condSpVine(condVar,dists,spVineCop)
 
+condDensity <- condStVine(condVar,dists,stVineCop)
 curve(condDensity)
-mtext(paste("Dists:",paste(round(dists[[1]],0),collapse=", ")),line=0)
-mtext(paste("Cond.:",paste(round(condVar,2),collapse=", ")),line=1)
 }
 
 \keyword{ distribution }
