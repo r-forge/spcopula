@@ -2,7 +2,7 @@ Package: spcopula
 Type: Package
 Title: copula driven spatial analysis
 Version: 0.1-1
-Date: 2013-10-24
+Date: 2013-11-19
 Authors@R: c(person("Benedikt", "Graeler", role = c("aut", "cre"), email =
         "ben.graeler@uni-muenster.de"), person("Marius", "Appel",
         role = "ctb"))
@@ -37,4 +37,5 @@ Collate:
   stVineCopula.R
   utilities.R
   returnPeriods.R
+  spatialGaussianCopula.R
   zzz.R

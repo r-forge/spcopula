@@ -85,11 +85,13 @@ meuseNeigh <- getNeighbours(meuse,var="rtZinc",size=vineDim)
 meuseSpVine <- fitCopula(spVineCopula(spCop, vineCopula(as.integer(vineDim-1))),
                          meuseNeigh)
 
+# log-likelihood:
+meuseSpVine@loglik
+
 meuseSpVine <- meuseSpVine@copula
 
 ##
 # leave-one-out x-validation
-
 time <- proc.time()  # ~100 s
 predMedian <- NULL
 predMean <- NULL

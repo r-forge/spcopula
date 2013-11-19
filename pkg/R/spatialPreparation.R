@@ -209,7 +209,7 @@ calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, ...,
   
   if(cor.method == "fasttau")
     lagCor <- sapply(lagData, function(x) VineCopula:::fasttau(x[,1], x[,2]))
-  if(cor.method %in% c("kendall","spearman","perarson"))
+  if(cor.method %in% c("kendall","spearman","pearson"))
     lagCor <- sapply(lagData, function(x) cor(x,method=cor.method)[1,2])
   if(cor.method == "normVariogram")  
     lagCor <- sapply(lagData, function(x) 1-cor(x,method="pearson")[1,2])
