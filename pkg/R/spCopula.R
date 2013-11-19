@@ -73,10 +73,10 @@ showCopula <- function(object) {
     cmpCop <- object@components[[i]]
     cat("  ", cmpCop@fullname, "at", object@distances[i], 
       paste("[",object@unit,"]",sep=""), "\n")
-    if (length(cmpCop@parameters) > 0) {
-      for (i in (1:length(cmpCop@parameters))) 
-        cat("    ", cmpCop@param.names[i], " = ", cmpCop@parameters[i], "\n")
-    }
+#     if (length(cmpCop@parameters) > 0) {
+#       for (i in (1:length(cmpCop@parameters))) 
+#         cat("    ", cmpCop@param.names[i], " = ", cmpCop@parameters[i], "\n")
+#     }
   }
   if(!is.null(object@calibMoa(normalCopula(0),0))) cat("A spatial dependence function is used. \n")
 }
@@ -213,7 +213,7 @@ spDepFunCopSnglDist <- function(fun, copula, pairs, h, do.logs=F, ...) {
       } else {
         if(class(lowerCop) != "indepCopula") {
           lowerParam <- calibPar(lowerCop, h)
-          lowerCop@parameters[length(lowerParam)] <- lowerParam
+          lowerCop@parameters[1:length(lowerParam)] <- lowerParam
         }
         return(fun(pairs, lowerCop, ...))
       }
@@ -499,6 +499,7 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
                         spearman=fitASC2.irho(cop, bins$lagData[[i]],
                                               rho=calcCor(bins$meanDists[i]))@copula,
                         stop(paste(calcCor(NULL), "is not yet supported.")))
+          param <- cop@parameters
         } else {
           if(class(cop) == "cqsCopula") {
             cop <- switch(calcCor(NULL),
@@ -507,6 +508,7 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
                           spearman=fitCQSec.irho(cop, bins$lagData[[i]],
                                                 rho=calcCor(bins$meanDists[i]))@copula,
                           stop(paste(calcCor(NULL), "is not yet supported.")))
+            param <- cop@parameters
           } else {
             param <- moa(cop, bins$meanDists[i])
             if(!is.na(param))
@@ -515,7 +517,7 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
         }
       }
       
-      if(is.na(param))
+      if(any(is.na(param)))
         tmploglik <- c(tmploglik, NA)
       else 
         tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]], cop, log=T)))

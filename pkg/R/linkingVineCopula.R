@@ -19,14 +19,16 @@ copulaFromFamilyIndex <- function(family, par, par2=0) {
   constr(c(par,par2))
 }
 
-#####################################################
+#########################################################
 ## generic wrapper functions to the VineCopula package ##
-#####################################################
+#########################################################
 
 # density from BiCopPDF
 linkVineCop.PDF <- function (u, copula, log=FALSE) {
   param <- copula@parameters
-  if(length(param)==1) param <- c(param,0)
+
+  if(length(param)==1) 
+    param <- c(param,0)
   n <- nrow(u)
   fam <- copula@family
 
@@ -34,8 +36,10 @@ linkVineCop.PDF <- function (u, copula, log=FALSE) {
 #   coplik = .C("LL_mod_seperate", as.integer(fam), as.integer(n), as.double(u[,1]), 
 #               as.double(u[,2]), as.double(param[1]), as.double(param[2]), 
 #               as.double(rep(0, n)), PACKAGE = "VineCopula")[[7]]
-  if(log) return(coplik)
-  else return(exp(coplik))
+  if(log) 
+    return(coplik)
+  else 
+    return(exp(coplik))
 }
 
 # cdf from BiCopCDF

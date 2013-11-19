@@ -186,16 +186,15 @@ condSpVine <- function (condVar, dists, spVine, n = 1000) {
 # interpolation
 
 spCopPredict.expectation <- function(predNeigh, spVine, margin, ..., stop.on.error=F) {
-#   stopifnot(!is.null(range))
-#   stopifnot(is.function(margin$d))
-#   stopifnot(is.function(margin$p))
   stopifnot(is.function(margin$q))
   
   dists <- calcSpTreeDists(predNeigh,length(spVine@spCop))
   
   predMean <- NULL
+  
+  pb <- txtProgressBar(0,nrow(predNeigh@data), 0, width=getOption("width")-10, style=3)
   for(i in 1:nrow(predNeigh@data)) { # i <-1
-    cat("[Predicting location ",i,".]\n", sep="")
+    setTxtProgressBar(pb, i)
     condSecVine <- condSpVine(as.numeric(predNeigh@data[i,-1]), 
                               lapply(dists,function(x) x[i,]), spVine)
     
@@ -203,12 +202,14 @@ spCopPredict.expectation <- function(predNeigh, spVine, margin, ..., stop.on.err
       margin$q(x)*condSecVine(x)
     }
     
-    ePred <- integrate(condExp,0,1,subdivisions=10000L,stop.on.error=stop.on.error, ...)
+    ePred <- integrate(condExp,0+.Machine$double.eps,1-.Machine$double.eps,subdivisions=10000L,stop.on.error=stop.on.error, ...)
     if(ePred$abs.error > 0.05)
             warning("Numerical integration in predExpectation performed at a level of absolute error of only ",
                     ePred$abs.error, " for location ",i,".")
     predMean <- c(predMean, ePred$value)
   }
+  close(pb)
+  
   if ("data" %in% slotNames(predNeigh@predLocs)) {
     res <- predNeigh@predLocs
     res@data[["expect"]] <- predMean
@@ -225,8 +226,9 @@ spCopPredict.quantile <- function(predNeigh, spVine, margin, p=0.5) {
   dists <- calcSpTreeDists(predNeigh,length(spVine@spCop))
   
   predQuantile <- NULL
+  pb <- txtProgressBar(0, nrow(predNeigh@data), 0, width=getOption("width")-10, style=3)
   for(i in 1:nrow(predNeigh@data)) { # i <-1
-    cat("[Predicting location ",i,".]\n", sep="")
+    setTxtProgressBar(pb, i)
     condSecVine <- condSpVine(as.numeric(predNeigh@data[i,-1]), 
                               lapply(dists,function(x) x[i,]), spVine)
     
@@ -247,6 +249,7 @@ spCopPredict.quantile <- function(predNeigh, spVine, margin, p=0.5) {
 #               pPred$objective, " where 0 has been sought for location ",i,".")
     predQuantile <- c(predQuantile, margin$q(xVals[lower]+xRes))
   }
+  close(pb)
   
   if ("data" %in% slotNames(predNeigh@predLocs)) {
     res <- predNeigh@predLocs

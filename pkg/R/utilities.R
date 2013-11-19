@@ -2,7 +2,7 @@
 
 
 # ranks are automatically removed and NAs are by default randomly distributed
-rankTransform <- function(u,v=NULL, ties.method="average") {
+rankTransform <- function(u,v=NULL, na.last=TRUE, ties.method="average") {
   if(!(is.matrix(u) | is.data.frame(u))) {
     if (is.null(v))
       stop("u must either be a matrix with at least 2 columns or u and v must be given.")
@@ -10,8 +10,7 @@ rankTransform <- function(u,v=NULL, ties.method="average") {
       u <- cbind(u,v)
   }
 
-  bool <- apply(u,1,function(row) !any(is.na(row)))
-  res <- apply(u[bool,],2,rank,ties.method=ties.method)/(sum(bool)+1)
+  res <- apply(u,2,function(x) rank(x,na.last,ties.method)/(sum(!is.na(x))+1))
   if(is.data.frame(u))
     return(as.data.frame(res))
   return(res)

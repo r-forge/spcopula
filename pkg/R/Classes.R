@@ -129,7 +129,7 @@ validSpCopula <- function(object) {
     nonIndep <- sapply(object@components[-nComp], function(x) class(x) != "indepCopula")
     for (i in (1:(nComp-1))[nonIndep]) {
       upParam <- object@calibMoa(object@components[[i]], object@distances[i+1])
-      if(is.na(upParam)) {
+      if(any(is.na(upParam))) {
         check.upper <- c(check.upper, TRUE)
       } else {
         if (class(object@components[[i]]) == "frankCopula" && upParam == 0) {

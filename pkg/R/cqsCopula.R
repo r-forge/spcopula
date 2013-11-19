@@ -131,15 +131,13 @@ invdduCQSec <- function (u, copula, y) {
   c0 <- -y
 
   v <- solveCubicEq(c3,c2,c1,c0)
-
-  return(v)
   
-#   filter <- function(vec){
-#     vec <- vec[!is.na(vec)]
-#     return(vec[vec >= 0 & vec <= 1])
-#   }
-# 
-#   return(apply(v,1,filter))
+  filter <- function(vec){
+    vec <- vec[!is.na(vec)]
+    return(vec[vec >= 0 & vec <= 1])
+  }
+
+  return(apply(v,1,filter))
 }
 
 setMethod("invdduCopula", signature("numeric","cqsCopula","numeric"), invdduCQSec)
@@ -180,14 +178,12 @@ invddvCQSec <- function (v, copula, y) {
 
   u <- solveCubicEq(c3,c2,c1,c0)
   
-  return(u)
+  filter <- function(vec){
+    vec <- vec[!is.na(vec)]
+    return(vec[vec >= 0 & vec <= 1])
+  }
 
-#   filter <- function(vec){
-#     vec <- vec[!is.na(vec)]
-#     return(vec[vec >= 0 & vec <= 1])
-#   }
-# 
-#   return(apply(u,1,filter))
+  return(apply(u,1,filter))
 }
 
 setMethod("invddvCopula", signature("numeric","cqsCopula","numeric"), invddvCQSec)
@@ -198,7 +194,7 @@ rCQSec <- function (n, copula) {
   u <- runif(n, min = 0, max = 1)
   y <- runif(n, min = 0, max = 1)
     
-  res <- cbind(u, invdduCQSec(u, copula, y))
+  res <- cbind(u, spcopula:::invdduCQSec(u, copula, y))
   colnames(res) <- c("u","v")
     
   return(res)
@@ -304,7 +300,7 @@ fitCQSec.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
 fitCQSec.ml <- function(copula, data, start, lower, upper, optim.control, optim.method) { 
   if(length(start)!=2) stop("Start values need to have same length as parameters.")
   
-  if (length(copula@fixed)==0) {
+  if (copula@fixed=="") {
     optFun <- function(param=c(0,0)) {
       if(any(param > 1) | param[2] < -1 | param[1] < limA(param[2])) 
         return(100)

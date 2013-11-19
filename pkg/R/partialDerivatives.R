@@ -101,9 +101,23 @@ setMethod("invddvCopula", signature("numeric","normalCopula","numeric"), invddvN
 ## independent copula ##
 ########################
 
+## Kendall's tau
+################
+setMethod("tau", signature("indepCopula"), function(copula, ...) return(0))
+
+## Spearman's rho
+#################
+setMethod("rho", signature("indepCopula"), function(copula, ...) return(0))
+
+## indepCopula as evCopula derivatives of A
+###########################################
+setMethod("dAdu", signature("indepCopula"), 
+          function(copula, w) {
+            data.frame(der1=rep(0, length(w)), der2=rep(0, length(w)))
+          })
+
 ## partial derivative d/du
 ##########################
-
 setMethod("dduCopula", signature("numeric","indepCopula"),
           function(u, copula, ...) {
             matrix(u,ncol=copula@dimension)[,2]
@@ -112,7 +126,6 @@ setMethod("dduCopula", signature("matrix","indepCopula"), function(u, copula, ..
 
 ## inverse of the partial derivative d/du
 #########################################
-
 invdduIndep <- function(u, copula, y){
   return(y)
 }
@@ -121,7 +134,6 @@ setMethod("invdduCopula", signature("numeric","indepCopula","numeric"), invdduIn
 
 ## partial derivative d/dv
 ##########################
-
 setMethod("ddvCopula", signature("numeric","indepCopula"),
           function(u, copula, ...) {
             matrix(u,ncol=copula@dimension)[,1]
@@ -130,7 +142,6 @@ setMethod("ddvCopula", signature("matrix","indepCopula"), function(u, copula, ..
 
 ## inverse of the partial derivative d/dv
 #########################################
-
 invddvIndep <- function(v, copula, y){
   return(y)
 }
@@ -144,7 +155,6 @@ setMethod("invddvCopula", signature("numeric","indepCopula", "numeric"), invddvI
 
 ## partial derivative d/du
 ##########################
-
 dduClayton <- function(u, copula){
   rho <- copula@parameters
 
