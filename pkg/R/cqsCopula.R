@@ -118,26 +118,37 @@ setMethod("dduCopula", signature("matrix","cqsCopula"), dduCQSec)
 ## inverse partial derivative ddu
 # seems to be accurate (1.4e-05 is the max out of 1000 random CQSec-copulas for 1000 random pairs (u,v) each.)
 invdduCQSec <- function (u, copula, y) {
-  stopifnot(length(u)==length(y))
+  stopifnot(length(u) == length(y))
   
   a <- copula@parameters[1]
   b <- copula@parameters[2]
 
-  # solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
-  usq <- u^2
-  c3 <- (b-a)*(1-4*u+3*usq)
-  c2 <- (b-a)*(-2+8*u-6*u^2)-b*(-1+2*u)
-  c1 <- (b-a)*(1-4*u+3*u^2)-b*(1-2*u)+1
-  c0 <- -y
-
-  v <- solveCubicEq(c3,c2,c1,c0)
+  if (a != b) { # the cubic case
+    # solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+    usq <- u^2
+    c3 <- (b-a)*(1-4*u+3*usq)
+    c2 <- (b-a)*(-2+8*u-6*u^2)-b*(-1+2*u)
+    c1 <- (b-a)*(1-4*u+3*u^2)-b*(1-2*u)+1
+    c0 <- -y
   
-  filter <- function(vec){
-    vec <- vec[!is.na(vec)]
-    return(vec[vec >= 0 & vec <= 1])
+    v <- solveCubicEq(c3,c2,c1,c0)
+    
+    filter <- function(vec){
+      vec <- vec[!is.na(vec)]
+      return(vec[vec >= 0 & vec <= 1])
+    }
+  
+    return(apply(v,1,filter))
   }
-
-  return(apply(v,1,filter))
+  if(a==0) # and b==0 obvioulsy as well: the independent case
+    return(y)
+  
+  # the qudratic cases remain
+  v <- y
+  uR <- u[u != 0.5]
+  v[u != 0.5] <- (-sqrt((-2*b*uR+b-1)^2-4*y[u != 0.5]*(2*b*uR-b))+2*b*uR-b+1)/(2*b*(2*uR-1))
+  
+  return(v)
 }
 
 setMethod("invdduCopula", signature("numeric","cqsCopula","numeric"), invdduCQSec)
@@ -162,28 +173,38 @@ setMethod("ddvCopula", signature("numeric","cqsCopula"),
 setMethod("ddvCopula", signature("matrix","cqsCopula"), ddvCQSec)
 
 ## inverse partial derivative ddv
-# seems to be accurate (1e-05 is the max out of 5000 random CQSec-copulas for 1000 random pairs (u,v) each. Very most are below 10*.Machine$double.eps)
 invddvCQSec <- function (v, copula, y) {
   stopifnot(length(v)==length(y)) 
 
   a <- copula@parameters[1]
   b <- copula@parameters[2]
 
-  # solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
-  vsq <- v^2
-  c3 <- (b-a)*(1-4*v+3*vsq)
-  c2 <- (b-a)*(-2+8*v-6*vsq)-b*(-1+2*v)
-  c1 <- (b-a)*(1-4*v+3*vsq)-b*(1-2*v)+1
-  c0 <- -y
-
-  u <- solveCubicEq(c3,c2,c1,c0)
+  if (a != b) { # the cubic case
+    # solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+    vsq <- v^2
+    c3 <- (b-a)*(1-4*v+3*vsq)
+    c2 <- (b-a)*(-2+8*v-6*vsq)-b*(-1+2*v)
+    c1 <- (b-a)*(1-4*v+3*vsq)-b*(1-2*v)+1
+    c0 <- -y
   
-  filter <- function(vec){
-    vec <- vec[!is.na(vec)]
-    return(vec[vec >= 0 & vec <= 1])
+    u <- solveCubicEq(c3,c2,c1,c0)
+    
+    filter <- function(vec){
+      vec <- vec[!is.na(vec)]
+      return(vec[vec >= 0 & vec <= 1])
+    }
+  
+    return(apply(u,1,filter))
   }
-
-  return(apply(u,1,filter))
+  if(a==0) # and b==0 obvioulsy as well: the independent case
+    return(y)
+  
+  # the qudratic cases remain
+  u <- y
+  vR <- v[v != 0.5]
+  u[v != 0.5] <- (-sqrt((-2*b*vR+b-1)^2-4*y[v != 0.5]*(2*b*vR-b))+2*b*vR-b+1)/(2*b*(2*vR-1))
+  
+  return(u)
 }
 
 setMethod("invddvCopula", signature("numeric","cqsCopula","numeric"), invddvCQSec)

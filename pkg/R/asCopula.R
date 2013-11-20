@@ -79,7 +79,7 @@ ddvASC2 <- function (u, copula){
   u1 <- u[, 1]
   u2 <- u[, 2]
 
-  return( u1 + b*(-1 + u1)*u1*(-1 + 2*u2) - (a - b)*(-1 + u1)^2*u1*u2*(-2 + 3*u2))
+  return( u1 + b*(u1-1)*u1*(2*u2-1) - (a - b)*(-1 + u1)^2*u1*u2*(-2 + 3*u2))
 }
 
 setMethod("ddvCopula", signature("numeric", "asCopula"),
@@ -94,54 +94,74 @@ setMethod("ddvCopula", signature("matrix", "asCopula"),ddvASC2)
 ## inverse partial derivative 
 
 invdduASC2 <- function (u, copula, y) {
-  if (length(u)!=length(y)) 
-    stop("Length of u and y differ!")
+  stopifnot(length(u) == length(y)) 
   
   a <- copula@parameters[1]
   b <- copula@parameters[2]
 
-# solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
-  usq <- u^2
-  c3 <- (a-b)*(-3*usq+4*u-1)
-  c2 <- (a-b)*(1-4*u+3*usq)+b*(- 1 + 2*u)
-  c1 <- 1+b*(1-2*u)
-  c0 <- -y
+  if (a != b) { # the cubic case
+    # solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+    usq <- u^2
+    c3 <- (a-b)*(-3*usq+4*u-1)
+    c2 <- (a-b)*(1-4*u+3*usq)+b*(- 1 + 2*u)
+    c1 <- 1+b*(1-2*u)
+    c0 <- -y
 
-  v <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
-
-  filter <- function(vec) {
-    vec <- vec[!is.na(vec)]
-    return(vec[vec >= 0 & vec <= 1])
-  }
+    v <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
     
-  return(apply(v,1,filter))
+    filter <- function(vec) {
+      vec <- vec[!is.na(vec)]
+      return(vec[vec >= 0 & vec <= 1])
+    }
+    
+    return(apply(v,1,filter))
+  } 
+  if(a==0) # and b==0 obvioulsy as well: the independent case
+    return(y)
+  
+  # the qudratic cases remain
+  v <- y
+  uR <- u[u != 0.5]
+  v[u != 0.5] <- (sqrt(4*y[u != 0.5]*(2*b*uR-b)+(-2*b*uR+b+1)^2)+2*b*uR-b-1)/(2*b*(2*uR-1))
+    
+  return(v)
 }
 
 setMethod("invdduCopula", signature("numeric","asCopula","numeric"),invdduASC2)
 
 ## inverse partial derivative ddv
 invddvASC2 <- function (v, copula, y) {
-    if (length(v)!=length(y)) 
-        stop("Length of v and y differ!")
+  stopifnot(length(v) == length(y)) 
 
-    a <- copula@parameters[1]
-    b <- copula@parameters[2]
-
-# solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
+  a <- copula@parameters[1]
+  b <- copula@parameters[2]
+  
+  if (a != b) { # the cubic case
+    # solving the cubic equation: u^3 * c3 + u^2 * c2 + u * c1 + c0 = 0
     vsq <- v^2
     c3 <- (a-b)*(2*v-3*vsq)
     c2 <- (a-b)*(-4*v+6*vsq)+b*(-1+2*v)
     c1 <- 1+(a-b)*(2*v - 3*vsq)+b*(1-2*v)
     c0 <- -y
 
-u <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
+    u <- solveCubicEq(c3,c2,c1,c0) # from cqsCopula.R
 
-filter <- function(vec){
-  vec <- vec[!is.na(vec)]
-  return(vec[vec >= 0 & vec <= 1])
-}
-
-return(apply(u,1,filter))
+    filter <- function(vec){
+      vec <- vec[!is.na(vec)]
+      return(vec[vec >= 0 & vec <= 1])
+    }
+    
+    return(apply(u,1,filter))
+  }
+  if(a==0) # and b==0 obvioulsy as well: the independent case
+    return(y)
+  
+  # the qudratic cases remain
+  u <- y
+  vR <- v[v != 0.5]
+  u[v != 0.5] <- (sqrt(4*y[v != 0.5]*(2*b*vR-b)+(-2*b*vR+b+1)^2)+2*b*vR-b-1)/(2*b*(2*vR-1))
+  
+  return(u)
 }
 
 setMethod("invddvCopula", signature("numeric","asCopula","numeric"),invddvASC2)
