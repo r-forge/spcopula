@@ -225,7 +225,7 @@ r270BB7Copula <- function (param=c(-1,-1)) {
   if (any(is.na(param) | param[1] > -1 | param[2] >= 0 | param <= c(-Inf,-Inf)))
     stop(paste("Parameter values out of bounds: theta: (-Inf,-1], delta: (-Inf,0)."))
   new("r270BB7Copula", dimension = as.integer(2), parameters = param, 
-      param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, -1), 
+      param.names = c("theta", "delta"), param.lowbnd = c(-Inf, -Inf), param.upbnd = c(-1, 0), 
       family=39, fullname = "270 deg rotated BB7 copula family. Number 39 in VineCopula.")
 }
 

@@ -30,7 +30,7 @@ export(spGaussCopPredict, spGaussLogLik)
 # export(setSizeLim)
 
 # spatial
-export(getNeighbours,getNeighbours.experimental, getStNeighbours)
+export(getNeighbours, getStNeighbours)
 export(calcBins)
 export(calcSpTreeDists, dropSpTree)
 

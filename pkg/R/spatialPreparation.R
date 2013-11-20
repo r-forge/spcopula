@@ -58,49 +58,49 @@ setMethod("[[", signature("neighbourhood","numeric","missing"), selectFromNeighb
 # returns an neighbourhood object
 ##################################
 
-getNeighbours <- function(dataLocs, predLocs, var=names(dataLocs)[1], size=5, 
-                          prediction=FALSE, min.dist=0.01) {
-  
-  stopifnot((!prediction && missing(predLocs)) || (prediction && !missing(predLocs)))
-  stopifnot(min.dist>0 || prediction)
-  
-  if(missing(predLocs) && !prediction)
-    predLocs=dataLocs
-  
-  stopifnot(is(predLocs,"Spatial"))
-  
-  if(any(is.na(match(var,names(dataLocs)))))
-    stop("At least one of the variables is unkown or is not part of the data.")
+# getNeighbours <- function(dataLocs, predLocs, var=names(dataLocs)[1], size=5, 
+#                           prediction=FALSE, min.dist=0.01) {
+#   
+#   stopifnot((!prediction && missing(predLocs)) || (prediction && !missing(predLocs)))
+#   stopifnot(min.dist>0 || prediction)
+#   
+#   if(missing(predLocs) && !prediction)
+#     predLocs=dataLocs
+#   
+#   stopifnot(is(predLocs,"Spatial"))
+#   
+#   if(any(is.na(match(var,names(dataLocs)))))
+#     stop("At least one of the variables is unkown or is not part of the data.")
+# 
+#   nLocs <- length(predLocs)
+#   size <- min(size, length(dataLocs)+prediction)
+#   
+#   allLocs <- matrix(NA,nLocs,size)
+#   allDists <- matrix(NA,nLocs,size-1)
+#   allData <- matrix(NA,nLocs,size)
+#   for (i in 1:nLocs) {
+#     tempDists <- spDists(dataLocs, predLocs[i, ])
+#     tempDists[tempDists < min.dist] <- Inf
+#     spLocs <- order(tempDists)[1:(size - 1)]
+#     
+#     allLocs[i,] <- c(i, spLocs)
+#     allDists[i,] <- tempDists[spLocs]
+#     allData[i,(prediction+1):size] <- dataLocs[c(i[!prediction],spLocs),
+#                                                var, drop = F]@data[[1]]
+#   }
+#   
+#   if (!prediction)
+#     predLocs <- NULL
+#   colnames(allData) <- paste(paste("N", rep(0:(size-1), 
+#                                             each=length(var)), sep=""),
+#                              rep(var,size),sep=".")
+#   return(neighbourhood(allData, allDists, allLocs, dataLocs,
+#                        predLocs, prediction, var))
+# }
+# 
 
-  nLocs <- length(predLocs)
-  size <- min(size, length(dataLocs)+prediction)
-  
-  allLocs <- matrix(NA,nLocs,size)
-  allDists <- matrix(NA,nLocs,size-1)
-  allData <- matrix(NA,nLocs,size)
-  for (i in 1:nLocs) {
-    tempDists <- spDists(dataLocs, predLocs[i, ])
-    tempDists[tempDists < min.dist] <- Inf
-    spLocs <- order(tempDists)[1:(size - 1)]
-    
-    allLocs[i,] <- c(i, spLocs)
-    allDists[i,] <- tempDists[spLocs]
-    allData[i,(prediction+1):size] <- dataLocs[c(i[!prediction],spLocs),
-                                               var, drop = F]@data[[1]]
-  }
-  
-  if (!prediction)
-    predLocs <- NULL
-  colnames(allData) <- paste(paste("N", rep(0:(size-1), 
-                                            each=length(var)), sep=""),
-                             rep(var,size),sep=".")
-  return(neighbourhood(allData, allDists, allLocs, dataLocs,
-                       predLocs, prediction, var))
-}
 
-
-
-getNeighbours.experimental = function (dataLocs, predLocs, var = names(dataLocs)[1], size = 5, 
+getNeighbours <- function (dataLocs, predLocs, var = names(dataLocs)[1], size = 5, 
 									   prediction = FALSE, min.dist = 0.01) 
 {
   stopifnot((!prediction && missing(predLocs)) || (prediction && 
@@ -141,16 +141,6 @@ getNeighbours.experimental = function (dataLocs, predLocs, var = names(dataLocs)
   return(neighbourhood(allData, matrix(result$allDists,nLocs, size - 1), matrix(result$allLocs, nLocs, size), dataLocs, 
                         predLocs, prediction, var))
 }
-
-
-
-
-
-
-
-
-
-
 
 #############
 ## BINNING ##
