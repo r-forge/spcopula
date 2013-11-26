@@ -5,10 +5,10 @@
 \alias{r270BB1Copula}
 
 \title{
-Constructor of the BB1 family and its derivatives
+Constructor of the BB1 family and rotated versions thereof
 }
 \description{
-Constructs an object of the \code{\linkS4class{BB1Copula}} (survival \code{sur}, 90 degree rotated \code{r90} and 270 degree rotated \code{r270}) family for a given parameter.
+Constructs an object of the \code{\linkS4class{BB1Copula}} (survival \code{sur}, 90 degree rotated \code{r90} and 270 degree rotated \code{r270}) family for given parameters.
 }
 \usage{
 BB1Copula(param)
@@ -40,3 +40,6 @@ persp(surBB1Copula(c(1,1.5)),dCopula, zlim=c(0,10))
 persp(r90BB1Copula(c(-1,-1.5)),dCopula, zlim=c(0,10))
 persp(r270BB1Copula(c(-1,-1.5)),dCopula, zlim=c(0,10))
 }
+
+\keyword{ distribution }
+\keyword{ copula } 

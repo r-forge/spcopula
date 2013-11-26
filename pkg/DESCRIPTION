@@ -38,4 +38,5 @@ Collate:
   utilities.R
   returnPeriods.R
   spatialGaussianCopula.R
+  tawnCopula.R
   zzz.R
