@@ -102,7 +102,7 @@ fitSpVine <- function(copula, data, method, estimate.variance=F) {
       l0 <- l0 + dCopula(u0[,c(1,i+1)], copula@spCop[[spTree]], h=h0[,i], log=T)
       u1 <- cbind(u1, dduCopula(u0[,c(1,i+1)], copula@spCop[[spTree]], h=h0[,i]))
       if (i < ncol(h0)) {
-        h1 <- cbind(h1,apply(data@index[,c(spTree,spTree+i)],1, 
+        h1 <- cbind(h1,apply(data@index[,c(spTree+1,spTree+i+1)],1, 
                              function(x) spDists(data@dataLocs[x,])[1,2]))
       }
     }
