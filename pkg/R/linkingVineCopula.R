@@ -172,11 +172,6 @@ linkVineCop.r <- function (n, copula){
   return(matrix(tmp, ncol = 2))
 }
 
-## fit a Copula through fitCopula with BiCopEst
-## -> BB8Copula (collate issues)
-
-
-
 
 # ## transform a fit from VineCopula to a list of copula objects
 # castVineCopula <- function(cdvEst) {

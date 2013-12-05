@@ -13,6 +13,7 @@ export(surClaytonCopula, r90ClaytonCopula, r270ClaytonCopula)
 export(surGumbelCopula, r90GumbelCopula, r270GumbelCopula)
 export(tawnT1Copula, surTawnT1Copula, r90TawnT1Copula, r270TawnT1Copula)
 export(tawnT2Copula, surTawnT2Copula, r90TawnT2Copula, r270TawnT2Copula)
+export(tawn3pCopula)
 export(spCopula, stCopula)
 export(vineCopula, spVineCopula, stVineCopula)
 export(neighbourhood, stNeighbourhood)
@@ -38,6 +39,8 @@ export(calcSpTreeDists, dropSpTree)
 
 # fitting
 export(fitCorFun, loglikByCopulasLags, fitSpCopula, composeSpCopula)
+export(tailDepFun, lowerTailDepFun, upperTailDepFun)
+export(empTailDepFun, lowerEmpTailDepFun, upperEmpTailDepFun)
 
 # MRP functions
 export(genEmpKenFun, genInvKenFun)

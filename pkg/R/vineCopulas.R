@@ -43,9 +43,9 @@ setMethod("show", signature("vineCopula"), showVineCopula)
 
 ## density ##
 
-dRVine <- function(u, copula, log=F) {
+dRVine <- function(u, copula, log=FALSE) {
   RVM <- copula@RVM
-  vineLoglik <- RVineLogLik(u, RVM, separate=T)$loglik
+  vineLoglik <- RVineLogLik(u, RVM, separate=TRUE)$loglik
   if(log)
     return(vineLoglik)
   else
@@ -89,14 +89,18 @@ setMethod("rCopula", signature("numeric","vineCopula"), rRVine)
 # fitting using RVine
 fitVineCop <- function(copula, data, method) {
   stopifnot(copula@dimension==ncol(data))
-  if("StructureSelect" %in% method)
-    vineCop <- vineCopula(RVineStructureSelect(data, indeptest="indeptest" %in% method))
+  if(!is.null(method[["familyset"]]))
+    familyset <- method[["familyset"]]
   else
-    vineCop <- vineCopula(RVineCopSelect(data, Matrix=copula@RVM$Matrix, 
+    familyset <- NA
+  if("StructureSelect" %in% method)
+    vineCop <- vineCopula(RVineStructureSelect(data, familyset, indeptest="indeptest" %in% method))
+  else
+    vineCop <- vineCopula(RVineCopSelect(data, familyset, copula@RVM$Matrix, 
                                          indeptest="indeptest" %in% method))
   
   return(new("fitCopula", estimate = vineCop@parameters, var.est = matrix(NA), 
-             method = method, 
+             method = sapply(method,paste,collapse=", "), 
              loglik = RVineLogLik(data, vineCop@RVM)$loglik,
              fitting.stats=list(convergence = as.integer(NA)),
              nsample = nrow(data), copula=vineCop))

@@ -39,4 +39,6 @@ Collate:
   returnPeriods.R
   spatialGaussianCopula.R
   tawnCopula.R
+  tawn3pCopula.R
+  tailDependenceFunctions.R
   zzz.R

@@ -132,7 +132,7 @@ fitSpVine <- function(copula, data, method, estimate.variance=F) {
   }
   
   return(new("fitCopula", estimate = spVineCop@parameters, var.est = matrix(NA), 
-             method = method, 
+             method = sapply(method,paste,collapse=", "), 
              loglik = sum(l0)+loglik,
              fitting.stats=list(convergence = as.integer(NA)),
              nsample = nrow(data@data), copula=spVineCop))
