@@ -36,7 +36,7 @@ a bivariate sample on (0,1)
 A function taking arguments from the unit interval (0,1) and returning the corresponding tail index.
 }
 \references{
-Inspired by: \url{http://www.r-bloggers.com/copulas-and-tail-dependence-part-1/}
+Inspired by: \url{http://freakonometrics.blog.free.fr/index.php?post/2012/09/11/Copulas-and-statistical-inference}
 }
 \author{
 Benedikt Graeler
@@ -67,4 +67,4 @@ curve(tdfBB6,add=TRUE,col="red")
 
 legend("bottomleft",c("empircal","Gauss","surv. Gumbel","surv. BB6"),
        col=c("black","blue","darkgreen","red"),lty=1)
-}
+} 
