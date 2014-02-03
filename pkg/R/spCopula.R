@@ -490,6 +490,8 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
     cat(cop@fullname,"\n")
     tmploglik <- NULL
     tmpCop <- list()
+    
+    pb <- txtProgressBar(0, length(bins$meanDists), style=3)
     for(i in 1:length(bins$meanDists)) {
       if(class(cop)!="indepCopula") {
         if(class(cop) == "asCopula") {
@@ -522,7 +524,9 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
       else 
         tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]], cop, log=T)))
       tmpCop <- append(tmpCop, cop)
+      setTxtProgressBar(pb, i)
     }
+    close(pb)
     loglik <- cbind(loglik, tmploglik)
     copulas[[class(cop)]] <- tmpCop
   }
@@ -576,6 +580,12 @@ loglikByCopulasLags <- function(bins, families=c(normalCopula(0),
                                                  claytonCopula(0), frankCopula(1), 
                                                  gumbelCopula(1)),
                                 calcCor) {
+  bins$lagData <- lapply(bins$lagData, 
+                         function(pairs) { 
+                           bool <- !is.na(pairs[,1]) & !is.na(pairs[,2])
+                           pairs[bool,]
+                         })
+  
   if(missing(calcCor))
     return(loglikByCopulasLags.static(bins, families))
   else

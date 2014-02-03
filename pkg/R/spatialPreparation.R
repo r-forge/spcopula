@@ -299,6 +299,7 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
   else {
     tempIndices <- NULL
     for (t.lag in rev(t.lags)) {
+#       smplInd <- max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags))
       smplInd <- sample(x=max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags)),
                         size=min(instances,lengthTime-max(abs(t.lags))))
       tempIndices <- cbind(smplInd+t.lag, tempIndices)
@@ -329,7 +330,9 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
   calcTau <- function(binnedData) {
     cors <- NULL
     for(i in 1:(ncol(binnedData)/2)) {
-      cors <- c(cors, VineCopula:::fasttau(binnedData[,2*i-1], binnedData[,2*i]))
+      tmpData <- binnedData[,2*i+c(-1,0)]
+      tmpData <- tmpData[!apply(tmpData, 1, function(x) any(is.na(x))),]
+      cors <- c(cors, VineCopula:::fasttau(tmpData[,1], tmpData[,2]))
     }
     return(cors)
   }
