@@ -91,38 +91,19 @@ ptawn3pCopula <- function(u, copula, ...) {
 setMethod("pCopula", signature("matrix", "tawn3pCopula"),  ptawn3pCopula)
 setMethod("pCopula", signature("numeric", "tawn3pCopula"), ptawn3pCopula)
 
-setMethod("rCopula", signature("numeric", "tawn3pCopula"),
-          function(n, copula, ...) {
-            copula:::revCopula(n, copula, ...)[,2:1]
-          })
 
 fitTawn3pCop <- function(copula, data, method = c("mpl", "ml", "itau", "irho"), 
-                         start = NULL, lower = NULL, upper = NULL, optim.method = "BFGS", 
+                         start = copula@parameters,
+                         lower = copula@param.lowbnd,
+                         upper = copula@param.upbnd,
+                         optim.method = "L-BFGS-B", 
                          optim.control = list(maxit = 1000), estimate.variance = FALSE, 
                          hideWarnings = TRUE) {
-  if(is.null(start))
-    start <- copula@parameters
   
-  # copied from copula::fitCopula
-  if (!is.matrix(data)) {
-    warning("coercing 'data' to a matrix.")
-    data <- as.matrix(data)
-    stopifnot(is.matrix(data))
-  }
-  
-  cat(match.arg(method))
-  
-  res <- switch(match.arg(method), 
-               ml = copula:::fitCopula.ml(copula, data, start, lower, upper, 
-                                          optim.method, optim.control, 
-                                          estimate.variance, hideWarnings),
-               mpl = copula:::fitCopula.mpl(copula, data, start, lower, upper, 
-                                            optim.method, optim.control, 
-                                            estimate.variance, hideWarnings),
-               itau = copula:::fitCopula.itau(copula, data, estimate.variance),
-               irho = copula:::fitCopula.irho(copula, data, estimate.variance))
-  cat(match.arg(method))
-  return(res)
+  fitCopulaAny <- selectMethod(fitCopula, "copula")
+  fitCopulaAny(copula, data, method, start, lower, upper, 
+               optim.method, optim.control, estimate.variance,
+               hideWarnings)
 }
             
 setMethod("fitCopula", signature("tawn3pCopula"), fitTawn3pCop)

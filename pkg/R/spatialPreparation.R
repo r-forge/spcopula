@@ -198,7 +198,7 @@ calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, ...,
   lagData <- lapply(lags, function(x) as.matrix((cbind(data[x[,1],var]@data, data[x[,2],var]@data))))
   
   if(cor.method == "fasttau")
-    lagCor <- sapply(lagData, function(x) VineCopula:::fasttau(x[,1], x[,2]))
+    lagCor <- sapply(lagData, function(x) TauMatrix(x)[1,2])
   if(cor.method %in% c("kendall","spearman","pearson"))
     lagCor <- sapply(lagData, function(x) cor(x,method=cor.method)[1,2])
   if(cor.method == "normVariogram")  
@@ -226,7 +226,7 @@ calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA,
   dists <- data@distances
   
   corFun <- switch(cor.method,
-                   fasttau=function(x) VineCopula:::fasttau(x[,1],x[,2]),
+                   fasttau=function(x) TauMatrix(x)[1,2],
                    function(x) cor(x,method=cor.method)[1,2])
   
   if (any(is.na(boundaries))) 
@@ -332,7 +332,7 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
     for(i in 1:(ncol(binnedData)/2)) {
       tmpData <- binnedData[,2*i+c(-1,0)]
       tmpData <- tmpData[!apply(tmpData, 1, function(x) any(is.na(x))),]
-      cors <- c(cors, VineCopula:::fasttau(tmpData[,1], tmpData[,2]))
+      cors <- c(cors, TauMatrix(tmpData)[1,2])
     }
     return(cors)
   }

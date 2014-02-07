@@ -3,6 +3,11 @@
 \alias{kendallDistribution,claytonCopula-method}
 \alias{kendallDistribution,frankCopula-method}
 \alias{kendallDistribution,gumbelCopula-method}
+\alias{kendallDistribution,BB1Copula-method}
+\alias{kendallDistribution,BB6Copula-method}
+\alias{kendallDistribution,BB7Copula-method}
+\alias{kendallDistribution,BB8Copula-method}
+\alias{kendallDistribution,joeBiCopula-method}
 \title{
 The Kendall distribution
 }

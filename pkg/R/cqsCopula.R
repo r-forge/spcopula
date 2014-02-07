@@ -215,7 +215,7 @@ rCQSec <- function (n, copula) {
   u <- runif(n, min = 0, max = 1)
   y <- runif(n, min = 0, max = 1)
     
-  res <- cbind(u, spcopula:::invdduCQSec(u, copula, y))
+  res <- cbind(u, invdduCQSec(u, copula, y))
   colnames(res) <- c("u","v")
     
   return(res)
@@ -252,7 +252,7 @@ setMethod("fitCopula", signature("cqsCopula"), fitCopula.cqs)
 
 fitCQSec.itau <- function(copula, data, estimate.variance=FALSE, tau=NULL) {
   if(is.null(tau))
-    tau <- VineCopula:::fasttau(data[,1],data[,2])
+    tau <- TauMatrix(data)[1,2]
   if(copula@fixed=="a")
     esti <- c(copula@parameters[1], iTauCQSec.a(copula@parameters[1], tau))
   if(copula@fixed=="b")

@@ -1,4 +1,3 @@
-## kendall function (empirical) -> spcopula
 genEmpKenFun <- function(copula, sample=NULL) {
   if(is.null(sample)) sample <- rCopula(1e6,copula)
   # as empirical copula:
@@ -124,3 +123,175 @@ qCopula_u.def <- function(copula,p,u, tol=.Machine$double.eps^.5) { # sample=NUL
 }
 
 setMethod("qCopula_u", signature("copula"), qCopula_u.def)
+
+
+## kendall distribution
+
+# empirical default
+getKendallDistr <- function(copula, sample=NULL) {
+  standardGeneric("getKendallDistr")
+  if(is.null(sample)) sample <- rcopula(copula,1e6)
+  empCop <- genEmpCop(sample)
+  ken <- empCop(sample) # takes really long, any suggestions? Comparring a 1e6x3/1e6x2 matrix by 1e6 pairs/triplets values
+  
+  empKenFun <- function(tlevel) {
+    res <- NULL
+    for(t in tlevel) {
+      res <- c(res,sum(ken<=t))
+    }
+    return(res/nrow(sample))
+  }
+  return(empKenFun)
+}
+
+setGeneric("getKendallDistr")
+
+## 
+
+kendallDistribution <- function(copula, t) {
+  stop("There is no analytical expression implemented for this copula family. See 'getKendallDstr' for a numerical solution instead.")
+}
+
+setGeneric("kendallDistribution")
+
+## Clayton
+## kendall distribution/measure, taken from VineCopula:::obs.stat
+kendall.Clayton <- function(copula, t){
+  par = copula@parameters
+  
+  kt <- rep(NA,length(t))
+  kt <- t + t * (1 - t^par)/par
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("claytonCopula"), kendall.Clayton)
+
+setMethod("getKendallDistr", signature("claytonCopula"), 
+          function(copula) return(function(t) kendall.Clayton(copula, t)))
+
+## Gumbel
+## kendall distribution/measure, taken from VineCopula:::obs.stat
+kendall.Gumbel <- function(copula, t){
+  par = copula@parameters
+  
+  kt <- rep(NA,length(t))
+  kt <- t - t * log(t)/(par)
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("gumbelCopula"), kendall.Gumbel)
+
+setMethod("getKendallDistr", signature("gumbelCopula"), 
+          function(copula) return(function(t) kendall.Gumbel(copula, t)))
+
+## Frank
+## kendall distribution/measure, taken from VineCopula:::obs.stat
+kendall.Frank <- function(copula, t){
+  par = copula@parameters
+  
+  kt <- rep(NA,length(t))
+  kt <- t + log((1 - exp(-par))/(1 - exp(-par * t))) * (1 - exp(-par * t))/(par * exp(-par * t))
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("frankCopula"), kendall.Frank)
+
+setMethod("getKendallDistr", signature("frankCopula"), 
+          function(copula) return(function(t) kendall.Frank(copula, t)))
+
+## direct definition for Archimedean copulas
+
+# BB1
+## kendall distribution/measure
+kendall.BB1 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + 1/(theta * delta) * (t^(-theta) - 1)/(t^(-1 - theta))
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("BB1Copula"), kendall.BB1)
+
+setMethod("getKendallDistr", signature("BB1Copula"), function(copula) return(function(t) kendall.BB1(copula, t)) )
+
+
+# BB6
+## kendall distribution/measure, taken from VineCopula:::obs.stat
+kendall.BB6 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + log(-(1 - t)^theta + 1) * (1 - t - (1 - t)^(-theta) + (1 - t)^(-theta) * t)/(delta * theta)
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("BB6Copula"), kendall.BB6)
+
+setMethod("getKendallDistr", signature("BB6Copula"), 
+          function(copula) return(function(t) kendall.BB6(copula, t)))
+
+# BB7
+## kendall distribution/measure, taken from VineCopula:::obs.stat
+kendall.BB7 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + 1/(theta * delta) * ((1 - (1 - t)^theta)^(-delta) -  1)/
+    ((1 - t)^(theta - 1) * (1 - (1 - t)^theta)^(-delta - 1))
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("BB7Copula"), kendall.BB7)
+
+setMethod("getKendallDistr", signature("BB7Copula"), 
+          function(copula) return(function(t) kendall.BB7(copula, t)))
+
+# BB8
+## kendall distribution/measure, taken from VineCopula:::obs.stat
+kendall.BB8 <- function(copula, t){
+  theta = copula@parameters[1]
+  delta = copula@parameters[2]
+  
+  kt <- rep(NA,length(t))
+  kt <- t + log(((1 - t * delta)^theta - 1)/((1 - delta)^theta - 1)) * (1 - t * delta - (1 - t * delta)^(-theta) + (1 - t * delta)^(-theta) * t * delta)/ (theta * delta)
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("BB8Copula"), kendall.BB8)
+setMethod("getKendallDistr", signature("BB8Copula"), 
+          function(copula) return(function(t) kendall.BB8(copula, t)))
+
+# BiJoe
+## kendall distribution/measure, taken from VineCopula:::obs.stat
+kendall.Joe <- function(copula, t){
+  par = copula@parameters[1]
+  
+  kt <- rep(NA,length(t))
+  kt <- t - (log(1 - (1 - t)^par) * (1 - (1 - t))^par)/(par * (1 - t)^(par - 1))
+  kt[t==1] <- 1
+  kt[t==0] <- 0
+  return(kt)  
+}
+
+setMethod("kendallDistribution", signature("joeBiCopula"), kendall.Joe)
+setMethod("getKendallDistr", signature("joeBiCopula"), 
+          function(copula) return(function(t) kendall.Joe(copula, t)))
+

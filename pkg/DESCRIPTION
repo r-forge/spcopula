@@ -1,17 +1,17 @@
 Package: spcopula
 Type: Package
 Title: copula driven spatial analysis
-Version: 0.1-1
-Date: 2013-11-20
-Authors@R: c(person("Benedikt", "Graeler", role = c("aut", "cre"), email =
-        "ben.graeler@uni-muenster.de"), person("Marius", "Appel",
-        role = "ctb"))
+Version: 0.2-0
+Date: 2014-02-07
+Authors@R: c(person("Benedikt", "Graeler", role = c("aut", "cre"),
+                    email = "ben.graeler@uni-muenster.de"),
+             person("Marius", "Appel",role = "ctb"))
 Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
 Description: This package provides a framework to analyse via copulas spatial and spatio-temporal data provided in the format of sp and spacetime package respectively. Additionally, support for calculating different multivariate return periods is implemented.
 License: GPL-2
 LazyLoad: yes
-Depends: copula (>= 0.999-7), R (>= 2.15.0)
-Imports: VineCopula (>= 1.1-2), sp, spacetime (>= 1.0-9), methods
+Depends: copula (>= 0.999-7), VineCopula (>= 1.2-1), R (>= 2.15.0)
+Imports: sp, spacetime (>= 1.0-9), methods
 URL: http://r-forge.r-project.org/projects/spcopula/
 Collate:
   Classes.R
@@ -24,21 +24,11 @@ Collate:
   stCopula.R
   spatialPreparation.R
   spatio-temporalPreparation.R
-  wrappingCFunctions.R
-  linkingVineCopula.R
-  BB1copula.R
-  BB6copula.R
-  BB7copula.R
-  BB8copula.R
-  joeBiCopula.R
-  ClaytonGumbelCopula.R
-  vineCopulas.R
   spVineCopula.R
   stVineCopula.R
   utilities.R
   returnPeriods.R
   spatialGaussianCopula.R
-  tawnCopula.R
   tawn3pCopula.R
   tailDependenceFunctions.R
   zzz.R

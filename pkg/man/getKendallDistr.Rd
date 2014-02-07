@@ -3,9 +3,14 @@
 \alias{getKendallDistr,claytonCopula-method}
 \alias{getKendallDistr,frankCopula-method}
 \alias{getKendallDistr,gumbelCopula-method}
+\alias{getKendallDistr,BB1Copula-method}
+\alias{getKendallDistr,BB6Copula-method}
+\alias{getKendallDistr,BB7Copula-method}
+\alias{getKendallDistr,BB8Copula-method}
+\alias{getKendallDistr,joeBiCopula-method}
 
 \title{
-retrieving the Kendall Distribution function for a given copula
+Retrieving the Kendall Distribution function for a given copula
 }
 \description{
 Depending on the copula passed, an analytical or empirical Kendall distribution function (\code{\link{kendallDistribution}}) is returned.
@@ -22,7 +27,7 @@ getKendallDistr(copula, sample = NULL)
 }
 }
 \value{
-A function that takes quantiles of the copula  and returns the Kendall Distribution value for this quantile.}
+A function that takes quantiles of the copula and returns the Kendall Distribution value for this quantile.}
 \author{
 Benedikt Graeler
 }

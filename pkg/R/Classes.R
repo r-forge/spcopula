@@ -177,26 +177,26 @@ setClass("stCopula", representation = representation("copula",
 ##  vine copulas  ##
 ####################
 
-validVineCopula = function(object) {
-  dim <- object@dimension
-  if( dim <= 2)
-    return("Number of dimension too small (>2).")
-  if(length(object@copulas)!=(dim*(dim-1)/2))
-    return("Number of provided copulas does not match given dimension.")
-  if(!any(unlist(lapply(object@copulas,function(x) is(x,"copula")))))
-    return("Not all provided copulas in your list are indeed copulas.")
-  return (TRUE)
-}
-
-setOldClass("RVineMatrix")
-
-setClass("vineCopula",
-         representation = representation(copulas="list", dimension="integer", 
-                                         RVM="RVineMatrix"),
-         prototype = prototype(RVM=structure(list(),class="RVineMatrix")),
-         validity = validVineCopula,
-         contains = list("copula")
-)
+# validVineCopula = function(object) {
+#   dim <- object@dimension
+#   if( dim <= 2)
+#     return("Number of dimension too small (>2).")
+#   if(length(object@copulas)!=(dim*(dim-1)/2))
+#     return("Number of provided copulas does not match given dimension.")
+#   if(!any(unlist(lapply(object@copulas,function(x) is(x,"copula")))))
+#     return("Not all provided copulas in your list are indeed copulas.")
+#   return (TRUE)
+# }
+# 
+# setOldClass("RVineMatrix")
+# 
+# setClass("vineCopula",
+#          representation = representation(copulas="list", dimension="integer", 
+#                                          RVM="RVineMatrix"),
+#          prototype = prototype(RVM=structure(list(),class="RVineMatrix")),
+#          validity = validVineCopula,
+#          contains = list("copula")
+# )
 
 #########################
 ## Spatial Vine Copula ##

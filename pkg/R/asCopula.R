@@ -209,7 +209,7 @@ setMethod("fitCopula", signature("asCopula"), fitCopulaASC2)
 
 fitASC2.itau <- function(copula, data, estimate.variance, tau=NULL) {
   if(is.null(tau))
-    tau <- VineCopula:::fasttau(data[,1],data[,2])
+    tau <- TauMatrix(data)[1,2]
   esti <- fitASC2.moa(tau, data, method="itau")
   copula <- asCopula(esti)
   

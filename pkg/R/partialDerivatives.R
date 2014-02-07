@@ -1,8 +1,8 @@
 # partial derivatives and their inverse of some copulas from the copula package
 # new defined copulas store their partial derivative separately
-
-setGeneric("dduCopula", function(u, copula, ...) standardGeneric("dduCopula"))
-setGeneric("ddvCopula", function(u, copula, ...) standardGeneric("ddvCopula"))
+# 
+# setGeneric("dduCopula", function(u, copula, ...) standardGeneric("dduCopula"))
+# setGeneric("ddvCopula", function(u, copula, ...) standardGeneric("ddvCopula"))
 
 ## inverse partial derivatives 
 # numerical standard function
@@ -371,85 +371,3 @@ setMethod("ddvCopula", signature("numeric","tCopula"),
             ddvStudent(matrix(u,ncol=copula@dimension),copula)
           })
 setMethod("ddvCopula", signature("matrix","tCopula"), ddvStudent)
-
-
-## kendall distribution
-
-# empirical default
-getKendallDistr <- function(copula, sample=NULL) {
-  standardGeneric("getKendallDistr")
-  if(is.null(sample)) sample <- rcopula(copula,1e6)
-  empCop <- genEmpCop(sample)
-  ken <- empCop(sample) # takes really long, any suggestions? Comparring a 1e6x3/1e6x2 matrix by 1e6 pairs/triplets values
-  
-  empKenFun <- function(tlevel) {
-    res <- NULL
-    for(t in tlevel) {
-      res <- c(res,sum(ken<=t))
-    }
-    return(res/nrow(sample))
-  }
-  return(empKenFun)
-}
-
-setGeneric("getKendallDistr")
-
-## 
-
-kendallDistribution <- function(copula, t) {
-  stop("There is no analytical expression implemented for this copula family. See 'getKendallDstr' for a numerical solution instead.")
-}
-
-setGeneric("kendallDistribution")
-
-## Clayton
-## kendall distribution/measure, taken from VineCopula:::obs.stat
-kendall.Clayton <- function(copula, t){
-  par = copula@parameters
-    
-  kt <- rep(NA,length(t))
-  kt <- t + t * (1 - t^par)/par
-  kt[t==1] <- 1
-  kt[t==0] <- 0
-  return(kt)  
-}
-
-setMethod("kendallDistribution", signature("claytonCopula"), kendall.Clayton)
-
-setMethod("getKendallDistr", signature("claytonCopula"), 
-          function(copula) return(function(t) kendall.Clayton(copula, t)))
-
-## Gumbel
-## kendall distribution/measure, taken from VineCopula:::obs.stat
-kendall.Gumbel <- function(copula, t){
-  par = copula@parameters
-    
-  kt <- rep(NA,length(t))
-  kt <- t - t * log(t)/(par)
-  kt[t==1] <- 1
-  kt[t==0] <- 0
-  return(kt)  
-}
-
-setMethod("kendallDistribution", signature("gumbelCopula"), kendall.Gumbel)
-
-setMethod("getKendallDistr", signature("gumbelCopula"), 
-          function(copula) return(function(t) kendall.Gumbel(copula, t)))
-
-## Frank
-## kendall distribution/measure, taken from VineCopula:::obs.stat
-kendall.Frank <- function(copula, t){
-  par = copula@parameters
-    
-  kt <- rep(NA,length(t))
-  kt <- t + log((1 - exp(-par))/(1 - exp(-par * t))) * (1 - exp(-par * t))/(par * exp(-par * t))
-  kt[t==1] <- 1
-  kt[t==0] <- 0
-  return(kt)  
-}
-
-setMethod("kendallDistribution", signature("frankCopula"), kendall.Frank)
-
-setMethod("getKendallDistr", signature("frankCopula"), 
-          function(copula) return(function(t) kendall.Frank(copula, t)))
-

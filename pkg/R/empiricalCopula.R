@@ -50,7 +50,7 @@ setMethod("pCopula", signature("matrix", "empiricalCopula"), pempCop.C)
 
 
 tauempCop <- function(copula){
-  VineCopula:::fasttau(copula@sample[,1],copula@sample[,2])
+  TauMatrix(copula@sample)[1,2]
 }
 
 setMethod("tau",signature("asCopula"),tauempCop)
@@ -61,3 +61,20 @@ rhoempCop <- function(copula){
 }
 
 setMethod("rho",signature("asCopula"),rhoempCop)
+
+
+# Vine Copula
+## jcdf ##
+pvineCopula <- function(u, copula) {
+  empCop <- genEmpCop(copula, 1e5)
+  
+  return(pCopula(u, empCop))
+}
+
+setMethod("pCopula", signature("numeric","vineCopula"), 
+          function(u,copula) {
+            pvineCopula(matrix(u, ncol=copula@dimension),copula)
+          })
+setMethod("pCopula", signature("data.frame","vineCopula"), 
+          function(u,copula) pvineCopula(as.matrix(u),copula))
+setMethod("pCopula", signature("matrix","vineCopula"), pvineCopula)

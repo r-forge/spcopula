@@ -62,10 +62,10 @@ Benedikt Graeler
 library(sp)
 data(meuse)
 coordinates(meuse) = ~x+y
-dataSet <- meuse
+meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 
 ## lag classes ##
-bins <- calcBins(dataSet,var="zinc",nbins=10,cutoff=800)
+bins <- calcBins(meuse, var="rtZinc", nbins=10, cutoff=800)
 }
 
 \keyword{spatial preparation}
