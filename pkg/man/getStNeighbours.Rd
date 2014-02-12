@@ -25,7 +25,7 @@ the variable name of interest, by default the first variable is used.
 The spatial size of the neighbourhood including the location of interest (for fitting as well for prediction).
 }
 \item{t.lags}{The temporal lags to be used in the spatio-temporal neighbourhood.}
-\item{timeSteps}{The number of tiem instances that should randomly be selected from \code{stData}. The defualt, \code{NA}, selects all locations.}
+\item{timeSteps}{The number of time instances that should randomly be selected from \code{stData}. The default, \code{NA}, selects all locations.}
   \item{prediction}{whether the neighbourhood should be used for prediction (TRUE) or spatial/Spatio-temporal vine copula fitting.}
   \item{min.dist}{
 the minimal distance for a location to be included. Must be larger than 0 for fitting purposes and might be 0 for prediction.

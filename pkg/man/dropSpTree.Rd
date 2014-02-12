@@ -19,7 +19,7 @@ the current spatial copula performing the conditioning
 }
 
 \value{
-A conditioned \code{\linkS4class{neighbourhood}} of dimesnion 1 less.
+A conditioned \code{\linkS4class{neighbourhood}} of dimension 1 less.
 }
 
 \author{

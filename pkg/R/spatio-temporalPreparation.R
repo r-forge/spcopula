@@ -116,6 +116,43 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
                          stInd, prediction, var))
 }
 
+
+## reduction of a larger neigbopurhood based on correlation strengths
+reduceNeighbours <- function(stNeigh, stDepFun, n) {
+  stopifnot(n>0)
+  
+  # transform distances into correlations to detect the strongest correlated ones
+  dimStNeigh <- dim(stNeigh@distances)
+  corMat <- matrix(NA, dimStNeigh[1], dimStNeigh[2])
+  
+  for (i in 1:dimStNeigh[2]) {
+    boolNA <- is.na(stNeigh@data[[1]]) | is.na(stNeigh@data[[1+i]])
+    stNeigh@distances[boolNA,i,] <- c(NA,NA)
+    tLag <- -1*stNeigh@distances[!boolNA,i,2][1]+1
+    corMat[!boolNA,i] <- stDepFun(stNeigh@distances[!boolNA,i,1], tLag)
+  }
+  
+  highCorMat <- t(apply(corMat, 1, function(x) order(x, na.last=TRUE, decreasing=TRUE)[1:n]))
+  
+  stNeighDataRed <- matrix(NA, nrow=nrow(highCorMat), ncol=n+1)
+  stNeighDistRed <- array(NA, dim=c(nrow(highCorMat), n, 2))
+  stNeighIndeRed <- array(NA, dim=c(nrow(highCorMat), n, 2))
+  for (i in 1:nrow(highCorMat)) {
+    stNeighDataRed[i,] <- as.numeric(stNeigh@data[i,c(1,highCorMat[i,]+1)])
+    stNeighDistRed[i,,] <- stNeigh@distances[i,highCorMat[i,],]
+    stNeighIndeRed[i,,] <- stNeigh@index[i,highCorMat[i,],]
+  }
+  
+  stNeighDataRed <- stNeighDataRed[!is.na(stNeigh@data[[1]]),]
+  stNeighDistRed <- stNeighDistRed[!is.na(stNeigh@data[[1]]),,]
+  stNeighIndeRed <- stNeighIndeRed[!is.na(stNeigh@data[[1]]),,]
+  
+  return(stNeighbourhood(stNeighDataRed,stNeighDistRed, stNeigh@dataLocs, 
+                         ST=stNeigh@dataLocs, stNeighIndeRed, prediction=F, 
+                         var=stNeigh@var))
+}
+
+## to be redone
 calcStNeighBins <- function(data, var="uniPM10", nbins=9, t.lags=-(0:2),
                             boundaries=NA, cutoff=NA, cor.method="fasttau") {
 #   dists <- data@distances[,,1]

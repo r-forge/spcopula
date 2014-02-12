@@ -8,8 +8,8 @@ Spatial Copula Fitting
 A bivariate spatial copula is composed out of a set of bivariate copulas. These are combined using a convex linear combination with weights based on distances where for copulas with a 1-1 correspondence of Kendall's tau or Spearman's rho a dependence function providing measures of association based on distances might be used. This function estimates a spatial dependence function, evaluates the log-likelihood per family and lag class, selects the best fits and composes a spatial bivariate copula.
 }
 \usage{
-fitSpCopula(bins, cutoff = NA, families = c(normalCopula(0), tCopula(0, dispstr = "un"),
-            claytonCopula(0), frankCopula(1), gumbelCopula(1)), ...)
+fitSpCopula(bins, cutoff = NA, families = c(normalCopula(), tCopula(),
+            claytonCopula(), frankCopula(), gumbelCopula()), ...)
 }
 \arguments{
   \item{bins}{
@@ -43,9 +43,7 @@ Take a look at \code{\link{fitCorFun}}, \code{\link{loglikByCopulasLags}}, \code
 }
 \examples{
 data(spCopDemo)
-fitSpCopula(bins=bins,cutoff=600,families=c(normalCopula(0), tCopula(0,dispstr = "un"),
-                                            claytonCopula(0), frankCopula(1), 
-                                            gumbelCopula(1), joeBiCopula(1.5)))
+fitSpCopula(bins, 600)
 }
 \keyword{ spatial }
 \keyword{ multivariate }% __ONLY ONE__ keyword per line

@@ -21,7 +21,6 @@ Benedikt Graeler
 }
 \examples{
 # a spatio-temporal C-vine copula (with independent copulas in the upper vine)
-
 spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
                                     claytonCopula(2), claytonCopula(1),
                                     claytonCopula(0.5), indepCopula()),
@@ -40,7 +39,6 @@ spCopT2 <- spCopula(components=list(claytonCopula(2), claytonCopula(1),
 stCop <- stCopula(components=list(spCopT0, spCopT1, spCopT2),
                   t.lags=-(0:2))
 
-library(VineCopula)
 stVineCopula(stCop, vineCopula(9L))
 }
 \keyword{ mulitvariate }

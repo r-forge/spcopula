@@ -627,9 +627,9 @@ composeSpCopula <- function(bestFit, families, bins, calcCor, range=max(bins$mea
 # bounds -> the bounds of the correlation function (typically c(0,1))
 # method -> the measure of association, either "kendall" or "spearman"
 fitSpCopula <- function(bins, cutoff=NA, 
-                        families=c(normalCopula(0), 
-                                   tCopula(0,dispstr="un"), claytonCopula(0), 
-                                   frankCopula(1), gumbelCopula(1)), ...) {
+                        families=c(normalCopula(), tCopula(),
+                                   claytonCopula(), frankCopula(),
+                                   gumbelCopula()), ...) {
   calcCor <- fitCorFun(bins, cutoff=cutoff, ...)
   loglik <- loglikByCopulasLags(bins, families, calcCor)
   
