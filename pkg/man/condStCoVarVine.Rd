@@ -62,10 +62,10 @@ stCop <- stCopula(components=list(spCopT0, spCopT1, spCopT2),
                   t.lags=-(0:2))
 
 # only a constant copula ius used for the covariate
-stCVVC <- stCoVarVineCopula(function(x) gumbelCopula(2), stCop, vineCopula(9L))
+stCVVC <- stCoVarVineCopula(function(x) gumbelCopula(7), stCop, vineCopula(5L))
 
 dists <- array(c(150, 250, 150, 250,0,0,-1,-1),dim=c(1,4,2))
-condVar <- c(0.15, 0.29, 0.55, 0.05, 0.41)
+condVar <- c(0.95, 0.29, 0.55, 0.05, 0.41)
 
 condDensity <- condStCoVarVine(condVar, dists, stCVVC, c(1,1))
 curve(condDensity)
