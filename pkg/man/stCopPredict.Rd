@@ -62,7 +62,7 @@ stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
 stNeigh <- getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3,
                            t.lags=-(0:1))
 
-stCopPredict(stNeigh, stVineCop, list(q=qunif), "quantile", 0.5)
+stCopPredict(list(stNeigh, stData, stQuerry), stVineCop, list(q=qunif), "quantile", 0.5)
 }
 
 \keyword{ distribution }

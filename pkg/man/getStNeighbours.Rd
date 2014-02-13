@@ -8,8 +8,8 @@ Creating Local Spatio-Temporal Neighbourhoods
 This function calculates local spatio-temporal neighbourhoods to be used for fitting of spatio-temporal vine copulas and for prediction using spatio-temporal vine copulas.
 }
 \usage{
-getStNeighbours(stData, ST, var = names(stData@data)[1], spSize = 4, t.lags=-(0:2),
-                timeSteps=NA, prediction=FALSE, min.dist = 0.01)
+getStNeighbours(stData, ST, spSize = 4, t.lags=-(0:2), var = names(stData@data)[1], 
+                coVar=character(), timeSteps=NA, prediction=FALSE, min.dist = 0.01)
 }
 \arguments{
   \item{stData}{
@@ -18,14 +18,13 @@ some spatio-temporal data frame holding the data used for estimation/prediction
   \item{ST}{
 A spatio-temporal object defining the prediction locations, might be missing if the spatio-temporal neighbourhood is used for fitting.
 }
-  \item{var}{
-the variable name of interest, by default the first variable is used.
-}
   \item{spSize}{
 The spatial size of the neighbourhood including the location of interest (for fitting as well for prediction).
 }
-\item{t.lags}{The temporal lags to be used in the spatio-temporal neighbourhood.}
-\item{timeSteps}{The number of time instances that should randomly be selected from \code{stData}. The default, \code{NA}, selects all locations.}
+  \item{t.lags}{The temporal lags to be used in the spatio-temporal neighbourhood.}
+  \item{var}{the variable name of interest, by default the first variable is used}
+  \item{coVar}{the covariate's name}
+  \item{timeSteps}{The number of time instances that should randomly be selected from \code{stData}. The default, \code{NA}, selects all locations.}
   \item{prediction}{whether the neighbourhood should be used for prediction (TRUE) or spatial/Spatio-temporal vine copula fitting.}
   \item{min.dist}{
 the minimal distance for a location to be included. Must be larger than 0 for fitting purposes and might be 0 for prediction.
@@ -47,13 +46,13 @@ library(spacetime)
 
 sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
 time <- Sys.time()+60*60*24*c(0,1,2)
-data <- data.frame(var1=runif(6))
+data <- data.frame(measure=runif(6))
 
 stData <- STFDF(sp, time, data)
 stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
                 time[2:3])
 
-getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3, 
-                t.lags=-(0:1))
+getStNeighbours(stData=stData, ST=stQuerry, var="measure", spSize=3, 
+                t.lags=-(0:1), prediction=TRUE)
 }
 \keyword{ spatial }

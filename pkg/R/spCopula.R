@@ -657,15 +657,16 @@ dropSpTree <- function(neigh, spCop) {
   cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
   if(is.na(cond)) {
     var <- paste(neigh@var,"|0",sep="")
+    coVar <- paste(neigh@coVar,"|0",sep="")
     colnames(u1) <- paste(paste("N", rep(1:(ncol(u1)), each=length(var)), sep=""),
                           rep(var,ncol(u1)),sep=".")
   } else {
     var <- paste(neigh@var,cond+1,sep="")
+    coVar <- neigh@coVar
     colnames(u1) <- paste(paste("N", rep(cond:(ncol(u1)+cond-1)+2,
                                          each=length(var)), sep=""),
                           rep(var,ncol(u1)),sep=".")
   }
   return(neighbourhood(data=u1, distances=h1, index=neigh@index[,-1],
-                       dataLocs=neigh@dataLocs, predLocs=neigh@predLocs,
-                       prediction=neigh@prediction, var=var))
+                       var=var, coVar=coVar, prediction=neigh@prediction))
 }

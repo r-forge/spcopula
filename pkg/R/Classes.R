@@ -173,9 +173,9 @@ setClass("stCopula", representation = representation("copula",
                                                      t.res="character"),
          validity = validStCopula, contains = list("copula"))
 
-####################
-##  vine copulas  ##
-####################
+###############################################
+##  vine copulas, happens now in VineCopula  ##
+###############################################
 
 # validVineCopula = function(object) {
 #   dim <- object@dimension
@@ -235,77 +235,58 @@ setClass("stVineCopula", representation("copula", stCop="stCopula", topCop="copu
 
 ## neighbourhood:
 
-sizeLim <- 25 #  a constant
-# setSizeLim <- function(x) {
-#   env <- parent.env(environment())
-#   unlockBinding("neighbourLim",env)
-#   assign("neighbourLim", x,envir=env)
-#   lockBinding("neighbourLim",env)
-# }
-
-# a class combining two matrices holding the data and the corresponding 
-# distances as well a slot for the coordinates refernce system and an attribute
-# if the data is already transformed to uniform on [0,1] distributed variables
-# data:		a list of data.frames holding the data per neighbour. each neighbour needs to have the same number of variables in the same order
-# sp: an optional slot providing the coordinates of locations
-# index: a matrix linking the data entries with the coordinates of the locations
 validNeighbourhood <- function(object) {
   if(length(var)>1)
     return("Only a single variable name is supported.")
-  if (object@prediction & is.null(object@predLocs))
-    return("The prediction locations have to be provided for the prediction procedure.")
   # check for number of rows
   if (nrow(object@data) != nrow(object@distances)) 
     return("Data and distances have unequal number of rows.")
   if (nrow(object@data) != nrow(object@index)) 
     return("Data and index have unequal number of rows.")
   # check for columns
-  if (ncol(object@data) != ncol(object@distances)+1)
+  if (ncol(object@data) != ncol(object@distances) + 1 + length(object@coVar))
     return("Data and distances have non matching number of columns.")
-  if (ncol(object@data) != ncol(object@index)) 
-    return("Data and index have unequal number of columns.")
+  if (ncol(object@data) != ncol(object@index) + length(object@coVar)) 
+    return("Data and index have non matching number of columns.")
   else 
     return(TRUE)
 }
-
-setClassUnion("optionalLocs",c("NULL","Spatial"))
 
 setClass("neighbourhood",
          representation = representation(data = "data.frame", 
                                          distances="matrix", 
                                          index="matrix",
-                                         dataLocs="Spatial",
-                                         predLocs="optionalLocs",
-                                         prediction="logical",
-                                         var="character"),         
-         validity = validNeighbourhood, contains = list("Spatial"))
+                                         var="character",
+                                         coVar="character",
+                                         prediction="logical"),         
+         validity = validNeighbourhood)
 
 ## ST neighbourhood
-
 validStNeighbourhood <- function(object) {
-  sizeN <- nrow(object@data)
-  if (object@prediction & is.null(object@dataLocs))
-    return("The spatio-temporal locations of the data have to be provided for the estimation procedure.")
   dimDists <- dim(object@distances)
+  dimInd <- dim(object@index)
+  
+  stopifnot(length(dimDists)==3)
+  stopifnot(length(dimInd)==3)
+  stopifnot(dimDists[3] == dimInd[3])
+  
   if (nrow(object@data) != dimDists[1]) 
     return("Data and distances have unequal number of rows.")
-  dimInd <- dim(object@index)
-  if (nrow(object@data) != dimInd[1]) 
+    if (nrow(object@data) != dimInd[1]) 
     return("Data and index have unequal number of rows.")
-  if (dimDists[2] != dimInd[2]) 
-    return("Data and index have unequal number of columns.")
+  if (ncol(object@data) + object@prediction != dimInd[2] + length(object@coVar)) 
+    return("Data and index have non matching number of columns.")
+  if (dimDists[2]+1 != dimInd[2]) 
+    return("Data and index have non matching number of columns.")
   else 
     return(TRUE)
 }
-
-setClassUnion("optionalST",c("NULL","ST"))
 
 setClass("stNeighbourhood",
          representation = representation(data = "data.frame", 
                                          distances="array", 
                                          index="array",
-                                         locations="ST",
-                                         dataLocs="optionalST",
                                          var="character", 
+                                         coVar="character",
                                          prediction="logical"),
-         validity = validStNeighbourhood, contains = list("ST"))
+         validity = validStNeighbourhood)

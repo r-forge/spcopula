@@ -8,7 +8,7 @@
 
 \title{Class \code{"spVineCopula"}}
 \description{
-A S4-class representing a spatial vine copula structure to model spatial processes. This spatial vine might be composed out of purely spatial trees or being mixed as lower spatail trees with an upper non-spatially variing joined copula.
+A S4-class representing a spatial vine copula structure to model spatial processes. This spatial vine might be composed out of purely spatial trees or being mixed as lower spatial trees with an upper non-spatially varying joined copula.
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("spVineCopula", ...)} or to the constructor \code{\link{spVineCopula}}.

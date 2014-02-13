@@ -7,7 +7,7 @@ spatial prediction using a Gaussian Copula
 This function allows to do spatial prediction using a Gaussian Copula based on the spatial parametrization.
 }
 \usage{
-spGaussCopPredict(corFun, predNeigh, margin, p = 0.5, ..., n = 1000)
+spGaussCopPredict(corFun, predNeigh, dataLocs, predLocs, margin, p = 0.5, ..., n = 1000)
 }
 
 \arguments{
@@ -17,6 +17,8 @@ A valid correlogram (i.e. producing a valid correlation matrix; e.g. based on a 
   \item{predNeigh}{
 A \code{\linkS4class{neighbourhood}} object used for prediction.
 }
+  \item{dataLocs}{a spatial object providing the data}
+  \item{predLocs}{a spatial object providing the prediction locations}
   \item{margin}{
 a list containing the marginal distribution. Currently only the entry \code{q} is required defining the quantile function.
 }
@@ -72,14 +74,16 @@ meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 
 # obtain the prediction neighbourhoods
 predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,16:19,25:28),],
-                                "rtZinc", 5L, TRUE, -1)
+                                5, "rtZinc", prediction=TRUE, min.dist=-1)
 
 qMar <- function(x) {
   qlnorm(x,mean(log(meuse$zinc)),sd(log(meuse$zinc)))
 }
 
 # predict using the Gaussian Copula
-predMedian <- spGaussCopPredict(meuseGaussCorFun, predMeuseNeigh, list(q=qMar))
+predMedian <- spGaussCopPredict(meuseGaussCorFun, predMeuseNeigh,
+                                meuse[1:4,], meuse.grid[c(9:12,16:19,25:28),],
+                                list(q=qMar))
 
 \dontrun{
   spplot(predMedian,"quantile.0.5", 

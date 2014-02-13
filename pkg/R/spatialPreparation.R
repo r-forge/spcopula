@@ -7,110 +7,59 @@
 ## spatial neighbourhood constructor
 ####################################
 
-neighbourhood <- function(data, distances, index, dataLocs, predLocs=NULL, 
-                          prediction, var) {
+neighbourhood <- function(data, distances, index, var, coVar=character(), prediction=FALSE) {
   sizeN <- ncol(distances)+1
   data <- as.data.frame(data)
   if (anyDuplicated(rownames(data))>0)
     rownames <- 1:length(rownames)
+  
   new("neighbourhood", data=data, distances=distances, index=index,
-      dataLocs=dataLocs, predLocs=predLocs, prediction=prediction, var=var,
-      bbox=dataLocs@bbox, proj4string=dataLocs@proj4string)
+      var=var, coVar=coVar, prediction=prediction)
 }
 
 ## show
 showNeighbourhood <- function(object){
   cat("A set of neighbourhoods consisting of", ncol(object@distances)+1, "locations each \n")
-  cat("with",nrow(object@data),"rows of observations for:\n")
-  cat(object@var,"\n")
+  if (length(object@var)>0) {
+    cat("with", nrow(object@data), "rows of observations for:\n")
+    cat(object@var, "\n")
+  } else {
+    cat("without data \n")
+  }
+  if(length(object@coVar)>0)
+    cat("with covariate", object@coVar, "\n")
 }
 
-setMethod(show,signature("neighbourhood"),showNeighbourhood)
+setMethod(show, signature("neighbourhood"), showNeighbourhood)
 
 ## names (from sp)
-setMethod(names, signature("neighbourhood"), function(x) x@var)
-
-## spplot ##
-spplotNeighbourhood <- function(obj, zcol=names(obj), ..., column=0) {
-  stopifnot(all(column<ncol(obj@data)))
-  pattern <- paste(paste("N", column, ".", sep=""), zcol, sep="")
-  spdf <- SpatialPointsDataFrame(coords=obj@dataLocs, 
-                                 data=obj@data[,pattern,drop=FALSE], 
-                                 proj4string=obj@proj4string, bbox=obj@bbox)
-  spplot(spdf, ...)
-}
-
-setMethod(spplot, signature("neighbourhood"), spplotNeighbourhood)
+setMethod(names, signature("neighbourhood"), function(x) c(x@var,x@coVar))
 
 selectFromNeighbourhood <- function(x, i) {
-  newSp <- x@dataLocs[i,]
   new("neighbourhood", data=x@data[i,,drop=F], 
-      distances=x@distances[i,,drop=F], 
-      dataLocs=newSp, predLocs=x@predLocs, bbox=newSp@bbox, 
-      proj4string=x@proj4string, index=x@index[i,,drop=F], var=x@var, 
-      prediction=x@prediction)
+      distances=x@distances[i,,drop=F], index=x@index[i,,drop=F], 
+      var=x@var, coVar=x@coVar, prediction=x@prediction)
 }
 
-setMethod("[[", signature("neighbourhood","numeric","missing"), selectFromNeighbourhood) 
+setMethod("[", signature("neighbourhood","numeric"), selectFromNeighbourhood) 
 
 ## calculate neighbourhood from SpatialPointsDataFrame
-
-# returns an neighbourhood object
-##################################
-
-# getNeighbours <- function(dataLocs, predLocs, var=names(dataLocs)[1], size=5, 
-#                           prediction=FALSE, min.dist=0.01) {
-#   
-#   stopifnot((!prediction && missing(predLocs)) || (prediction && !missing(predLocs)))
-#   stopifnot(min.dist>0 || prediction)
-#   
-#   if(missing(predLocs) && !prediction)
-#     predLocs=dataLocs
-#   
-#   stopifnot(is(predLocs,"Spatial"))
-#   
-#   if(any(is.na(match(var,names(dataLocs)))))
-#     stop("At least one of the variables is unkown or is not part of the data.")
-# 
-#   nLocs <- length(predLocs)
-#   size <- min(size, length(dataLocs)+prediction)
-#   
-#   allLocs <- matrix(NA,nLocs,size)
-#   allDists <- matrix(NA,nLocs,size-1)
-#   allData <- matrix(NA,nLocs,size)
-#   for (i in 1:nLocs) {
-#     tempDists <- spDists(dataLocs, predLocs[i, ])
-#     tempDists[tempDists < min.dist] <- Inf
-#     spLocs <- order(tempDists)[1:(size - 1)]
-#     
-#     allLocs[i,] <- c(i, spLocs)
-#     allDists[i,] <- tempDists[spLocs]
-#     allData[i,(prediction+1):size] <- dataLocs[c(i[!prediction],spLocs),
-#                                                var, drop = F]@data[[1]]
-#   }
-#   
-#   if (!prediction)
-#     predLocs <- NULL
-#   colnames(allData) <- paste(paste("N", rep(0:(size-1), 
-#                                             each=length(var)), sep=""),
-#                              rep(var,size),sep=".")
-#   return(neighbourhood(allData, allDists, allLocs, dataLocs,
-#                        predLocs, prediction, var))
-# }
-# 
-
-
-getNeighbours <- function (dataLocs, predLocs, var = names(dataLocs)[1], size = 5, 
-									   prediction = FALSE, min.dist = 0.01) 
-{
-  stopifnot((!prediction && missing(predLocs)) || (prediction && 
-                                                     !missing(predLocs)))
+getNeighbours <- function (dataLocs, predLocs, size = 5, 
+                           var = names(dataLocs)[1], coVar=character(),
+                           prediction = FALSE, min.dist = 0.01) {
+  stopifnot((!prediction && missing(predLocs)) || (prediction && !missing(predLocs)))
   stopifnot(min.dist > 0 || prediction)
+  
   if (missing(predLocs) && !prediction) 
     predLocs = dataLocs
+  
   stopifnot(is(predLocs, "Spatial"))
-  if (any(is.na(match(var, names(dataLocs))))) 
-    stop("At least one of the variables is unkown or is not part of the data.")
+  
+  if ("data" %in% slotNames(dataLocs)) {
+    if (any(is.na(match(var, names(dataLocs))))) 
+      stop("The variables is not part of the data.")
+  }
+  
   nLocs <- length(predLocs)
   size <- min(size, length(dataLocs) + prediction)
   
@@ -128,18 +77,25 @@ getNeighbours <- function (dataLocs, predLocs, var = names(dataLocs)[1], size = 
      as.integer(prediction),
      PACKAGE="spcopula")
   
-  if (!prediction) allData <- matrix(dataLocs[result$allLocs, var, drop = F]@data[[1]], nLocs, size)
-  else allData <- matrix(c(rep(NA,nLocs),dataLocs[result$allLocs[(nLocs+1):(nLocs*size)], var, drop = F]@data[[1]]), nLocs, size)
+  if ("data" %in% slotNames(dataLocs)) {
+    if (!prediction) {
+      allData <- matrix(dataLocs[result$allLocs, var, drop = F]@data[[1]],
+                        nLocs, size)
+    } else {
+      allData <- matrix(c(rep(NA,nLocs),
+                          dataLocs[result$allLocs[(nLocs+1):(nLocs*size)], var, drop = F]@data[[1]]),
+                        nLocs, size)
+    }
+    colnames(allData) <- paste(paste("N", rep(0:(size - 1), each = length(var)), sep = ""),
+                               rep(var, size), sep = ".")
+  } else {
+    allData <- as.data.frame(matrix(NA, nLocs, size + length(coVar)))
+    var <- character()
+  }
   
-  if (!prediction) 
-    predLocs <- NULL
-  
-  colnames(allData) <- paste(paste("N", rep(0:(size - 1), each = length(var)), 
-                                   sep = ""), rep(var, size), sep = ".")
-  
-  
-  return(neighbourhood(allData, matrix(result$allDists,nLocs, size - 1), matrix(result$allLocs, nLocs, size), dataLocs, 
-                        predLocs, prediction, var))
+  return(neighbourhood(data=allData, distances=matrix(result$allDists, nLocs, size - 1), 
+                       index=matrix(result$allLocs, nLocs, size), var=var, coVar=coVar,
+                       prediction=prediction))
 }
 
 #############
@@ -273,83 +229,3 @@ calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA,
 }
   
 setMethod(calcBins, signature="neighbourhood", calcNeighBins)
-
-# instances: number  -> number of randomly choosen temporal intances
-#            NA      -> all observations
-#            other   -> temporal indexing as in spacetime/xts, the parameter t.lags is set to 0 in this case.
-# t.lags:    numeric -> temporal shifts between obs
-calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, 
-                       instances=NA, t.lags=-(0:2), ...,
-                       cor.method="fasttau", plot=FALSE) {
-  if(is.na(cutoff)) 
-    cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
-  if(is.na(boundaries)) 
-    boundaries <- ((1:nbins) * cutoff / nbins)
-  if(is.na(instances)) 
-    instances=length(data@time)
-  
-  spIndices <- calcSpLagInd(data@sp, boundaries)
-    
-  mDists <- sapply(spIndices,function(x) mean(x[,3]))
-  
-  lengthTime <- length(data@time)
-  if (!is.numeric(instances) | !length(instances)==1) {
-    tempIndices <- cbind(instances, instances)
-  } 
-  else {
-    tempIndices <- NULL
-    for (t.lag in rev(t.lags)) {
-#       smplInd <- max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags))
-      smplInd <- sample(x=max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags)),
-                        size=min(instances,lengthTime-max(abs(t.lags))))
-      tempIndices <- cbind(smplInd+t.lag, tempIndices)
-      tempIndices <- cbind(smplInd, tempIndices)
-    }
-  }
-    
-  retrieveData <- function(spIndex, tempIndices) {
-    binnedData <- NULL
-    for (i in 1:(ncol(tempIndices)/2)) {
-      binnedData <- cbind(binnedData, 
-                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], var]@data, 
-                                           data[spIndex[,2], tempIndices[,2*i], var]@data))))
-    }
-    return(binnedData)
-  }
-  
-  lagData <- lapply(spIndices, retrieveData, tempIndices=tempIndices)
-  
-  calcStats <- function(binnedData) {
-    cors <- NULL
-    for(i in 1:(ncol(binnedData)/2)) {
-      cors <- c(cors, cor(binnedData[,2*i-1], binnedData[,2*i], method=cor.method, use="pairwise.complete.obs"))
-    }
-    return(cors)
-  }
-  
-  calcTau <- function(binnedData) {
-    cors <- NULL
-    for(i in 1:(ncol(binnedData)/2)) {
-      tmpData <- binnedData[,2*i+c(-1,0)]
-      tmpData <- tmpData[!apply(tmpData, 1, function(x) any(is.na(x))),]
-      cors <- c(cors, TauMatrix(tmpData)[1,2])
-    }
-    return(cors)
-  }
-  
-  calcCor <- switch(cor.method, fasttau=calcTau, calcStats)
-  
-  lagCor <- sapply(lagData, calcCor)
-  
-  if(plot) { 
-    plot(mDists, as.matrix(lagCor)[1,], xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
-         ylim=1.05*c(-abs(min(lagCor)),max(lagCor)), xlim=c(0,max(mDists)))
-    abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
-  }
-  
-  res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices))
-  attr(res,"cor.method") <- cor.method
-  return(res)
-}
-
-setMethod(calcBins, signature(data="STFDF"), calcStBins)

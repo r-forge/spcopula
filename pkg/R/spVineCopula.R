@@ -86,13 +86,18 @@ setMethod("dCopula",signature=signature("data.frame","spVineCopula"),
               dspVine(as.matrix(u), copula@spCop, NULL, log=log, ...)
           })
 
-# fiiting the spatial vine for a given list of spatial copulas
-fitSpVine <- function(copula, data, method, estimate.variance=F) {
-  stopifnot(class(data)=="neighbourhood")
-  stopifnot(copula@dimension == ncol(data@data))
+# fitting the spatial vine for a given list of spatial copulas
+fitSpVine <- function(copula, data, method, estimate.variance=FALSE) {
+  stopifnot(is.list(data))
+  stopifnot(length(data)==2)
+  neigh <- data[[1]]
+  dataLocs <- data[[2]]
   
-  u0 <- as.matrix(data@data) # previous level's (contitional) data
-  h0 <- data@distances # previous level's distances
+  stopifnot(class(neigh)=="neighbourhood")
+  stopifnot(copula@dimension == ncol(neigh@data))
+  
+  u0 <- as.matrix(neigh@data) # previous level's (contitional) data
+  h0 <- neigh@distances # previous level's distances
   l0 <- rep(0,nrow(u0)) # spatial density
   for(spTree in 1:length(copula@spCop)) {
     cat("[Dropping ", spTree, ". spatial tree.]\n",sep="")
@@ -101,9 +106,9 @@ fitSpVine <- function(copula, data, method, estimate.variance=F) {
     for(i in 1:ncol(h0)) { # i <- 1
       l0 <- l0 + dCopula(u0[,c(1,i+1)], copula@spCop[[spTree]], h=h0[,i], log=T)
       u1 <- cbind(u1, dduCopula(u0[,c(1,i+1)], copula@spCop[[spTree]], h=h0[,i]))
-      if (i < ncol(h0)) {
-        h1 <- cbind(h1,apply(data@index[,c(spTree+1,spTree+i+1)],1, 
-                             function(x) spDists(data@dataLocs[x,])[1,2]))
+      if (i < ncol(h0) & spTree < length(copula@spCop)) {
+        h1 <- cbind(h1,apply(neigh@index[,c(spTree+1,spTree+i+1)],1, 
+                             function(x) spDists(dataLocs[x,])[1,2]))
       }
     }
     u0 <- u1
@@ -135,13 +140,13 @@ fitSpVine <- function(copula, data, method, estimate.variance=F) {
              method = sapply(method,paste,collapse=", "), 
              loglik = sum(l0)+loglik,
              fitting.stats=list(convergence = as.integer(NA)),
-             nsample = nrow(data@data), copula=spVineCop))
+             nsample = nrow(neigh@data), copula=spVineCop))
 }
 
-setMethod("fitCopula",signature=signature("spVineCopula"),fitSpVine)
+setMethod("fitCopula", signature=signature("spVineCopula"), fitSpVine)
 
 # deriving all spatial tree distances
-calcSpTreeDists <- function(neigh, n.trees) {
+calcSpTreeDists <- function(neigh, dataLocs, n.trees) {
   condDists <- list(n.trees)
   condDists[[1]] <- neigh@distances
   if(n.trees==1)
@@ -150,7 +155,7 @@ calcSpTreeDists <- function(neigh, n.trees) {
     h1 <- NULL
     for(i in 1:(ncol(neigh@distances)-spTree)) {
       h1 <- cbind(h1,apply(neigh@index[,c(spTree+1,spTree+i+1),drop=F],1, 
-                           function(x) spDists(neigh@dataLocs[x,])[1,2]))
+                           function(x) spDists(dataLocs[x,])[1,2]))
       dimnames(h1) <- NULL
     }
     condDists[[spTree+1]] <- h1
@@ -185,10 +190,12 @@ condSpVine <- function (condVar, dists, spVine, n = 1000) {
 
 # interpolation
 
-spCopPredict.expectation <- function(predNeigh, spVine, margin, ..., stop.on.error=F) {
+spCopPredict.expectation <- function(data, spVine, margin, ..., stop.on.error=F) {
   stopifnot(is.function(margin$q))
   
-  dists <- calcSpTreeDists(predNeigh,length(spVine@spCop))
+  predNeigh <- data[[1]]
+  
+  dists <- calcSpTreeDists(predNeigh, data[[2]], length(spVine@spCop))
   
   predMean <- NULL
   
@@ -210,20 +217,23 @@ spCopPredict.expectation <- function(predNeigh, spVine, margin, ..., stop.on.err
   }
   close(pb)
   
-  if ("data" %in% slotNames(predNeigh@predLocs)) {
+  predLocs <- data[[3]]
+  if ("data" %in% slotNames(predLocs)) {
     res <- predNeigh@predLocs
     res@data[["expect"]] <- predMean
     return(res)
   } else {
     predMean <- data.frame(predMean)
     colnames(predMean) <- "expect"
-    return(addAttrToGeom(predNeigh@predLocs, predMean, match.ID=FALSE))
+    return(addAttrToGeom(predLocs, predMean, match.ID=FALSE))
   }
 }
 
-spCopPredict.quantile <- function(predNeigh, spVine, margin, p=0.5) {
+spCopPredict.quantile <- function(data, spVine, margin, p=0.5) {
   stopifnot(is.function(margin$q))
-  dists <- calcSpTreeDists(predNeigh,length(spVine@spCop))
+  
+  predNeigh <- data[[1]]
+  dists <- calcSpTreeDists(predNeigh, data[[2]], length(spVine@spCop))
   
   predQuantile <- NULL
   pb <- txtProgressBar(0, nrow(predNeigh@data), 0, width=getOption("width")-10, style=3)
@@ -241,31 +251,29 @@ spCopPredict.quantile <- function(predNeigh, spVine, margin, p=0.5) {
     b <- density[lower]
     xRes <- -b/m+sign(m)*sqrt(b^2/m^2+2*(p-int[lower])/m)
     
-#     pPred <- optimise(function(x) abs(integrate(condSecVine, 0, x, 
-#                                                 subdivisions=10000L, 
-#                                                 abs.tol=1e-6)$value-p), c(0,1))
-#     if(pPred$objective > 1e-4)
-#       warning("Numerical evaluation in predQuantile achieved an objective of only ",
-#               pPred$objective, " where 0 has been sought for location ",i,".")
     predQuantile <- c(predQuantile, margin$q(xVals[lower]+xRes))
   }
   close(pb)
   
-  if ("data" %in% slotNames(predNeigh@predLocs)) {
-    res <- predNeigh@predLocs
+  predLocs <- data[[3]]
+  if ("data" %in% slotNames(predLocs)) {
+    res <- predLocs
     res@data[[paste("quantile.",p,sep="")]] <- predQuantile
     return(res)
   } else {
     predQuantile <- data.frame(predQuantile)
     colnames(predQuantile) <- paste("quantile.",p,sep="")
-    return(addAttrToGeom(predNeigh@predLocs, predQuantile, match.ID=FALSE))
+    return(addAttrToGeom(predLocs, predQuantile, match.ID=FALSE))
   }
 }
 
-spCopPredict <- function(predNeigh, spVine, margin, method="quantile", p=0.5, ...) {
+spCopPredict <- function(data, spVine, margin, method="quantile", p=0.5, ...) {
+  stopifnot(is.list(data))
+  stopifnot(length(data)==3)
+  
   switch(method,
-         quantile=spCopPredict.quantile(predNeigh, spVine, margin, p),
-         expectation=spCopPredict.expectation(predNeigh, spVine, margin, ...))
+         quantile=spCopPredict.quantile(data, spVine, margin, p),
+         expectation=spCopPredict.expectation(data, spVine, margin, ...))
 }
 
 # draw from a spatial vine

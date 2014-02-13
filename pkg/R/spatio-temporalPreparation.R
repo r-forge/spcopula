@@ -7,52 +7,79 @@
 ## spatio-temporal neighbourhood constructor
 ############################################
 
-stNeighbourhood <- function(data, distances, STxDF, ST=NULL,index, 
-                          prediction, var) {
+stNeighbourhood <- function(data, distances, index, var, coVar=character(), prediction=FALSE) {
   data <- as.data.frame(data)
   sizeN <- nrow(data)
-  dimDists <- dim(distances)
   
-  stopifnot(dimDists[1]==sizeN)
-  stopifnot(dimDists[2]==ncol(data)-(!prediction))
-  stopifnot(dimDists[3]==2)
-  colnames(data) <- paste(paste("N", (0+prediction):dimDists[2], sep=""),var,sep=".")
+  dimDists <- dim(distances)
+  dimInd <- dim(index)
+  
+  stopifnot(length(dimDists) == 3)
+  stopifnot(length(dimInd) == 3)
+  
+  stopifnot(dimDists[1] == sizeN)
+  stopifnot(dimInd[1] == dimDists[1])
+  
+  stopifnot(((dimDists[2] + !prediction) + length(coVar)) == ncol(data))
+  stopifnot(dimInd[2] == dimDists[2]+1)
+  
+  stopifnot(dimDists[3] == 2)
+  stopifnot(dimInd[3] == dimDists[3])
+  
+  colnames(data) <- paste(paste("N", (0+prediction):dimDists[2], sep=""), var, sep=".")
+  
+  if(length(coVar)>0)
+    colnames(data)[dimDists[2] + 1:length(coVar)] <- paste("N0", coVar)
+  
   if (anyDuplicated(rownames(data))>0)
     rownames <- 1:length(rownames)
-  new("stNeighbourhood", data=data, distances=distances, locations=ST, 
-      dataLocs=STxDF, index=index, prediction=prediction, var=var,
-      sp=as(STxDF@sp, "Spatial"), time=STxDF@time[1], 
-      endTime=STxDF@endTime[length(STxDF@endTime)])
+  
+  new("stNeighbourhood", data=data, distances=distances, index=index,
+      var=var, coVar=coVar, prediction=prediction)
 }
 
 ## show
-showStNeighbourhood <- function(object){
+showStNeighbourhood <- function(object) {
   cat("A set of spatio-temporal neighbourhoods consisting of", dim(object@distances)[2]+1, "locations each \n")
   cat("with",nrow(object@data),"rows of observations for:\n")
   cat(object@var,"\n")
+  if(length(object@coVar > 0))
+    cat("with covariate", object@coVar, "\n")
 }
 
-setMethod(show,signature("stNeighbourhood"),showStNeighbourhood)
+setMethod(show, signature("stNeighbourhood"), showStNeighbourhood)
 
+# select
+selectFromStNeighbourhood <- function(x, i) {
+  new("stNeighbourhood", data=x@data[i,,drop=F], 
+      distances=x@distances[i,,,drop=F], index=x@index[i,,,drop=F], 
+      var=x@var, coVar=x@coVar, prediction=x@prediction)
+}
+
+setMethod("[", signature("stNeighbourhood","numeric"), selectFromStNeighbourhood) 
 
 ## calculate neighbourhood from ST
 
 # returns an neighbourhood object
 ##################################
 
-getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4, 
-                            t.lags=-(0:2), timeSteps=NA, prediction=FALSE, min.dist=0.01) {
+getStNeighbours <- function(stData, ST, spSize=4, t.lags=-(0:2),
+                            var=names(stData@data)[1], coVar=character(),
+                            timeSteps=NA, prediction=FALSE, min.dist=0.01) {
   stopifnot((!prediction && missing(ST)) || (prediction && !missing(ST)))
   stopifnot(min.dist>0 || prediction)
   
   timeSpan <- min(t.lags)
   if(missing(ST) && !prediction)
-    ST=stData
+    ST=geometry(stData)
   
   stopifnot(is(ST,"ST"))
   
   if(any(is.na(match(var,names(stData@data)))))
-    stop("At least one of the variables is unkown or is not part of the data.")
+    stop("The variables is not part of stData.")
+  if(length(coVar)>0)
+    if(any(is.na(match(coVar,names(stData@data)))))
+      stop("The covariate is not part of stData.")
   
   if(!prediction) {
     if(is.na(timeSteps)) {
@@ -62,58 +89,73 @@ getStNeighbours <- function(stData, ST, var=names(stData@data)[1], spSize=4,
       reSample <- function() sort(sample((1-timeSpan):length(stData@time), timeSteps))
     }
     nLocs <- length(ST@sp)*timeSteps
-    nghbrs <- getNeighbours(stData[,1], var=var, size=spSize, min.dist=min.dist)
+    nghbrs <- getNeighbours(dataLocs=geometry(stData@sp), var=character(), size=spSize,
+                            min.dist=min.dist)
   } else {
     nLocs <- length(ST)
-    nghbrs <- getNeighbours(stData[,1], ST@sp, var, spSize, prediction, min.dist)
+    nghbrs <- getNeighbours(dataLocs=geometry(stData@sp), predLocs=geometry(ST@sp),
+                            size=spSize, var=character(), prediction=prediction, 
+                            min.dist=min.dist)
     timeNghbrs <- sapply(index(ST@time), function(x) which(x == index(stData@time)))
     reSample <- function() timeNghbrs
     timeSteps <- length(stData@time)+timeSpan
   }
   
-  stNeighData <- matrix(NA, nLocs, (spSize-1)*length(t.lags)+1)
-  stDists <- array(NA,c(nLocs,(spSize-1)*length(t.lags),2))
-  stInd <- array(NA,c(nLocs,(spSize-1)*length(t.lags),2))
+  nStNeighs <- (spSize-1)*length(t.lags)
+  
+  stNeighData <- matrix(NA, nLocs, nStNeighs + 1 + length(coVar))
+  stDists <- array(NA,c(nLocs, nStNeighs, 2))
+  stInd <- array(NA,c(nLocs, nStNeighs + 1, 2))
   
   nTimeInst <- length(reSample())
   
-  for(i in 1:nrow(nghbrs@index)){ # i <- 1
+  for (i in 1:nrow(nghbrs@index)) {
     timeInst <- reSample() # draw random time steps for each neighbourhood
-    stNeighData[(i-1)*timeSteps+(1:timeSteps),
-                1:spSize] <- matrix(stData[nghbrs@index[i,], timeInst,
-                                           var, drop=F]@data[[1]],
-                                    ncol=spSize, byrow=T) # retrieve the top level data
-    tmpInd <- matrix(rep(timeInst, spSize-1), ncol=spSize-1)
-    for(j in 2:length(t.lags)) {
-      t <- t.lags[j]
-      stNeighData[(i-1)*timeSteps+(1:timeSteps),
-                  (j-1)*(spSize-1)+2:(spSize)] <- matrix(stData[nghbrs@index[i,][-1],
-                                                                timeInst+t,
-                                                                var, drop=F]@data[[1]],
-                                                         ncol=spSize-1, byrow=T)
-      tmpInd <- cbind(tmpInd, matrix(rep(timeInst+t,spSize-1),ncol=spSize-1))
+    spInd <- (i-1)*timeSteps+(1:timeSteps)
+    
+    stNeighData[spInd, 1:spSize] <- matrix(stData[nghbrs@index[i,], timeInst,
+                                                  var, drop=F]@data[[1]],
+                                           ncol=spSize, byrow=T)
+    # add covariate(s) to the last column(s)
+    if (length(coVar) > 0) {
+      coVarCols <- nStNeighs + 1 + (1:length(coVar))
+      stNeighData[spInd, coVarCols] <- matrix(stData[nghbrs@index[i,1], timeInst,
+                                                     coVar, drop=F]@data[[1]],
+                                              ncol=length(coVar), byrow=T)
     }
-
-    stDists[(i-1)*timeSteps+1:timeSteps,,1] <- matrix(rep(nghbrs@distances[i,],
-                                                          timeSteps*length(t.lags)),
-                                                      byrow=T, ncol=length(t.lags)*(spSize-1))   # store sp distances
-    stDists[(i-1)*timeSteps+1:timeSteps,,2] <- matrix(rep(rep(t.lags,each=spSize-1),
-                                                          timeSteps),
-                                                      byrow=T, ncol=length(t.lags)*(spSize-1))  # store tmp distances
-    stInd[(i-1)*timeSteps+1:timeSteps,,1] <- matrix(rep(nghbrs@index[i,][-1],
-                                                    timeSteps*length(t.lags)),
-                                                    byrow=T, ncol=length(t.lags)*(spSize-1))
-    stInd[(i-1)*timeSteps+1:timeSteps,,2] <- tmpInd
+    
+    tmpInd <- matrix(rep(timeInst, spSize), ncol=spSize)
+    
+    for (j in 2:length(t.lags)) {
+      t <- t.lags[j]
+      stNeighData[spInd, (j-1)*(spSize-1)+2:(spSize)] <- matrix(stData[nghbrs@index[i,][-1],
+                                                                       timeInst+t, var, drop=F]@data[[1]],
+                                                                ncol=spSize-1, byrow=T)
+      tmpInd <- cbind(tmpInd, matrix(rep(timeInst+t,spSize-1), ncol=spSize-1))
+    }
+    
+    # store spatial distances
+    stDists[spInd,,1] <- matrix(rep(nghbrs@distances[i,], timeSteps*length(t.lags)),
+                                byrow=T, ncol=nStNeighs)
+    
+    # store temporal distances
+    stDists[spInd,,2] <- matrix(rep(rep(t.lags,each=spSize-1), timeSteps),
+                                byrow=T, ncol=nStNeighs)  
+    
+    # store space indices
+    stInd[spInd,,1] <- matrix(rep(c(nghbrs@index[i, ], rep(nghbrs@index[i, -1], length(t.lags)-1)),
+                                  timeSteps), ncol = nStNeighs + 1, byrow = T)
+    
+    # store time indices
+    stInd[spInd,,2] <- tmpInd
   }
 
   if (prediction) {
-    dataLocs <- stData
     stNeighData <- stNeighData[,-1]
   } else {
     dataLocs <- NULL
   }
-  return(stNeighbourhood(as.data.frame(stNeighData), stDists, stData, ST, 
-                         stInd, prediction, var))
+  return(stNeighbourhood(as.data.frame(stNeighData), stDists, stInd, var, coVar, prediction))
 }
 
 
@@ -133,23 +175,34 @@ reduceNeighbours <- function(stNeigh, stDepFun, n) {
   }
   
   highCorMat <- t(apply(corMat, 1, function(x) order(x, na.last=TRUE, decreasing=TRUE)[1:n]))
+  nrCM <- nrow(highCorMat)
   
-  stNeighDataRed <- matrix(NA, nrow=nrow(highCorMat), ncol=n+1)
-  stNeighDistRed <- array(NA, dim=c(nrow(highCorMat), n, 2))
-  stNeighIndeRed <- array(NA, dim=c(nrow(highCorMat), n, 2))
-  for (i in 1:nrow(highCorMat)) {
-    stNeighDataRed[i,] <- as.numeric(stNeigh@data[i,c(1,highCorMat[i,]+1)])
-    stNeighDistRed[i,,] <- stNeigh@distances[i,highCorMat[i,],]
-    stNeighIndeRed[i,,] <- stNeigh@index[i,highCorMat[i,],]
+  stNeighDataRed <- matrix(NA, nrow=nrCM, ncol=n+1+length(stNeigh@coVar))
+  stNeighDistRed <- array(NA, dim=c(nrCM, n, 2))
+  stNeighIndeRed <- array(NA, dim=c(nrCM, n+1, 2))
+  if (length(stNeigh@coVar) > 0) {
+    for (i in 1:nrCM) {
+      selCol <- c(1,highCorMat[i,]+1, ncol(stNeigh@data)-((length(stNeigh@coVar)-1):0))
+      stNeighDataRed[i,] <- as.numeric(stNeigh@data[i,selCol])
+      stNeighDistRed[i,,] <- stNeigh@distances[i,highCorMat[i,],]
+      stNeighIndeRed[i,,] <- stNeigh@index[i,c(1,highCorMat[i,]+1),]
+    }
+  } else {
+    for (i in 1:nrCM) {
+      stNeighDataRed[i,] <- as.numeric(stNeigh@data[i,c(1,highCorMat[i,]+1)])
+      stNeighDistRed[i,,] <- stNeigh@distances[i,highCorMat[i,],]
+      stNeighIndeRed[i,,] <- stNeigh@index[i,c(1,highCorMat[i,]+1),]
+    }
   }
   
-  stNeighDataRed <- stNeighDataRed[!is.na(stNeigh@data[[1]]),]
-  stNeighDistRed <- stNeighDistRed[!is.na(stNeigh@data[[1]]),,]
-  stNeighIndeRed <- stNeighIndeRed[!is.na(stNeigh@data[[1]]),,]
+  boolNA <- !is.na(stNeigh@data[[1]])
+  stNeighDataRed <- stNeighDataRed[boolNA,]
+  stNeighDistRed <- stNeighDistRed[boolNA,,]
+  stNeighIndeRed <- stNeighIndeRed[boolNA,,]
   
-  return(stNeighbourhood(stNeighDataRed,stNeighDistRed, stNeigh@dataLocs, 
-                         ST=stNeigh@dataLocs, stNeighIndeRed, prediction=F, 
-                         var=stNeigh@var))
+  return(stNeighbourhood(stNeighDataRed, stNeighDistRed, stNeighIndeRed,
+                         var=stNeigh@var, coVar=stNeigh@coVar,
+                         prediction=stNeigh@prediction))
 }
 
 ## to be redone
@@ -260,3 +313,84 @@ calcStNeighBins <- function(data, var="uniPM10", nbins=9, t.lags=-(0:2),
 }
 
 setMethod(calcBins, signature="stNeighbourhood", calcStNeighBins)
+
+
+# instances: number  -> number of randomly choosen temporal intances
+#            NA      -> all observations
+#            other   -> temporal indexing as in spacetime/xts, the parameter t.lags is set to 0 in this case.
+# t.lags:    numeric -> temporal shifts between obs
+calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, 
+                       instances=NA, t.lags=-(0:2), ...,
+                       cor.method="fasttau", plot=FALSE) {
+  if(is.na(cutoff)) 
+    cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
+  if(is.na(boundaries)) 
+    boundaries <- ((1:nbins) * cutoff / nbins)
+  if(is.na(instances)) 
+    instances=length(data@time)
+  
+  spIndices <- calcSpLagInd(data@sp, boundaries)
+  
+  mDists <- sapply(spIndices,function(x) mean(x[,3]))
+  
+  lengthTime <- length(data@time)
+  if (!is.numeric(instances) | !length(instances)==1) {
+    tempIndices <- cbind(instances, instances)
+  } 
+  else {
+    tempIndices <- NULL
+    for (t.lag in rev(t.lags)) {
+      #       smplInd <- max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags))
+      smplInd <- sample(x=max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags)),
+                        size=min(instances,lengthTime-max(abs(t.lags))))
+      tempIndices <- cbind(smplInd+t.lag, tempIndices)
+      tempIndices <- cbind(smplInd, tempIndices)
+    }
+  }
+  
+  retrieveData <- function(spIndex, tempIndices) {
+    binnedData <- NULL
+    for (i in 1:(ncol(tempIndices)/2)) {
+      binnedData <- cbind(binnedData, 
+                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], var]@data, 
+                                           data[spIndex[,2], tempIndices[,2*i], var]@data))))
+    }
+    return(binnedData)
+  }
+  
+  lagData <- lapply(spIndices, retrieveData, tempIndices=tempIndices)
+  
+  calcStats <- function(binnedData) {
+    cors <- NULL
+    for(i in 1:(ncol(binnedData)/2)) {
+      cors <- c(cors, cor(binnedData[,2*i-1], binnedData[,2*i], method=cor.method, use="pairwise.complete.obs"))
+    }
+    return(cors)
+  }
+  
+  calcTau <- function(binnedData) {
+    cors <- NULL
+    for(i in 1:(ncol(binnedData)/2)) {
+      tmpData <- binnedData[,2*i+c(-1,0)]
+      tmpData <- tmpData[!apply(tmpData, 1, function(x) any(is.na(x))),]
+      cors <- c(cors, TauMatrix(tmpData)[1,2])
+    }
+    return(cors)
+  }
+  
+  calcCor <- switch(cor.method, fasttau=calcTau, calcStats)
+  
+  lagCor <- sapply(lagData, calcCor)
+  
+  if(plot) { 
+    plot(mDists, as.matrix(lagCor)[1,], xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
+         ylim=1.05*c(-abs(min(lagCor)),max(lagCor)), xlim=c(0,max(mDists)))
+    abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
+  }
+  
+  res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices))
+  attr(res,"cor.method") <- cor.method
+  return(res)
+}
+
+setMethod(calcBins, signature(data="STFDF"), calcStBins)

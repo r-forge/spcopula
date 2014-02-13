@@ -1,10 +1,10 @@
 ## spatial Gaussian Copula
 
 # "density" evaluation
-spGaussLogLik <- function(corFun, neigh, log=T) {
+spGaussLogLik <- function(corFun, neigh, dataLocs, log=T) {
   neighDim <- ncol(neigh@data)
   
-  allDataDists <- spDists(neigh@dataLocs)
+  allDataDists <- spDists(dataLocs)
   
   pb <- txtProgressBar(0, nrow(neigh@data), 0, width = getOption("width") - 10, style = 3)
   
@@ -29,12 +29,12 @@ spGaussLogLik <- function(corFun, neigh, log=T) {
 }
 
 # interpolation based on a valid corelogram function
-spGaussCopPredict <- function(corFun, predNeigh, margin, p=0.5, ..., n=1000) {
+spGaussCopPredict <- function(corFun, predNeigh, dataLocs, predLocs, margin, p=0.5, ..., n=1000) {
   stopifnot(is.list(margin))
   stopifnot(is(margin$q, "function"))
   
   neighDim <- ncol(predNeigh@data)
-  allDataDists <- spDists(predNeigh@dataLocs)
+  allDataDists <- spDists(dataLocs)
   
   pb <- txtProgressBar(0, nrow(predNeigh@data), 0, width = getOption("width") - 10, style = 3)
   
@@ -73,15 +73,15 @@ spGaussCopPredict <- function(corFun, predNeigh, margin, p=0.5, ..., n=1000) {
   }
   close(pb)
   
-  if ("data" %in% slotNames(predNeigh@predLocs)) {
-    res <- predNeigh@predLocs
+  if ("data" %in% slotNames(predLocs)) {
+    res <- predLocs
     res@data[[paste("quantile.", p, sep = "")]] <- predQuantile
     return(res)
   }
   else {
     predQuantile <- data.frame(predQuantile)
     colnames(predQuantile) <- paste("quantile.", p, sep = "")
-    return(addAttrToGeom(predNeigh@predLocs, predQuantile, 
+    return(addAttrToGeom(predLocs, predQuantile, 
                          match.ID = FALSE))
   }
 }

@@ -23,14 +23,10 @@ pMar <- function(q) plnorm(q, meanLog, sdLog)
 qMar <- function(p) qlnorm(p, meanLog, sdLog)
 dMar <- function(x) dlnorm(x, meanLog, sdLog)
 
-# pMar <- function(q) pgev(q, gevEsti[1], gevEsti[2], gevEsti[3])
-# qMar <- function(p) qgev(p, gevEsti[1], gevEsti[2], gevEsti[3])
-# dMar <- function(x) dgev(x, gevEsti[1], gevEsti[2], gevEsti[3])
-
-meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
+meuse$marZinc <- pMar(meuse$zinc)
 
 ## lag classes ##
-bins <- calcBins(meuse,var="rtZinc",nbins=10,cutoff=800)
+bins <- calcBins(meuse,var="marZinc",nbins=10,cutoff=800)
 
 ## calculate parameters for Kendall's tau function ##
 # either linear
@@ -80,10 +76,10 @@ text(x=(1:10+0.5),y=spLoglik,lapply(bins$lagData,length))
 ##
 # spatial vine
 vineDim <- 5L
-meuseNeigh <- getNeighbours(meuse,var="rtZinc",size=vineDim)
+meuseNeigh <- getNeighbours(meuse,var="marZinc",size=vineDim)
 
 meuseSpVine <- fitCopula(spVineCopula(spCop, vineCopula(as.integer(vineDim-1))),
-                         meuseNeigh)
+                         list(meuseNeigh, meuse))
 
 # log-likelihood:
 meuseSpVine@loglik

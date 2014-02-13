@@ -1,5 +1,6 @@
 \name{spVineCopula}
 \alias{spVineCopula}
+
 \title{
 Constructor of the virtual super class \code{\linkS4class{spVineCopula}}.
 }

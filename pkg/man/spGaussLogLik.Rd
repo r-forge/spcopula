@@ -56,11 +56,11 @@ coordinates(meuse) <- ~x+y
 
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 
-meuseNeigh <- getNeighbours(meuse, var="rtZinc", size=5L, 
+meuseNeigh <- getNeighbours(meuse, size=5L, var="rtZinc",
                             prediction=FALSE)
 
 # calculate the log-likelihood
-spGaussLogLik(meuseGaussCorFun, meuseNeigh)
+spGaussLogLik(meuseGaussCorFun, meuseNeigh, meuse)
 }
 
 \keyword{ distribution }

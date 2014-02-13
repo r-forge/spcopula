@@ -35,19 +35,6 @@ Benedikt Graeler
 \code{\link{condSpVine}}
 }
 \examples{
-data(spCopDemo)
-
-calcKTauPol <- fitCorFun(bins, degree=3)
-
-spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
-                                  frankCopula(1), normalCopula(0), claytonCopula(0),
-                                  claytonCopula(0), claytonCopula(0), claytonCopula(0),
-                                  claytonCopula(0), indepCopula()),
-                  distances=bins$meanDists,
-                  spDepFun=calcKTauPol, unit="m")
-
-spVineCop <- spVineCopula(spCop, vineCopula(4L))
-
 library(sp)
 data(meuse.grid)
 coordinates(meuse.grid) <- ~x+y
@@ -55,22 +42,37 @@ gridded(meuse.grid) <- TRUE
 
 data(meuse)
 coordinates(meuse) <- ~x+y
+data(spCopDemo)
+
+calcKTauPol <- fitCorFun(bins, degree=3)
+
+spCop <- spCopula(components=list(normalCopula(), tCopula(),
+                                  frankCopula(), normalCopula(), claytonCopula(),
+                                  claytonCopula(), claytonCopula(), claytonCopula(),
+                                  claytonCopula(), indepCopula()),
+                  distances=bins$meanDists,
+                  spDepFun=calcKTauPol, unit="m")
+
+spVineCop <- spVineCopula(spCop, vineCopula(4L))
 
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 
-predMeuseNeigh <- getNeighbours(meuse[1:4,], meuse.grid[c(9:12,16:19,25:28),],
-                                "rtZinc", 5L, TRUE, -1)
+dataLocs <- meuse[1:4,]
+predLocs <- meuse.grid[c(9:12,16:19,25:28),]
+predMeuseNeigh <- getNeighbours(dataLocs, predLocs, 
+                                5, "rtZinc", prediction=TRUE, min.dist=-1)
 
 qMar <- function(x) {
   qlnorm(x,mean(log(meuse$zinc)),sd(log(meuse$zinc)))
 }
 
-predMedian <- spCopPredict(predMeuseNeigh, spVineCop, list(q=qMar), "quantile", p=0.5)
+predMedian <- spCopPredict(list(predMeuseNeigh, dataLocs, predLocs),
+                           spVineCop, list(q=qMar), "quantile", p=0.5)
 
 \dontrun{
-spplot(predMedian,"quantile.0.5", 
-       sp.layout=list("sp.points", meuse, pch = 19, col = "red"),
-       col.regions=bpy.colors())
+  spplot(predMedian, "quantile.0.5", 
+         sp.layout=list("sp.points", meuse, pch = 19, col = "red"),
+         col.regions=bpy.colors())
 }
 }
 
