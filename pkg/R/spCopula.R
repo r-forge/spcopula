@@ -640,7 +640,7 @@ fitSpCopula <- function(bins, cutoff=NA,
 }
 
 ## dropping a spatial tree, returning a conditional neighbourhood
-dropSpTree <- function(neigh, spCop) {
+dropSpTree <- function(neigh, dataLocs, spCop) {
   u1 <- matrix(NA,nrow(neigh@data),ncol(neigh@data)-1)
   h1 <- matrix(NA,nrow(neigh@distances),ncol(neigh@distances)-1)
 
@@ -649,7 +649,7 @@ dropSpTree <- function(neigh, spCop) {
                      neigh@distances[,i])
     if (i < ncol(neigh@distances)) {
       h1[,i] <- apply(neigh@index[,c(2,2+i)],1, 
-                   function(x) spDists(neigh@dataLocs[x,])[1,2])
+                   function(x) spDists(dataLocs[x,])[1,2])
     }
   }
   

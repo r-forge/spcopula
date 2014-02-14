@@ -2,28 +2,23 @@
 \alias{spGaussLogLik}
 
 \title{
-Density evalaution for a spatial Gaussian Copula
+Density evaluation for a spatial Gaussian Copula
 }
 \description{
 Evaluates the density for a spatial Gaussian Copula.
 }
 \usage{
-spGaussLogLik(corFun, neigh, log = T)
+spGaussLogLik(corFun, neigh, dataLocs, log = T)
 }
 
 \arguments{
-  \item{corFun}{
-A valid correlogram (i.e. producing a valid correlation matrix; e.g. based on a variogram).
-}
-  \item{neigh}{
-A \code{\linkS4class{neighbourhood}} object to be evaluated.
-}
-  \item{log}{
-Should the log-likelihood be returned?
-}
+  \item{corFun}{A valid correlogram (i.e. producing a valid correlation matrix; e.g. based on a variogram).}
+  \item{neigh}{A \code{\linkS4class{neighbourhood}} object to be evaluated.}
+  \item{dataLocs}{The same \code{\linkS4class{Spatial}} object used to generate \code{neigh}.}
+  \item{log}{Should the log-likelihood be returned?}
 }
 \details{
-Evaluates the density for all neioghbourhoods in \code{neigh} and returns the (log)-likelihood.
+Evaluates the density for all neighbourhoods in \code{neigh} and returns the (log)-likelihood.
 }
 \value{
 The (log)-likelihood value.

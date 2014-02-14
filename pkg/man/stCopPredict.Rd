@@ -2,16 +2,18 @@
 \alias{stCopPredict}
 
 \title{
-spatio-temporal prediction based on a spatio-temporal vine copula
+Spatio-Temporal Prediction based on a Spatio-Temporal Vine Copula
 }
 \description{
 A spatio-temporal vine copula is used to predict values at unobserved spatio-temporal locations conditioned on observations of a local spatio-temporal neighbourhood.
 }
 \usage{
-stCopPredict(predNeigh, stVine, margin, method = "quantile", p = 0.5, ...)
+stCopPredict(predNeigh, dataST, predST, stVine, margin, method = "quantile", p = 0.5, ...)
 }
 \arguments{
   \item{predNeigh}{the \code{\linkS4class{neighbourhood}} used for prediction, its slot \code{prediction} must be \code{TRUE}.}
+  \item{dataST}{the same \code{\linkS4class{ST}} object as used in the generation of \code{predNeigh} providing the data for interpolation.}
+  \item{predST}{the same \code{\linkS4class{ST}} object as used in the generation of \code{predNeigh} providing the prediction locations for interpolation.}
   \item{stVine}{the spatio-temporal vine copula describing the spatio-temporal dependence}
   \item{margin}{the marginal distribution as a list with entries named "d" for the density function (PDF), "q" for the quantile function and "p" for cumulative distribution function (CDF).}
   \item{method}{one of \code{"quantile"} or \code{"expectation"} denoting the type of predictor.}
@@ -62,7 +64,7 @@ stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
 stNeigh <- getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3,
                            t.lags=-(0:1))
 
-stCopPredict(list(stNeigh, stData, stQuerry), stVineCop, list(q=qunif), "quantile", 0.5)
+stCopPredict(stNeigh, stData, stQuerry, stVineCop, list(q=qunif), "quantile", 0.5)
 }
 
 \keyword{ distribution }

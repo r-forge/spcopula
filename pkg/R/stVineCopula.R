@@ -136,10 +136,7 @@ condStVine <- function (condVar, dists, stVine, n = 1000) {
 ## interpolation ##
 ###################
 
-stCopPredict.expectation <- function(data, stVine, margin, ..., stop.on.error=F) {
-  stopifnot(is.function(margin$q))
-  
-  predNeigh <- data[[1]]
+stCopPredict.expectation <- function(predNeigh, dataST, predST, stVine, margin, ..., stop.on.error=F) {
   dists <- predNeigh@distances
   
   predMean <- NULL
@@ -157,24 +154,19 @@ stCopPredict.expectation <- function(data, stVine, margin, ..., stop.on.error=F)
                     ePred$abs.error, " for location ",i,".")
     predMean <- c(predMean, ePred$value)
   }
-  
-  predLocs <- data[[3]]
-  
-  if ("data" %in% slotNames(predLocs)) {
-    res <- predLocs
+    
+  if ("data" %in% slotNames(predST)) {
+    res <- predST
     res@data[["expect"]] <- predMean
     return(res)
   } else {
     predMean <- data.frame(predMean)
     colnames(predMean) <- "expect"
-    return(addAttrToGeom(predLocs, predMean, match.ID=FALSE))
+    return(addAttrToGeom(predST, predMean, match.ID=FALSE))
   }
 }
 
-stCopPredict.quantile <- function(data, stVine, margin, p=0.5) {
-  stopifnot(is.function(margin$q))
-  
-  predNeigh <- data[[1]]
+stCopPredict.quantile <- function(predNeigh, dataST, predST, stVine, margin, p=0.5) {
   dists <- predNeigh@distances
   
   predQuantile <- NULL
@@ -193,68 +185,26 @@ stCopPredict.quantile <- function(data, stVine, margin, p=0.5) {
     
     predQuantile <- c(predQuantile, margin$q(xVals[lower]+xRes))
   }
-  
-  predLocs <- data[[3]]
-  
-  if ("data" %in% slotNames(predLocs)) {
-    res <- predLocs
+
+  if ("data" %in% slotNames(predST)) {
+    res <- predST
     res@data[[paste("quantile.",p,sep="")]] <- predQuantile
     return(res)
   } else {
     predQuantile <- data.frame(predQuantile)
     colnames(predQuantile) <- paste("quantile.",p,sep="")
-    return(addAttrToGeom(predLocs, predQuantile, match.ID=FALSE))
+    return(addAttrToGeom(predST, predQuantile, match.ID=FALSE))
   }
 }
 
-stCopPredict <- function(data, stVine, margin, method="quantile", p=0.5, ...) {
-  stopifnot(is.list(data))
-  stopifnot(length(data)==3)
+stCopPredict <- function(predNeigh, dataST, predST, stVine, margin, method="quantile", p=0.5, ...) {
+  stopifnot(class(predNeigh) == "stNeighbourhood")
+  stopifnot(inherits(dataST, "ST"))
+  stopifnot(inherits(predST, "ST"))
+  stopifnot(class(stVine) == "stVineCopula")
+  stopifnot(is.function(margin$q))
   
   switch(method,
-         quantile=stCopPredict.quantile(data, stVine, margin, p),
-         expectation=stCopPredict.expectation(data, stVine, margin, ...))
-}
-
-dropStTree <- function (data, stCop) {
-  stopifnot(is.list(data))
-  stopifnot(length(data) == 2)
-  
-  neigh <- data[[1]]
-  stopifnot(class(neigh) == "stNeighbourhood")
-  
-  u0 <- as.matrix(neigh@data)
-  h0 <- neigh@distances
-  u1 <- matrix(NA, nrow(u0), ncol(u0)-1)
-  h1 <- array(dim = c(nrow(u0), ncol(h0)-1, 2))
-  cat("[Margin ")
-  for (i in 1:dim(h0)[2]) {
-    cat(i, ", ",sep="")
-    u1[,i] <- dduCopula(u0[, c(1, i + 1)], stCop, h = h0[, i, ])
-    if (i < ncol(h0)) {
-      h1[,i,1] <- apply(neigh@index[, c(1, i + 1), 1], 1, 
-                        function(x) spDists(data[[2]]@sp[x, ])[1, 2])
-      h1[,i,2] <- apply(neigh@index[, c(1, i + 1), 2], 1, 
-                        function(x) diff(x))
-    }
-  }
-  cat("]\n")
-  
-  if (length(neigh@coVar) > 0)
-    u1[,ncol(u0)-(1:length(neigh@coVar))] <- u0[,ncol(u0) + 1 - (1:length(neigh@coVar))]
-  
-  varSplit <- strsplit(neigh@var, "|", fixed = TRUE)[[1]]
-  cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
-  
-  if (is.na(cond)) {
-    coVar <- paste(neigh@coVar, "|0", sep = "")
-    cond <- paste(neigh@var, "|0", sep = "")
-  }
-  else {
-    coVar <- neigh@coVar
-    cond <- paste(neigh@var, cond + 1, sep = "")
-  }
-  
-  return(stNeighbourhood(data = u1, distances = h1, index = neigh@index[, -1, ],
-                         var = cond, coVar = coVar, prediction = neigh@prediction))
+         quantile=stCopPredict.quantile(predNeigh, dataST, predST, stVine, margin, p),
+         expectation=stCopPredict.expectation(predNeigh, dataST, predST, stVine, margin, ...))
 }

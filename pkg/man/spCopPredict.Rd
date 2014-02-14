@@ -8,10 +8,13 @@ spatial prediction based on a spatial vine copula
 A spatial vine copula is used to predict values at unobserved locations conditioned on observations of a local neighbourhood.
 }
 \usage{
-spCopPredict(predNeigh, spVine, margin, method = "quantile", p = 0.5, ...)
+spCopPredict(predNeigh, dataLocs, predLocs, spVine, margin,
+             method = "quantile", p = 0.5, ...)
 }
 \arguments{
   \item{predNeigh}{the \code{\linkS4class{neighbourhood}} used for prediction, its slot \code{prediction} must be \code{TRUE}.}
+  \item{dataLocs}{some \code{\linkS4class{Spatial}} class providing the data for the prediction.}
+  \item{predLocs}{some \code{\linkS4class{Spatial}} class providing the prediction locations.}
   \item{spVine}{the spatial vine copula describing the spatial dependence}
   \item{margin}{the marginal distribution as a list with entries named "d" for the density function (PDF), "q" for the quantile function and "p" for cumulative distribution function (CDF).}
   \item{method}{one of \code{"quantile"} or \code{"expectation"} denoting the type of predictor.}
@@ -66,7 +69,7 @@ qMar <- function(x) {
   qlnorm(x,mean(log(meuse$zinc)),sd(log(meuse$zinc)))
 }
 
-predMedian <- spCopPredict(list(predMeuseNeigh, dataLocs, predLocs),
+predMedian <- spCopPredict(predMeuseNeigh, dataLocs, predLocs,
                            spVineCop, list(q=qMar), "quantile", p=0.5)
 
 \dontrun{

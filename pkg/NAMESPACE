@@ -19,7 +19,7 @@ export(invdduCopula, invddvCopula)
 export(qCopula_u)
 export(condSpVine,spCopPredict)
 export(condStVine,stCopPredict)
-export(condStCoVarVine)
+export(condStCoVarVine, condCovariate)
 export(spGaussCopPredict, spGaussLogLik)
 
 # tweaks

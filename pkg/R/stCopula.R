@@ -178,3 +178,45 @@ ddvStCopula <- function (u, copula, h) {
 setMethod("ddvCopula", signature("numeric","stCopula"), 
           function(u, copula, ...) ddvStCopula(matrix(u,ncol=2), copula, ...))
 setMethod("ddvCopula", signature("matrix","stCopula"), ddvStCopula)
+
+# dropping a sptio-temporal tree
+dropStTree <- function (stNeigh, dataLocs, stCop) {
+  stopifnot(class(stNeigh) == "stNeighbourhood")
+  
+  u0 <- as.matrix(stNeigh@data)
+  h0 <- stNeigh@distances
+  u1 <- matrix(NA, nrow(u0), ncol(u0)-1-length(stNeigh@coVar))
+  h1 <- array(dim = c(nrow(u0), ncol(h0)-1, 2))
+  
+  pb <- txtProgressBar(0,dim(h0)[2],style=3)
+  for (i in 1:dim(h0)[2]) {
+    u1[,i] <- dduCopula(u0[, c(1, i + 1)], stCop, h = h0[, i, ])
+    if (i < ncol(h0)) {
+      h1[,i,1] <- apply(stNeigh@index[, c(1, i + 1), 1], 1, 
+                        function(x) spDists(dataLocs@sp[x, ])[1, 2])
+      h1[,i,2] <- apply(stNeigh@index[, c(1, i + 1), 2], 1, 
+                        function(x) diff(x))
+    }
+    setTxtProgressBar(pb, i)
+  }
+  close(pb)
+  
+#   # add covariate to the conditioned neighbourhood?
+#   if (length(stNeigh@coVar) > 0)
+#     u1[,ncol(u0)-(1:length(stNeigh@coVar))] <- u0[,ncol(u0) + 1 - (1:length(stNeigh@coVar))]
+  
+  varSplit <- strsplit(stNeigh@var, "|", fixed = TRUE)[[1]]
+  cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
+  
+  if (is.na(cond)) {
+#     coVar <- paste(stNeigh@coVar, "|0", sep = "")
+    cond <- paste(stNeigh@var, "|0", sep = "")
+  }
+  else {
+#     coVar <- stNeigh@coVar
+    cond <- paste(stNeigh@var, cond + 1, sep = "")
+  }
+  
+  return(stNeighbourhood(data = u1, distances = h1, index = stNeigh@index[, -1, ],
+                         var = cond, prediction = stNeigh@prediction))
+}

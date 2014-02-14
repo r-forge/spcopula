@@ -3,8 +3,8 @@
 \docType{class}
 \alias{neighbourhood-class}
 \alias{names,neighbourhood-method}
-\alias{[[,neighbourhood,ANY,ANY-method}
-\alias{[[,neighbourhood,numeric,missing-method}
+\alias{[,neighbourhood,numeric,ANY,ANY-method}
+\alias{calcBins,neighbourhood-method}
 
 \title{Class \code{neighbourhood}}
 \description{A class representing a local spatial neighbourhood.}
@@ -26,7 +26,8 @@ Objects can be created by calls of the form \code{new("neighbourhood", ...)}, fr
   \describe{
     \item{names}{\code{signature(x = "neighbourhood")}: provides the variable names of the neighbourhood. }
     \item{show}{\code{signature(object = "neighbourhood")}: a brief description of the characteristics of the neighbourhood.}
-    \item{[[}{subsets the selection of neighbourhoods returning a subset of these ("column wise")}
+    \item{[}{\code{signature(x = "neighbourhood", i = "numeric", j = "missing")}: subsets the selection of neighbourhoods returning a subset of these ("column wise")}
+    \item{calcBins}{\code{signature(data = "neighbourhood")}: calculates bins from an existing neighbourhood for repeated application of spatio-temporal trees in a spatio-temporal vine copula.}
 	 }
 }
 \author{

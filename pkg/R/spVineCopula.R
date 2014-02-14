@@ -190,12 +190,8 @@ condSpVine <- function (condVar, dists, spVine, n = 1000) {
 
 # interpolation
 
-spCopPredict.expectation <- function(data, spVine, margin, ..., stop.on.error=F) {
-  stopifnot(is.function(margin$q))
-  
-  predNeigh <- data[[1]]
-  
-  dists <- calcSpTreeDists(predNeigh, data[[2]], length(spVine@spCop))
+spCopPredict.expectation <- function(predNeigh, dataLocs, predLocs, spVine, margin, ..., stop.on.error=F) {
+  dists <- calcSpTreeDists(predNeigh, dataLocs, length(spVine@spCop))
   
   predMean <- NULL
   
@@ -217,7 +213,6 @@ spCopPredict.expectation <- function(data, spVine, margin, ..., stop.on.error=F)
   }
   close(pb)
   
-  predLocs <- data[[3]]
   if ("data" %in% slotNames(predLocs)) {
     res <- predNeigh@predLocs
     res@data[["expect"]] <- predMean
@@ -229,11 +224,8 @@ spCopPredict.expectation <- function(data, spVine, margin, ..., stop.on.error=F)
   }
 }
 
-spCopPredict.quantile <- function(data, spVine, margin, p=0.5) {
-  stopifnot(is.function(margin$q))
-  
-  predNeigh <- data[[1]]
-  dists <- calcSpTreeDists(predNeigh, data[[2]], length(spVine@spCop))
+spCopPredict.quantile <- function(predNeigh, dataLocs, predLocs, spVine, margin, p=0.5) {
+  dists <- calcSpTreeDists(predNeigh, dataLocs, length(spVine@spCop))
   
   predQuantile <- NULL
   pb <- txtProgressBar(0, nrow(predNeigh@data), 0, width=getOption("width")-10, style=3)
@@ -255,7 +247,6 @@ spCopPredict.quantile <- function(data, spVine, margin, p=0.5) {
   }
   close(pb)
   
-  predLocs <- data[[3]]
   if ("data" %in% slotNames(predLocs)) {
     res <- predLocs
     res@data[[paste("quantile.",p,sep="")]] <- predQuantile
@@ -267,13 +258,15 @@ spCopPredict.quantile <- function(data, spVine, margin, p=0.5) {
   }
 }
 
-spCopPredict <- function(data, spVine, margin, method="quantile", p=0.5, ...) {
-  stopifnot(is.list(data))
-  stopifnot(length(data)==3)
+spCopPredict <- function(predNeigh, dataLocs, predLocs, spVine, margin, method="quantile", p=0.5, ...) {
+  stopifnot(is.function(margin$q))
+  stopifnot(class(predNeigh) == "neighbourhood")
+  stopifnot(inherits(dataLocs, "Spatial"))
+  stopifnot(inherits(predLocs, "Spatial"))
   
   switch(method,
-         quantile=spCopPredict.quantile(data, spVine, margin, p),
-         expectation=spCopPredict.expectation(data, spVine, margin, ...))
+         quantile=spCopPredict.quantile(predNeigh, dataLocs, predLocs, spVine, margin, p),
+         expectation=spCopPredict.expectation(predNeigh, dataLocs, predLocs, spVine, margin, ...))
 }
 
 # draw from a spatial vine

@@ -29,7 +29,7 @@ stNeighbourhood <- function(data, distances, index, var, coVar=character(), pred
   colnames(data) <- paste(paste("N", (0+prediction):dimDists[2], sep=""), var, sep=".")
   
   if(length(coVar)>0)
-    colnames(data)[dimDists[2] + 1:length(coVar)] <- paste("N0", coVar)
+    colnames(data)[ncol(data) + 1 - (length(coVar):1)] <- paste("N0", coVar)
   
   if (anyDuplicated(rownames(data))>0)
     rownames <- 1:length(rownames)
@@ -167,12 +167,15 @@ reduceNeighbours <- function(stNeigh, stDepFun, n) {
   dimStNeigh <- dim(stNeigh@distances)
   corMat <- matrix(NA, dimStNeigh[1], dimStNeigh[2])
   
+  pb <- txtProgressBar(0, dimStNeigh[2], style=3)
   for (i in 1:dimStNeigh[2]) {
     boolNA <- is.na(stNeigh@data[[1]]) | is.na(stNeigh@data[[1+i]])
     stNeigh@distances[boolNA,i,] <- c(NA,NA)
     tLag <- -1*stNeigh@distances[!boolNA,i,2][1]+1
     corMat[!boolNA,i] <- stDepFun(stNeigh@distances[!boolNA,i,1], tLag)
+    setTxtProgressBar(pb, i)
   }
+  close(pb)
   
   highCorMat <- t(apply(corMat, 1, function(x) order(x, na.last=TRUE, decreasing=TRUE)[1:n]))
   nrCM <- nrow(highCorMat)
@@ -206,8 +209,8 @@ reduceNeighbours <- function(stNeigh, stDepFun, n) {
 }
 
 ## to be redone
-calcStNeighBins <- function(data, var="uniPM10", nbins=9, t.lags=-(0:2),
-                            boundaries=NA, cutoff=NA, cor.method="fasttau") {
+# calcStNeighBins <- function(data, var="uniPM10", nbins=9, t.lags=-(0:2),
+#                             boundaries=NA, cutoff=NA, cor.method="fasttau") {
 #   dists <- data@distances[,,1]
 #   
 #   corFun <- switch(cor.method,
@@ -310,9 +313,9 @@ calcStNeighBins <- function(data, var="uniPM10", nbins=9, t.lags=-(0:2),
 #   res <- list(np=np, meanDists = meanDists, lagCor=moa, lagData=lagData)
 #   attr(res,"cor.method") <- switch(cor.method, fasttau="kendall", cor.method)
 #   return(res)
-}
-
-setMethod(calcBins, signature="stNeighbourhood", calcStNeighBins)
+# }
+# 
+# setMethod(calcBins, signature="stNeighbourhood", calcStNeighBins)
 
 
 # instances: number  -> number of randomly choosen temporal intances

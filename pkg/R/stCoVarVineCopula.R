@@ -166,6 +166,25 @@ condStCoVarVine <- function (condVar, dists, stCVVC, stInd, n = 1000) {
   return(condVineFun)
 }
 
+# condition the covariate on the central location
+condCovariate <- function(stNeigh, coVarCop) {
+  stopifnot(length(stNeigh@coVar) == 1)
+  
+  nrNeigh <- nrow(stNeigh@index)
+  ncData <- ncol(stNeigh@data)
+  
+  vddu <- numeric(nrNeigh)
+  uv <- as.matrix(stNeigh@data[,c(1,ncData)])
+  stInd <- stNeigh@index[,1,]
+  
+  for (i in 1:nrNeigh) {
+    vddu[i] <- dduCopula(uv[i,], coVarCop(stInd[i,]))
+  }
+  
+  return(vddu)
+}
+
+
 ## interpolation ##
 ###################
 # 
