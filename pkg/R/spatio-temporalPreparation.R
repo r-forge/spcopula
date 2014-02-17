@@ -160,23 +160,31 @@ getStNeighbours <- function(stData, ST, spSize=4, t.lags=-(0:2),
 
 
 ## reduction of a larger neigbopurhood based on correlation strengths
-reduceNeighbours <- function(stNeigh, stDepFun, n) {
+reduceNeighbours <- function(stNeigh, stDepFun, n, 
+                             prediction=stNeigh@prediction, dropEmpty=!prediction) {
   stopifnot(n>0)
   
   # transform distances into correlations to detect the strongest correlated ones
   dimStNeigh <- dim(stNeigh@distances)
   corMat <- matrix(NA, dimStNeigh[1], dimStNeigh[2])
   
-  pb <- txtProgressBar(0, dimStNeigh[2], style=3)
+  pb <- txtProgressBar(0, 2*dimStNeigh[1], style=3)
   for (i in 1:dimStNeigh[2]) {
-    boolNA <- is.na(stNeigh@data[[1]]) | is.na(stNeigh@data[[1+i]])
+    # whether neighbours are missing: set distance to NA
+    if (prediction) # central location is not part of the data
+      boolNA <- is.na(stNeigh@data[[i]])
+    else {
+      if(dropEmpty) # neighbourrhoods with missing central location are not to be considered
+        boolNA <- is.na(stNeigh@data[[1]]) | is.na(stNeigh@data[[1+i]])
+      else # do not care about NA at the central location (e.g. cross-validation)
+        boolNA <- is.na(stNeigh@data[[1+i]])
+    }
     stNeigh@distances[boolNA,i,] <- c(NA,NA)
     tLag <- -1*stNeigh@distances[!boolNA,i,2][1]+1
     corMat[!boolNA,i] <- stDepFun(stNeigh@distances[!boolNA,i,1], tLag)
-    setTxtProgressBar(pb, i)
+    setTxtProgressBar(pb, i*dimStNeigh[1]/dimStNeigh[2])
   }
-  close(pb)
-  
+    
   highCorMat <- t(apply(corMat, 1, function(x) order(x, na.last=TRUE, decreasing=TRUE)[1:n]))
   nrCM <- nrow(highCorMat)
   
@@ -185,23 +193,36 @@ reduceNeighbours <- function(stNeigh, stDepFun, n) {
   stNeighIndeRed <- array(NA, dim=c(nrCM, n+1, 2))
   if (length(stNeigh@coVar) > 0) {
     for (i in 1:nrCM) {
-      selCol <- c(1,highCorMat[i,]+1, ncol(stNeigh@data)-((length(stNeigh@coVar)-1):0))
+      if (prediction)
+        selCol <- c(highCorMat[i,], ncol(stNeigh@data)-((length(stNeigh@coVar)-1):0))
+      else 
+        selCol <- c(1,highCorMat[i,]+1, ncol(stNeigh@data)-((length(stNeigh@coVar)-1):0))
       stNeighDataRed[i,] <- as.numeric(stNeigh@data[i,selCol])
       stNeighDistRed[i,,] <- stNeigh@distances[i,highCorMat[i,],]
       stNeighIndeRed[i,,] <- stNeigh@index[i,c(1,highCorMat[i,]+1),]
+      setTxtProgressBar(pb, dimStNeigh[1]+i)
     }
   } else {
     for (i in 1:nrCM) {
-      stNeighDataRed[i,] <- as.numeric(stNeigh@data[i,c(1,highCorMat[i,]+1)])
+      if (prediction)
+        selCol <- c(highCorMat[i,])
+      else
+        selCol <- c(1,highCorMat[i,]+1)
+      stNeighDataRed[i,] <- as.numeric(stNeigh@data[i, selCol])
       stNeighDistRed[i,,] <- stNeigh@distances[i,highCorMat[i,],]
       stNeighIndeRed[i,,] <- stNeigh@index[i,c(1,highCorMat[i,]+1),]
+      setTxtProgressBar(pb, dimStNeigh[1]+i)
     }
   }
+  close(pb)
   
-  boolNA <- !is.na(stNeigh@data[[1]])
-  stNeighDataRed <- stNeighDataRed[boolNA,]
-  stNeighDistRed <- stNeighDistRed[boolNA,,]
-  stNeighIndeRed <- stNeighIndeRed[boolNA,,]
+  # check whether neighbourhoods with missing central locations need to be dropped
+  if (dropEmpty) {
+    boolNA <- !is.na(stNeigh@data[[1]])
+    stNeighDataRed <- stNeighDataRed[boolNA,]
+    stNeighDistRed <- stNeighDistRed[boolNA,,]
+    stNeighIndeRed <- stNeighIndeRed[boolNA,,]
+  }
   
   return(stNeighbourhood(stNeighDataRed, stNeighDistRed, stNeighIndeRed,
                          var=stNeigh@var, coVar=stNeigh@coVar,

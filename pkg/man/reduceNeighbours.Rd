@@ -8,7 +8,8 @@ Selecting the strongest correlated neighbours
 A function selecting the strongest correlated neighbours from a larger set of neighbours
 }
 \usage{
-reduceNeighbours(stNeigh, stDepFun, n)
+reduceNeighbours(stNeigh, stDepFun, n,
+                 prediction=stNeigh@prediction, dropEmpty=!prediction)
 }
 
 \arguments{
@@ -18,9 +19,9 @@ the proxy neighbourhood to be investigated
   \item{stDepFun}{
 a spatio-temporal dependence function that return correlation estimates based on a spatial and temporal distance
 }
-  \item{n}{
-the number of neighbours to be selected.
-}
+  \item{n}{the number of neighbours to be selected.}
+  \item{prediction}{whether the neighbourhood is used for prediction (the data slot does not provide the central location's data)}
+  \item{dropEmpty}{whether empty neighbourhoods (i.e. neighbourhoods with \code{NA}'s at the central location) shall be dropped.}
 }
 \value{A spatio-temporal neighbourhood \code{\linkS4class{stNeighbourhood}} with fewer neighbours.}
 
