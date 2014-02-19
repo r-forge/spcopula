@@ -54,7 +54,7 @@ spCopT2 <- spCopula(components=list(claytonCopula(2), claytonCopula(1),
                     unit="km")
 
 stCop <- stCopula(components=list(spCopT0, spCopT1, spCopT2),
-                  t.lags=-(0:2))
+                  tlags=-(0:2))
 
 # only a constant copula ius used for the covariate
 stCoVarVineCopula(function(x) gumbelCopula(2), stCop, vineCopula(9L))

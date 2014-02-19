@@ -38,7 +38,7 @@ stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
                 time[2:3])
 
 stNeigh <- getStNeighbours(stData=stData, ST=stQuerry, 
-                           spSize=3, t.lags=-(0:1),
+                           spSize=3, tlags=-(0:1),
                            var="var", coVar="coVar", prediction=TRUE)
 
 condCovariate(stNeigh, function(x) gumbelCopula(7))

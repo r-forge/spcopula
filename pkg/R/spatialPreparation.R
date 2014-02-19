@@ -168,8 +168,10 @@ calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, ...,
     abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
   }
   
-  res <- list(np=np, meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags)
+#   res <- list(np=np, meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=lags)
+  res <- list(np=np, meanDists = mDists, lagCor=lagCor, lags=lags)
   attr(res,"cor.method") <- cor.method
+  attr(res,"variable") <- var
   return(res)
 }
 
@@ -177,7 +179,7 @@ setMethod(calcBins, signature("Spatial"), calcSpBins)
 
 # calc bins from a (conditional) neighbourhood
 
-calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA, 
+calcNeighBins <- function(data, var=data@var, nbins=9, boundaries=NA, 
                           cutoff=NA, cor.method="kendall", plot=TRUE) {
   dists <- data@distances
   
@@ -199,7 +201,6 @@ calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA,
   np <- numeric(nbins)
   moa <- numeric(nbins)
   meanDists <- numeric(nbins)
-  lagData <- NULL
 
   data <- as.matrix(data@data)
   
@@ -211,7 +212,7 @@ calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA,
       pairs <- rbind(pairs, data[bools[,col],c(1,1+col)])
     }
     
-    lagData <- append(lagData, list(pairs))
+#    lagData <- append(lagData, list(pairs))
     moa[i] <- corFun(pairs)
     meanDists[i] <- mean(dists[bools])
     np[i] <- sum(bools)
@@ -223,8 +224,11 @@ calcNeighBins <- function(data, var=names(data), nbins=9, boundaries=NA,
     abline(h=c(-min(moa),0,min(moa)),col="grey")
   }
   
-  res <- list(np=np, meanDists = meanDists, lagCor=moa, lagData=lagData)
+#   res <- list(np=np, meanDists = meanDists, lagCor=moa, lagData=lagData)
+  res <- list(np=np, meanDists = meanDists, lagCor=moa)
   attr(res,"cor.method") <- switch(cor.method, fasttau="kendall", cor.method)
+  attr(res,"variable") <- var
+  
   return(res)
 }
   

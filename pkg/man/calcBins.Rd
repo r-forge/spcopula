@@ -34,7 +34,7 @@ The largest spatial distance to be investigated, if set to \code{NA}, one third 
 \item{\dots}{Additional arguments for the spatio-temporal case:
 \describe{
     \item{instances}{To reduce the data size or circumvent unwanted autocorrelation effects, one might provide a number of randomly selected time instances from the spatio-temporal \code{data.frame}. If this parameter is set to \code{NA}, the complete time series will be used, if different from a single number, \code{instances} will be passed on as to index time.}
-    \item{t.lags}{a vector indicating the time lags to be investigated}
+    \item{tlags}{a vector indicating the time lags to be investigated}
 }
 }
   \item{cor.method}{

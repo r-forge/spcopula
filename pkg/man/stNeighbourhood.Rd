@@ -36,7 +36,7 @@ stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
                 time[2:3])
 
 getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3,
-                t.lags=-(0:1))
+                tlags=-(0:1))
 }
 
 \keyword{spatio-temporal}

@@ -26,7 +26,7 @@ dMar <- function(x) dlnorm(x, meanLog, sdLog)
 meuse$marZinc <- pMar(meuse$zinc)
 
 ## lag classes ##
-bins <- calcBins(meuse,var="marZinc",nbins=10,cutoff=800)
+bins <- calcBins(meuse, var="marZinc", nbins=10, cutoff=800)
 
 ## calculate parameters for Kendall's tau function ##
 # either linear
@@ -38,7 +38,7 @@ calcKTauPol <- fitCorFun(bins, degree=3)
 curve(calcKTauPol,0, 1000, col="purple",add=TRUE)
 
 ## find best fitting copula per lag class
-loglikTau <- loglikByCopulasLags(bins, calcKTauPol,
+loglikTau <- loglikByCopulasLags(bins, meuse, calcKTauPol,
                                  families=c(normalCopula(0), tCopula(0),
                                             claytonCopula(0), frankCopula(1), 
                                             gumbelCopula(1), joeBiCopula(1.5),
@@ -57,11 +57,16 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0),
                   spDepFun=calcKTauPol, unit="m")
 
 ## compare spatial copula loglik by lag:
+lagData <- lapply(bins$lags, function(x) {
+                               as.matrix((cbind(meuse[x[,1], "marZinc"]@data,
+                                                meuse[x[,2], "marZinc"]@data)))
+                             })
+
 spLoglik <- NULL
 for(i in 1:length(bins$lags)) { # i <- 7
   cat("Lag",i,"\n")
   spLoglik <- c(spLoglik,
-                sum((dCopula(u=bins$lagData[[i]], spCop,log=T,
+                sum((dCopula(u=lagData[[i]], spCop,log=T,
                             h=bins$lags[[i]][,3]))))
 }
 
@@ -71,7 +76,7 @@ points(loglikTau$loglik[,1], col="red", pch=5)
 legend(6, 50,c("Spatial Copula", "best copula per lag", "Gaussian Copula",
                "number of pairs"), 
        pch=c(1,16,5,50), col=c("black", "green", "red"))
-text(x=(1:10+0.5),y=spLoglik,lapply(bins$lagData,length))
+text(x=(1:10+0.5), y=spLoglik, lapply(lagData,length))
 
 ##
 # spatial vine

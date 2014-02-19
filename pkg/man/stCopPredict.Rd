@@ -49,7 +49,7 @@ spCopT1 <- spCopula(components=list(claytonCopula(4), claytonCopula(2),
                     unit="km")
 
 stCop <- stCopula(components=list(spCopT0, spCopT1),
-                  t.lags=-(0:1))
+                  tlags=-(0:1))
 
 stVineCop <- stVineCopula(stCop, vineCopula(4L))
 
@@ -62,7 +62,7 @@ stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
                 time[2:3])
 
 stNeigh <- getStNeighbours(stData=stData, ST=stQuerry, prediction=TRUE, spSize=3,
-                           t.lags=-(0:1))
+                           tlags=-(0:1))
 
 stCopPredict(stNeigh, stData, stQuerry, stVineCop, list(q=qunif), "quantile", 0.5)
 }

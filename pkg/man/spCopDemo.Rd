@@ -13,6 +13,7 @@
 \alias{sdLog}
 \alias{shape}
 \alias{spCop}
+\alias{meuseSpVine}
 \docType{data}
 \title{
 workspace produced in \code{demo(spCopula)}

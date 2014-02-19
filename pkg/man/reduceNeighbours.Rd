@@ -44,7 +44,7 @@ data <- data.frame(var1=runif(10))
 
 stData <- STFDF(sp, time, data)
 
-stNeigh <- getStNeighbours(stData, spSize=2, t.lags=-(0:2))
+stNeigh <- getStNeighbours(stData, spSize=2, tlags=-(0:2))
 
 reduceNeighbours(stNeigh, function(h,delta) return(1/h/delta), 2)
 }

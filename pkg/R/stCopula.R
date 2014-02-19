@@ -5,23 +5,23 @@
 ## constructor ##
 #################
 
-stCopula <- function(components, t.lags, distances=NA, stDepFun, unit="m", t.res="day") {
+stCopula <- function(components, tlags, distances=NA, stDepFun, unit="m", tres="day") {
   if(all(sapply(components, function(x) class(x)=="spCopula"))) {
     if(length(unique(sapply(components, function(x) x@unit))) >1 )
       stop("All spatial copulas need to have the same distance unit.")
-    stopifnot(length(t.lags) == length(components))
+    stopifnot(length(tlags) == length(components))
     spCopList <- components
   } else {
     spCopList <- list()
     
     if(!missing(stDepFun)) {
       getSpCop <- function(comp,dist,time) spCopula(comp, dist,
-                                                    spDepFun=function(h) stDepFun(h,time), unit)
-      for(i in 1:length(t.lags)){
+                                                    spDepFun=function(h) stDepFun(h, time, 1:length(tlags)), unit)
+      for(i in 1:length(tlags)){
         spCopList <- append(spCopList, getSpCop(components[[i]], distances[[i]], i))
       }
     } else {
-      for(i in 1:length(t.lags)){
+      for(i in 1:length(tlags)){
         spCopList <- append(spCopList, spCopula(components[[i]], distances[[i]], unit=unit))
       }
     }
@@ -35,7 +35,7 @@ stCopula <- function(components, t.lags, distances=NA, stDepFun, unit="m", t.res
   new("stCopula", dimension=as.integer(2), parameters=param, param.names=param.names,
       param.lowbnd=param.low, param.upbnd=param.up,
       fullname="Spatio-Temporal Copula: distance and time dependent convex combination of bivariate copulas",
-      spCopList=spCopList, t.lags=t.lags, t.res=t.res)
+      spCopList=spCopList, tlags=tlags, tres=tres)
 }
 
 ## show method ##
@@ -47,8 +47,8 @@ showStCopula <- function(object) {
   cat("Copulas:\n")
   for (i in 1:length(object@spCopList)) {
     cmpCop <- object@spCopList[[i]]
-    cat("  ", cmpCop@fullname, "at", object@t.lags[i], 
-      paste("[",object@t.res,"]",sep=""), "\n")
+    cat("  ", cmpCop@fullname, "at", object@tlags[i], 
+      paste("[",object@tres,"]",sep=""), "\n")
     show(cmpCop)
   }
 }
@@ -65,16 +65,16 @@ pStCopula <- function (u, copula, h) {
   n <- nrow(u)
   tDist <- unique(h[,2])
   
-  if(any(is.na(match(tDist,copula@t.lags)))) 
+  if(any(is.na(match(tDist,copula@tlags)))) 
     stop("Prediction time(s) do(es) not math the modelled time slices.")
   
   if (length(tDist)==1) {
-    res <- pSpCopula(u, copula@spCopList[[match(tDist, copula@t.lags)]], h[,1])
+    res <- pSpCopula(u, copula@spCopList[[match(tDist, copula@tlags)]], h[,1])
   } else {
     res <- numeric(n)
     for(t in tDist) {
       tmpInd <- h[,2]==t
-      tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
+      tmpCop <- copula@spCopList[[match(t, copula@tlags)]]
       res[tmpInd] <- pSpCopula(u[tmpInd,,drop=F], tmpCop, h[tmpInd,1])
     }
   }
@@ -95,16 +95,16 @@ dStCopula <- function (u, copula, log, h) {
   n <- nrow(u)
   tDist <- unique(h[,2])
   
-  if(any(is.na(match(tDist,copula@t.lags)))) 
+  if(any(is.na(match(tDist,copula@tlags)))) 
     stop("Prediction time(s) do(es) not math the modelled time slices.")
   
   if (length(tDist)==1) {
-    res <- dSpCopula(u, copula@spCopList[[match(tDist, copula@t.lags)]], log, h[,1])
+    res <- dSpCopula(u, copula@spCopList[[match(tDist, copula@tlags)]], log, h[,1])
   } else {
     res <- numeric(n)
     for(t in tDist) {
       tmpInd <- h[,2]==t
-      tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
+      tmpCop <- copula@spCopList[[match(t, copula@tlags)]]
       res[tmpInd] <- dSpCopula(u[tmpInd,,drop=F], tmpCop, log, h[tmpInd,1])
     }
   }
@@ -128,16 +128,16 @@ dduStCopula <- function (u, copula, h) {
   n <- nrow(u)
   tDist <- unique(h[,2])
   
-  if(any(is.na(match(tDist,copula@t.lags)))) 
+  if(any(is.na(match(tDist,copula@tlags)))) 
     stop("Prediction time(s) do(es) not math the modelled time slices.")
   
   if (length(tDist)==1) {
-    res <- dduSpCopula(u, copula@spCopList[[match(tDist, copula@t.lags)]], h[,1])
+    res <- dduSpCopula(u, copula@spCopList[[match(tDist, copula@tlags)]], h[,1])
   } else {
     res <- numeric(n)
     for(t in tDist) {
       tmpInd <- h[,2]==t
-      tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
+      tmpCop <- copula@spCopList[[match(t, copula@tlags)]]
       res[tmpInd] <- dduSpCopula(u[tmpInd,,drop=F], tmpCop, h[tmpInd,1])
     }
   }
@@ -159,16 +159,16 @@ ddvStCopula <- function (u, copula, h) {
   n <- nrow(u)
   tDist <- unique(h[,2])
   
-  if(any(is.na(match(tDist,copula@t.lags)))) 
+  if(any(is.na(match(tDist,copula@tlags)))) 
     stop("Prediction time(s) do(es) not math the modelled time slices.")
   
   if (length(tDist)==1) {
-    res <- ddvSpCopula(u, copula@spCopList[[match(tDist,copula@t.lags)]], h[,1])
+    res <- ddvSpCopula(u, copula@spCopList[[match(tDist,copula@tlags)]], h[,1])
   } else {
     res <- numeric(n)
     for(t in tDist) {
       tmpInd <- h[,2]==t
-      tmpCop <- copula@spCopList[[match(t, copula@t.lags)]]
+      tmpCop <- copula@spCopList[[match(t, copula@tlags)]]
       res[tmpInd] <- ddvSpCopula(u[tmpInd,,drop=F], tmpCop, h[tmpInd,1])
     }
   }
@@ -179,7 +179,53 @@ setMethod("ddvCopula", signature("numeric","stCopula"),
           function(u, copula, ...) ddvStCopula(matrix(u,ncol=2), copula, ...))
 setMethod("ddvCopula", signature("matrix","stCopula"), ddvStCopula)
 
-# dropping a sptio-temporal tree
+# log-likelihood by copula for all spatio-temporal lags
+
+
+loglikByCopulasStLags <- function(stBins, data, families = c(normalCopula(),
+                                                             tCopula(),
+                                                             claytonCopula(),
+                                                             frankCopula(),
+                                                             gumbelCopula()),
+                                  calcCor, lagSub=1:length(stBins$meanDists)) {
+  nTimeLags <- dim(stBins$lagCor)[1]
+  var <- attr(stBins, "variable")
+  
+  retrieveData <- function(spIndex, tempIndices) {
+    binnedData <- NULL
+    for (i in 1:(ncol(tempIndices)/2)) {
+      binnedData <- cbind(binnedData, 
+                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], var]@data, 
+                                           data[spIndex[,2], tempIndices[,2*i], var]@data))))
+    }
+    return(binnedData)
+  }
+  
+  lagData <- lapply(stBins$lags[[1]][lagSub], retrieveData, tempIndices=stBins$lags[[2]])
+  
+  tmpBins <- list(meanDists=stBins$meanDists[lagSub])
+  attr(tmpBins, "variable") <- var
+  
+  loglikTau <- list()
+  for(j in 1:nTimeLags) {
+    tmpLagData <- lapply(lagData, function(x) x[,c(2*j-1,2*j)])
+    tmpLagData <- lapply(tmpLagData, function(pairs) {
+      bool <- !is.na(pairs[,1]) & !is.na(pairs[,2])
+      pairs[bool,]
+    })
+    
+    if(missing(calcCor))
+      res <- loglikByCopulasLags.static(tmpLagData, families)
+    else
+      res <- loglikByCopulasLags.dyn(tmpBins, tmpLagData, families, 
+                                     function(h) calcCor(h, j, 1:nTimeLags))
+    loglikTau[[paste("loglik",j,sep="")]] <- res
+  }
+  
+  return(loglikTau)
+}
+
+# dropping a spatio-temporal tree
 dropStTree <- function (stNeigh, dataLocs, stCop) {
   stopifnot(class(stNeigh) == "stNeighbourhood")
   

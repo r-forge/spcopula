@@ -18,8 +18,8 @@ Objects can be created by calls of the form \code{new("stCopula", ...)}.
 \section{Slots}{
   \describe{
     \item{\code{spCopList}:}{Object of class \code{"list"} the list of bivariate spatial copulas \code{\linkS4class{spCopula}}, one per time lag }
-    \item{\code{t.lags}:}{Object of class \code{"numeric"} the time lags }
-    \item{\code{t.res}:}{Object of class \code{"character"} the temporal resolution }
+    \item{\code{tlags}:}{Object of class \code{"numeric"} the time lags }
+    \item{\code{tres}:}{Object of class \code{"character"} the temporal resolution }
     \item{\code{dimension}:}{Object of class \code{"integer"} the dimension: 2 }
     \item{\code{parameters}:}{Object of class \code{"numeric"} empty }
     \item{\code{param.names}:}{Object of class \code{"character"} empty }

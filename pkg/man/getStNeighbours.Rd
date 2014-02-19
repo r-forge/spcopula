@@ -8,7 +8,7 @@ Creating Local Spatio-Temporal Neighbourhoods
 This function calculates local spatio-temporal neighbourhoods to be used for fitting of spatio-temporal vine copulas and for prediction using spatio-temporal vine copulas.
 }
 \usage{
-getStNeighbours(stData, ST, spSize = 4, t.lags=-(0:2), var = names(stData@data)[1], 
+getStNeighbours(stData, ST, spSize = 4, tlags=-(0:2), var = names(stData@data)[1], 
                 coVar=character(), timeSteps=NA, prediction=FALSE, min.dist = 0.01)
 }
 \arguments{
@@ -21,7 +21,7 @@ A spatio-temporal object defining the prediction locations, might be missing if 
   \item{spSize}{
 The spatial size of the neighbourhood including the location of interest (for fitting as well for prediction).
 }
-  \item{t.lags}{The temporal lags to be used in the spatio-temporal neighbourhood.}
+  \item{tlags}{The temporal lags to be used in the spatio-temporal neighbourhood.}
   \item{var}{the variable name of interest, by default the first variable is used}
   \item{coVar}{the covariate's name}
   \item{timeSteps}{The number of time instances that should randomly be selected from \code{stData}. The default, \code{NA}, selects all locations.}
@@ -53,6 +53,6 @@ stQuerry <- STF(SpatialPoints(matrix(c(181000,181200,333600,333600),2)),
                 time[2:3])
 
 getStNeighbours(stData=stData, ST=stQuerry, var="measure", spSize=3, 
-                t.lags=-(0:1), prediction=TRUE)
+                tlags=-(0:1), prediction=TRUE)
 }
 \keyword{ spatial }

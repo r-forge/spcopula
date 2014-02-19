@@ -63,13 +63,13 @@ setMethod("[", signature("stNeighbourhood","numeric"), selectFromStNeighbourhood
 # returns an neighbourhood object
 ##################################
 
-getStNeighbours <- function(stData, ST, spSize=4, t.lags=-(0:2),
+getStNeighbours <- function(stData, ST, spSize=4, tlags=-(0:2),
                             var=names(stData@data)[1], coVar=character(),
                             timeSteps=NA, prediction=FALSE, min.dist=0.01) {
   stopifnot((!prediction && missing(ST)) || (prediction && !missing(ST)))
   stopifnot(min.dist>0 || prediction)
   
-  timeSpan <- min(t.lags)
+  timeSpan <- min(tlags)
   if(missing(ST) && !prediction)
     ST=geometry(stData)
   
@@ -101,7 +101,7 @@ getStNeighbours <- function(stData, ST, spSize=4, t.lags=-(0:2),
     timeSteps <- length(stData@time)+timeSpan
   }
   
-  nStNeighs <- (spSize-1)*length(t.lags)
+  nStNeighs <- (spSize-1)*length(tlags)
   
   stNeighData <- matrix(NA, nLocs, nStNeighs + 1 + length(coVar))
   stDists <- array(NA,c(nLocs, nStNeighs, 2))
@@ -126,8 +126,8 @@ getStNeighbours <- function(stData, ST, spSize=4, t.lags=-(0:2),
     
     tmpInd <- matrix(rep(timeInst, spSize), ncol=spSize)
     
-    for (j in 2:length(t.lags)) {
-      t <- t.lags[j]
+    for (j in 2:length(tlags)) {
+      t <- tlags[j]
       stNeighData[spInd, (j-1)*(spSize-1)+2:(spSize)] <- matrix(stData[nghbrs@index[i,][-1],
                                                                        timeInst+t, var, drop=F]@data[[1]],
                                                                 ncol=spSize-1, byrow=T)
@@ -135,15 +135,15 @@ getStNeighbours <- function(stData, ST, spSize=4, t.lags=-(0:2),
     }
     
     # store spatial distances
-    stDists[spInd,,1] <- matrix(rep(nghbrs@distances[i,], timeSteps*length(t.lags)),
+    stDists[spInd,,1] <- matrix(rep(nghbrs@distances[i,], timeSteps*length(tlags)),
                                 byrow=T, ncol=nStNeighs)
     
     # store temporal distances
-    stDists[spInd,,2] <- matrix(rep(rep(t.lags,each=spSize-1), timeSteps),
+    stDists[spInd,,2] <- matrix(rep(rep(tlags,each=spSize-1), timeSteps),
                                 byrow=T, ncol=nStNeighs)  
     
     # store space indices
-    stInd[spInd,,1] <- matrix(rep(c(nghbrs@index[i, ], rep(nghbrs@index[i, -1], length(t.lags)-1)),
+    stInd[spInd,,1] <- matrix(rep(c(nghbrs@index[i, ], rep(nghbrs@index[i, -1], length(tlags)-1)),
                                   timeSteps), ncol = nStNeighs + 1, byrow = T)
     
     # store time indices
@@ -230,7 +230,7 @@ reduceNeighbours <- function(stNeigh, stDepFun, n,
 }
 
 ## to be redone
-# calcStNeighBins <- function(data, var="uniPM10", nbins=9, t.lags=-(0:2),
+# calcStNeighBins <- function(data, var="uniPM10", nbins=9, tlags=-(0:2),
 #                             boundaries=NA, cutoff=NA, cor.method="fasttau") {
 #   dists <- data@distances[,,1]
 #   
@@ -248,8 +248,8 @@ reduceNeighbours <- function(stNeigh, stDepFun, n,
 #   }
 #   
 #   lagData <- NULL
-#   for(t.lag in t.lags) { # t.lag <- 0
-#     tBool <- data@distances[,,2]==t.lag
+#   for(tlag in tlags) { # tlag <- 0
+#     tBool <- data@distances[,,2]==tlag
 #     tmpLagData <- NULL
 #     for(i in 1:nbins) { # i <- 1
 #       sBool <- (dists <= boundaries[i + 1] & dists > boundaries[i])
@@ -341,10 +341,10 @@ reduceNeighbours <- function(stNeigh, stDepFun, n,
 
 # instances: number  -> number of randomly choosen temporal intances
 #            NA      -> all observations
-#            other   -> temporal indexing as in spacetime/xts, the parameter t.lags is set to 0 in this case.
-# t.lags:    numeric -> temporal shifts between obs
+#            other   -> temporal indexing as in spacetime/xts, the parameter tlags is set to 0 in this case.
+# tlags:    numeric -> temporal shifts between obs
 calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, 
-                       instances=NA, t.lags=-(0:2), ...,
+                       instances=NA, tlags=-(0:2), ...,
                        cor.method="fasttau", plot=FALSE) {
   if(is.na(cutoff)) 
     cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
@@ -363,11 +363,14 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
   } 
   else {
     tempIndices <- NULL
-    for (t.lag in rev(t.lags)) {
-      #       smplInd <- max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags))
-      smplInd <- sample(x=max(1,1-min(t.lags)):min(lengthTime,lengthTime-min(t.lags)),
-                        size=min(instances,lengthTime-max(abs(t.lags))))
-      tempIndices <- cbind(smplInd+t.lag, tempIndices)
+    for (tlag in rev(tlags)) {
+      if(is.na(instances))
+        smplInd <- max(1,1-min(tlags)):min(lengthTime,lengthTime-min(tlags))
+      else
+        smplInd <- sort(sample(x=max(1,1-min(tlags)):min(lengthTime,lengthTime-min(tlags)),
+                               size=min(instances,lengthTime-max(abs(tlags)))))
+      
+      tempIndices <- cbind(smplInd+tlag, tempIndices)
       tempIndices <- cbind(smplInd, tempIndices)
     }
   }
@@ -412,8 +415,10 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
     abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
   }
   
-  res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices))
+  # res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices))
+  res <- list(meanDists = mDists, lagCor=lagCor, lags=list(sp=spIndices, time=tempIndices))
   attr(res,"cor.method") <- cor.method
+  attr(res, "variable") <- var
   return(res)
 }
 

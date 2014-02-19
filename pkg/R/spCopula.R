@@ -448,7 +448,7 @@ fitCorFunSng <- function(bins, degree, cutoff, bounds, cor.method, weighted) {
   }
 }
 
-fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1), 
+fitCorFun <- function(bins, degree=3, cutoff=NA, tlags, bounds=c(0,1), 
                       cor.method=NULL, weighted=FALSE){
   if(is.null(cor.method)) {
     if(is.null(attr(bins,"cor.method")))
@@ -460,9 +460,10 @@ fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1),
       stop("The cor.method attribute of the bins argument and the argument cor.method do not match.")
   }
   
-  if(is.null(nrow(bins$lagCor)))
+  if(is.null(nrow(bins$lagCor))) # the spatial case
     return(fitCorFunSng(bins, degree, cutoff, bounds, cor.method, weighted))
-  
+    
+  # the spatio-temporal case
   degree <- rep(degree,length.out=nrow(bins$lagCor))
   calcKTau <- list()
   for(j in 1:nrow(bins$lagCor)) {
@@ -471,14 +472,21 @@ fitCorFun <- function(bins, degree=3, cutoff=NA, bounds=c(0,1),
                                                       degree[j], cutoff, bounds, 
                                                       cor.method, weighted)
   }
-  return(calcKTau)
+  
+  corFun <- function(h, time, tlags=sort(tlags,decreasing=TRUE)) {
+    t <- which(tlags==time)
+    calcKTau[[time]](h)
+  }
+  
+  attr(corFun, "tlags") <- sort(tlags, decreasing=TRUE)
+  return(corFun)
 }
 
 
 # towards b)
   
 ## loglikelihoods for a dynamic spatial copula
-loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
+loglikByCopulasLags.dyn <- function(bins, lagData, families, calcCor) {
   moa <- switch(calcCor(NULL),
                 kendall=function(copula, h) iTau(copula, calcCor(h)),
                 spearman=function(copula, h) iRho(copula, calcCor(h)),
@@ -496,18 +504,18 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
       if(class(cop)!="indepCopula") {
         if(class(cop) == "asCopula") {
           cop <- switch(calcCor(NULL),
-                        kendall=fitASC2.itau(cop, bins$lagData[[i]], 
+                        kendall=fitASC2.itau(cop, lagData[[i]], 
                                               tau=calcCor(bins$meanDists[i]))@copula,
-                        spearman=fitASC2.irho(cop, bins$lagData[[i]],
+                        spearman=fitASC2.irho(cop, lagData[[i]],
                                               rho=calcCor(bins$meanDists[i]))@copula,
                         stop(paste(calcCor(NULL), "is not yet supported.")))
           param <- cop@parameters
         } else {
           if(class(cop) == "cqsCopula") {
             cop <- switch(calcCor(NULL),
-                          kendall=fitCQSec.itau(cop, bins$lagData[[i]], 
+                          kendall=fitCQSec.itau(cop, lagData[[i]], 
                                                 tau=calcCor(bins$meanDists[i]))@copula,
-                          spearman=fitCQSec.irho(cop, bins$lagData[[i]],
+                          spearman=fitCQSec.irho(cop, lagData[[i]],
                                                 rho=calcCor(bins$meanDists[i]))@copula,
                           stop(paste(calcCor(NULL), "is not yet supported.")))
             param <- cop@parameters
@@ -522,7 +530,7 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
       if(any(is.na(param)))
         tmploglik <- c(tmploglik, NA)
       else 
-        tmploglik <- c(tmploglik, sum(dCopula(bins$lagData[[i]], cop, log=T)))
+        tmploglik <- c(tmploglik, sum(dCopula(lagData[[i]], cop, log=T)))
       tmpCop <- append(tmpCop, cop)
       setTxtProgressBar(pb, i)
     }
@@ -537,12 +545,12 @@ loglikByCopulasLags.dyn <- function(bins, families, calcCor) {
 }
 
 ## loglikelihoods for a static spatial copula
-loglikByCopulasLags.static <- function(bins, families) {
+loglikByCopulasLags.static <- function(lagData, families) {
   
   fits <-lapply(families, 
                 function(cop) {
                   cat(cop@fullname,"\n")
-                  lapply(bins$lagData,
+                  lapply(lagData,
                          function(x) {
                            tryCatch(fitCopula(cop, x, estimate.variance = FALSE),
                                     error=function(e) return(NA))
@@ -571,26 +579,34 @@ loglikByCopulasLags.static <- function(bins, families) {
   return(list(loglik=loglik, copulas=copulas))
 }
 
-# bins     -> typically output from calcBins
-# calcTau  -> a function on distance providing Kendall's tau estimates, 
-# families -> a vector of dummy copula objects of each family to be considered
-#             DEFAULT: c(normal, t_df=4, clayton, frank, gumbel
-loglikByCopulasLags <- function(bins, families=c(normalCopula(0), 
-                                                 tCopula(0,dispstr="un"),
-                                                 claytonCopula(0), frankCopula(1), 
-                                                 gumbelCopula(1)),
-                                calcCor) {
-  bins$lagData <- lapply(bins$lagData, 
-                         function(pairs) { 
-                           bool <- !is.na(pairs[,1]) & !is.na(pairs[,2])
-                           pairs[bool,]
-                         })
+##
+
+loglikByCopulasLags <- function(bins, data, families=c(normalCopula(), 
+                                                       tCopula(),
+                                                       claytonCopula(), frankCopula(), 
+                                                       gumbelCopula()),
+                                calcCor, lagSub=1:length(bins$meanDists)) {
+  var <- attr(bins, "variable")
+  
+  lagData <- lapply(bins$lags[lagSub], 
+                    function(x) {
+                      as.matrix((cbind(data[x[,1], var]@data, 
+                                       data[x[,2], var]@data)))
+                    })
+  
+  lagData <- lapply(lagData, 
+                    function(pairs) {
+                      bool <- !is.na(pairs[,1]) & !is.na(pairs[,2])
+                      pairs[bool,]
+                    })
   
   if(missing(calcCor))
-    return(loglikByCopulasLags.static(bins, families))
+    return(loglikByCopulasLags.static(lagData, families))
   else
-    return(loglikByCopulasLags.dyn(bins, families, calcCor))
+    return(loglikByCopulasLags.dyn(lapply(bins, function(x) x[lagSub]),
+                                          lagData, families, calcCor))
 }
+
 
 
 # towards d)
@@ -626,12 +642,12 @@ composeSpCopula <- function(bestFit, families, bins, calcCor, range=max(bins$mea
 # degree -> the degree of the polynominal
 # bounds -> the bounds of the correlation function (typically c(0,1))
 # method -> the measure of association, either "kendall" or "spearman"
-fitSpCopula <- function(bins, cutoff=NA, 
+fitSpCopula <- function(bins, data, cutoff=NA, 
                         families=c(normalCopula(), tCopula(),
                                    claytonCopula(), frankCopula(),
                                    gumbelCopula()), ...) {
   calcCor <- fitCorFun(bins, cutoff=cutoff, ...)
-  loglik <- loglikByCopulasLags(bins, families, calcCor)
+  loglik <- loglikByCopulasLags(bins, data, families, calcCor)
   
   bestFit <- apply(apply(loglik$loglik, 1, rank),2, 
                    function(x) which(x==length(families)))

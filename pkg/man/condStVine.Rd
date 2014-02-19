@@ -49,7 +49,7 @@ spCopT1 <- spCopula(components=list(claytonCopula(4), claytonCopula(2),
                     unit="km")
 
 stCop <- stCopula(components=list(spCopT0, spCopT1),
-                  t.lags=-(0:1))
+                  tlags=-(0:1))
 
 stVineCop <- stVineCopula(stCop, vineCopula(4L))
 
