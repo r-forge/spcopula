@@ -18,7 +18,7 @@ rankTransform <- function(u,v=NULL, na.last=TRUE, ties.method="average") {
 
 ##
 dependencePlot <- function(var=NULL, smpl, bandwidth=0.075, 
-                           main="Stength of dependece", 
+                           main="Stength of dependence", 
                            transformation=function (x) x, ...) {
   if(is.null(var)) {
     if (ncol(smpl)>2) {
