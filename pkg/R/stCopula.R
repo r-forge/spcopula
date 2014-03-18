@@ -129,7 +129,7 @@ dduStCopula <- function (u, copula, h) {
   tDist <- unique(h[,2])
   
   if(any(is.na(match(tDist,copula@tlags)))) 
-    stop("Prediction time(s) do(es) not math the modelled time slices.")
+    stop("Prediction time(s) do(es) not match the modelled time slices.")
   
   if (length(tDist)==1) {
     res <- dduSpCopula(u, copula@spCopList[[match(tDist, copula@tlags)]], h[,1])
@@ -148,6 +148,32 @@ setMethod("dduCopula", signature("numeric","stCopula"),
           function(u, copula, ...) dduStCopula(matrix(u,ncol=2), copula, ...))
 setMethod("dduCopula", signature("matrix","stCopula"), dduStCopula)
 
+invdduStCopula <- function(u, copula, y, h, tol=.Machine$double.eps^0.5) {
+  message("invdduCopula is numerically evalauted.")
+  
+  if(!is.matrix(h)) 
+    h <- matrix(h,ncol=2)
+  
+  nElem <- length(u)
+  stopifnot(nElem == length(y))
+  stopifnot(nrow(h) == 1 | nrow(h)==nElem)
+  
+  optFun <- function(u, v, y, h) abs(dduStCopula(cbind(rep(u, length(v)), v), copula, h)-y)
+  
+  optMe <- function(aU, aY, aH) optimise(function(v) optFun(u=aU, v, y=aY, h=aH), c(0,1))$minimum
+  
+  if(nrow(h) == 1 & nElem > 1)
+    h <- matrix(rep(h,nElem),ncol=2, byrow=T)
+  
+  rV <- numeric(nElem)
+  for (i in 1:nElem) {
+    rV[i] <- optMe(u[i], y[i], h[i,,drop=FALSE])
+  }
+  
+  return(rV)
+}
+
+setMethod("invdduCopula", signature("numeric", "stCopula"), invdduStCopula)
 
 ## ddvSpCopula ##
 #################
@@ -160,7 +186,7 @@ ddvStCopula <- function (u, copula, h) {
   tDist <- unique(h[,2])
   
   if(any(is.na(match(tDist,copula@tlags)))) 
-    stop("Prediction time(s) do(es) not math the modelled time slices.")
+    stop("Prediction time(s) do(es) not match the modelled time slices.")
   
   if (length(tDist)==1) {
     res <- ddvSpCopula(u, copula@spCopList[[match(tDist,copula@tlags)]], h[,1])
@@ -178,6 +204,33 @@ ddvStCopula <- function (u, copula, h) {
 setMethod("ddvCopula", signature("numeric","stCopula"), 
           function(u, copula, ...) ddvStCopula(matrix(u,ncol=2), copula, ...))
 setMethod("ddvCopula", signature("matrix","stCopula"), ddvStCopula)
+
+invddvStCopula <- function(v, copula, y, h, tol=.Machine$double.eps^0.5) {
+  message("invdduCopula is numerically evalauted.")
+  
+  if(!is.matrix(h)) 
+    h <- matrix(h,ncol=2)
+  
+  nElem <- length(v)
+  stopifnot(nElem == length(y))
+  stopifnot(nrow(h) == 1 | nrow(h)==nElem)
+  
+  optFun <- function(u, v, y, h) abs(ddvStCopula(cbind(u, rep(v, length(u))), copula, h)-y)
+  
+  optMe <- function(aV, aY, aH) optimise(function(u) optFun(u, v=aV, y=aY, h=aH), c(0,1))$minimum
+  
+  if(nrow(h) == 1 & nElem > 1)
+    h <- matrix(rep(h,nElem),ncol=2, byrow=T)
+  
+  rU <- numeric(nElem)
+  for (i in 1:nElem) {
+    rU[i] <- optMe(v[i], y[i], h[i,,drop=FALSE])
+  }
+  
+  return(rU)
+}
+
+setMethod("invddvCopula", signature("numeric", "stCopula"), invddvStCopula)
 
 # log-likelihood by copula for all spatio-temporal lags
 

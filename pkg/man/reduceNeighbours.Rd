@@ -39,7 +39,7 @@ library(sp)
 library(spacetime)
 
 sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
-time <- Sys.time()+60*60*24*c(0,1,2,3,4)
+time <- as.POSIXct("2014-03-18")+60*60*24*c(0,1,2,3,4)
 data <- data.frame(var1=runif(10))
 
 stData <- STFDF(sp, time, data)

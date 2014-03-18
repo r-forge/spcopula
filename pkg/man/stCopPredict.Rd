@@ -54,7 +54,7 @@ stCop <- stCopula(components=list(spCopT0, spCopT1),
 stVineCop <- stVineCopula(stCop, vineCopula(4L))
 
 sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
-time <- Sys.time()+60*60*24*c(0,1,2)
+time <- as.POSIXct("2014-03-18")+60*60*24*c(0,1,2)
 data <- data.frame(var1=runif(6))
 
 stData <- STFDF(sp, time, data)
