@@ -358,10 +358,34 @@ setMethod("dduCopula", signature("matrix","spCopula"), dduSpCopula)
 setMethod("dduCopula", signature("numeric","spCopula"), 
           function(u, copula, ...) dduSpCopula(matrix(u,ncol=copula@dimension),copula, ...) )
 
+invdduSpCopula <- function(u, copula, y, h, tol=.Machine$double.eps^0.5) {
+  message("invdduCopula is numerically evalauted.")
+  
+  nElem <- length(u)
+  stopifnot(nElem == length(y))
+  stopifnot(length(h) == 1 | length(h)==nElem)
+  
+  optFun <- function(u, v, y, h) abs(dduSpCopula(cbind(rep(u, length(v)), v), copula, h)-y)
+  
+  optMe <- function(aU, aY, aH) optimise(function(v) optFun(u=aU, v, y=aY, h=aH), c(0,1))$minimum
+  
+  if(length(h) == 1 & nElem > 1)
+    h <- rep(h, nElem)
+  
+  rV <- numeric(nElem)
+  for (i in 1:nElem) {
+    rV[i] <- optMe(u[i], y[i], h[i])
+  }
+  
+  return(rV)
+}
+
+setMethod("invdduCopula", signature("numeric", "spCopula"), invdduSpCopula)
+
 ## ddvSpCopula
 ###############
 
-ddvSpCopula <- function (u, copula, h, block=1) {
+ddvSpCopula <- function (u, copula, h) {
   if (missing(h)) 
     stop("Point pairs need to be provided with their separating distance h.")
   if(length(h)>1 && length(h)!=nrow(u))
@@ -388,6 +412,30 @@ ddvSpCopula <- function (u, copula, h, block=1) {
 setMethod("ddvCopula", signature("matrix","spCopula"), ddvSpCopula)
 setMethod("ddvCopula", signature("numeric","spCopula"), 
           function(u, copula, ...) ddvSpCopula(matrix(u,ncol=copula@dimension),copula, ...) )
+
+invddvSpCopula <- function(v, copula, y, h, tol=.Machine$double.eps^0.5) {
+  message("invddvCopula is numerically evalauted.")
+  
+  nElem <- length(v)
+  stopifnot(nElem == length(y))
+  stopifnot(length(h) == 1 | length(h)==nElem)
+  
+  optFun <- function(u, v, y, h) abs(ddvSpCopula(cbind(u, rep(v, length(u))), copula, h)-y)
+  
+  optMe <- function(aV, aY, aH) optimise(function(u) optFun(u, v=aV, y=aY, h=aH), c(0,1))$minimum
+  
+  if(length(h) == 1 & nElem > 1)
+    h <- rep(h, nElem)
+  
+  rU <- numeric(nElem)
+  for (i in 1:nElem) {
+    rU[i] <- optMe(v[i], y[i], h[i])
+  }
+  
+  return(rU)
+}
+
+setMethod("invddvCopula", signature("numeric", "spCopula"), invddvSpCopula)
 
 
 #############

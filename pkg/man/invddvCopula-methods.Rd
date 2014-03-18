@@ -6,6 +6,8 @@
 \alias{invddvCopula,numeric,frankCopula,numeric-method}
 \alias{invddvCopula,numeric,indepCopula,numeric-method}
 \alias{invddvCopula,numeric,normalCopula,numeric-method}
+\alias{invddvCopula,numeric,spCopula,ANY-method}
+
 \title{Methods for Function \code{invddvCopula} in Package \pkg{spcopula}}
 \description{
 Methods for function \code{invddvCopula} in package \pkg{spcopula}

@@ -7,7 +7,7 @@ Kernel smoothed scatter plot
 Plots a kernel smoothed scatter plot of the provided rank-transformed sample. The work is done by the function \code{\link{panel.smoothScatter}}.
 }
 \usage{
-dependencePlot(var = NULL, smpl, bandwidth = 0.075,  main="Stength of dependece",
+dependencePlot(var = NULL, smpl, bandwidth = 0.075,  main="Stength of dependence",
                transformation = function(x) x, ...)
 }
 %- maybe also 'usage' for other objects documented here.

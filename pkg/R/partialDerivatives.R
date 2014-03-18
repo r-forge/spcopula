@@ -6,7 +6,7 @@
 
 ## inverse partial derivatives 
 # numerical standard function
-invdduCopula <- function(u, copula, y, tol=.Machine$double.eps^0.5) {
+invdduCopula <- function(u, copula, y, ..., tol=.Machine$double.eps^0.5) {
     if (length(u) != length(y)) 
         stop("Length of u and y differ!")
     message("Numerical evaluation of invddu takes place.")
@@ -21,7 +21,7 @@ invdduCopula <- function(u, copula, y, tol=.Machine$double.eps^0.5) {
 
 setGeneric("invdduCopula")
 
-invddvCopula <- function(v, copula, y, tol=.Machine$double.eps^0.5) {
+invddvCopula <- function(v, copula, y, ..., tol=.Machine$double.eps^0.5) {
     if (length(v) != length(y)) 
         stop("Length of v and y differ!")
   message("Numerical evaluation of invddv takes place.")
