@@ -27,6 +27,51 @@ Loading required package: VineCopula
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 > cleanEx()
+> nameEx("EU_RB")
+> ### * EU_RB
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: EU_RB
+> ### Title: Daily mean PM10 concentrations over Europe in June and July 2005
+> ### Aliases: EU_RB
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> data(EU_RB)
+> str(EU_RB)
+Formal class 'STFDF' [package "spacetime"] with 4 slots
+  ..@ data   :'data.frame':	11834 obs. of  2 variables:
+  .. ..$ PM10: num [1:11834] 14 9.7 7.8 21.9 11.2 9 11 6.1 7.4 7.4 ...
+  .. ..$ EMEP: num [1:11834] 11.62 5.02 3.94 3.82 7.01 ...
+  ..@ sp     :Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+  .. .. ..@ data       :'data.frame':	194 obs. of  1 variable:
+  .. .. .. ..$ station_altitude: int [1:194] 525 581 918 560 172 117 665 1137 330 330 ...
+  .. .. ..@ coords.nrs : num(0) 
+  .. .. ..@ coords     : num [1:194, 1:2] 4592866 4761515 4658756 4690954 4799839 ...
+  .. .. .. ..- attr(*, "dimnames")=List of 2
+  .. .. .. .. ..$ : NULL
+  .. .. .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..@ bbox       : num [1:2, 1:2] 2749697 1647732 6412269 4604814
+  .. .. .. ..- attr(*, "dimnames")=List of 2
+  .. .. .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. .. .. ..$ : chr [1:2] "min" "max"
+  .. .. ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. .. .. ..@ projargs: chr " +proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+  ..@ time   :An 'xts' object on 2005-06-01/2005-07-31 containing:
+  Data: int [1:61, 1] 5266 5267 5268 5269 5270 5271 5272 5273 5274 5275 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : chr "..1"
+  Indexed by objects of class: [POSIXct,POSIXt] TZ: GMT
+  xts Attributes:  
+ NULL
+  ..@ endTime: POSIXct[1:61], format: "2005-06-02 02:00:00" "2005-06-03 02:00:00" ...
+> 
+> 
+> 
+> cleanEx()
 > nameEx("asCopula-class")
 > ### * asCopula-class
 > 
@@ -1073,8 +1118,9 @@ detaching 'package:sp'
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: qCopula_u
-> ### Title: The inverse of a bivariate copula given u
-> ### Aliases: qCopula_u qCopula_u,copula-method
+> ### Title: The inverse of a bivariate copula given u or v
+> ### Aliases: qCopula_u qCopula_u,copula-method qCopula_v
+> ###   qCopula_v,copula-method
 > ### Keywords: distribution multivariate
 > 
 > ### ** Examples
@@ -1083,6 +1129,11 @@ detaching 'package:sp'
 > pCopula(uv,asCopula(c(-1,1)))-0.9
  [1] -5.285787e-09 -1.979502e-10  7.899040e-09 -5.241861e-09  2.531447e-09
  [6]  8.471355e-09 -6.502292e-09 -1.261782e-09  3.313125e-09  7.337630e-09
+> 
+> uv <- qCopula_v(asCopula(c(-1,1)), p=rep(0.9,10), v=runif(10,0.9,1))
+> pCopula(uv,asCopula(c(-1,1)))-0.9
+ [1] -1.033849e-09  4.513519e-09  8.776860e-09  2.134065e-09  3.399305e-09
+ [6]  4.947090e-09  2.469908e-10  4.513539e-09  6.891024e-09 -3.606405e-09
 > 
 > 
 > 
@@ -2008,7 +2059,7 @@ Class "Copula", by class "evCopula", distance 3
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  14.21 0.18 14.52 NA NA 
+Time elapsed:  15.31 0.21 15.71 NA NA 
 > grDevices::dev.off()
 null device 
           1 

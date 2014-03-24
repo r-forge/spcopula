@@ -521,7 +521,9 @@ fitCorFun <- function(bins, degree=3, cutoff=NA, tlags, bounds=c(0,1),
                                                       cor.method, weighted)
   }
   
-  corFun <- function(h, time, tlags=sort(tlags,decreasing=TRUE)) {
+  tlsort <- sort(tlags,decreasing=TRUE)
+  
+  corFun <- function(h, time, tlags=tlsort) {
     t <- which(tlags==time)
     calcKTau[[time]](h)
   }

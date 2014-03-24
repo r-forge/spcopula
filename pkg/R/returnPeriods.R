@@ -125,6 +125,44 @@ qCopula_u.def <- function(copula,p,u, tol=.Machine$double.eps^.5) { # sample=NUL
 setMethod("qCopula_u", signature("copula"), qCopula_u.def)
 
 
+setGeneric("qCopula_v",function(copula,p,v,...) {standardGeneric("qCopula_v")})
+
+qCopula_v.def <- function(copula,p,v, tol=.Machine$double.eps^.5) { # sample=NULL
+  dim <- copula@dimension
+  if(length(p) != length(v)) stop("Length of p and v differ!")
+  
+  params <- NULL
+  for(i in 1:length(p)) { # i <- 1
+    if (v[i] < p[i]) {
+      params <- rbind(params,rep(NA,dim-1))
+    } else {
+      if (dim == 2) {
+        params <- rbind(params, 
+                        optimize(function(u) abs(pCopula(cbind(u, rep(v[i],length(u))),copula)-p[i]),
+                                 c(p,1), tol=tol)$minimum)
+      } else {
+        opt <- optim(par=rep(p[i],dim-1), 
+                     function(uw) abs(pCopula(c(uw[1],v[i],uw[2]), copula)-p[i]), 
+                     lower=rep(p[i],dim-1), upper=rep(1,dim-1), method="L-BFGS-B")
+        params <- rbind(params, opt$par)
+      }
+    }
+  }
+  
+  if (dim == 2) {
+    return(cbind(params,v))
+  } else {
+    if (is.matrix(params))
+      return(cbind(params[,1], v, params[,2]))
+    else
+      return(cbind(params[1], v, params[2]))
+  }
+  
+}
+
+setMethod("qCopula_v", signature("copula"), qCopula_v.def)
+
+
 ## kendall distribution
 
 # empirical default
