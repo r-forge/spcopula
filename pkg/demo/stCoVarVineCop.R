@@ -1,7 +1,12 @@
-# demo related to the JSS paper 
-##
+######################################################################
+# demo related to a paper (in preparation for JSS)
+# Different than the study presented in the above paper, only a tempo-
+# ral subset of the European air quality data is used and the set of
+# copula family candidates is limited. These chnages have been neces-
+# sary to maintain the "runability" of this demo.
+######################################################################
+library(spcopula)
 library(evd)
-
 data(EU_RB)
 
 # estimate a GEV at each location for PM10 and EMEP
@@ -25,25 +30,6 @@ EU_RB@data$marEMEP <- as.vector(marEMEP)
 ########################################
 ## correlation between EMEP and PM10? ##
 ########################################
-
-# monCor <- NULL
-# monCop <- NULL
-# for(month in c("2005-01", "2005-02", "2005-03", "2005-04",
-#                "2005-05", "2005-06", "2005-07", "2005-08",
-#                "2005-09", "2005-10", "2005-11", "2005-12")) {
-#   
-#   smpl <- cbind(EU_RB_2005[,month,"marPM10"]@data[[1]],
-#                 EU_RB_2005[,month,"marEMEP"]@data[[1]])
-#   bool <- !apply(smpl,1,function(row) any(is.na(row)))
-#   smpl <- smpl[bool,]
-#   
-#   monCor <- c(monCor, VineCopula:::fasttau(smpl[,1], smpl[,2]))
-#   monCop <- append(monCop,list(BiCopSelect(smpl[,1], smpl[,2], familyset=c(2,4))))
-# }
-# 
-# plot(monCor)
-# 
-# table(sapply(monCop, function(x) x$family))
 
 dayCor <- numeric(61)
 for(day in 1:61) {
@@ -103,8 +89,6 @@ points(stBins$meanDists/1000, stBins$lagCor[2,], col=fiveColors[3])
 points(stBins$meanDists/1000, stBins$lagCor[3,], col=fiveColors[1])
 abline(h=0)
 abline(h=0.025,col="grey")
-
-which(tlags==time)
 
 fun1 <- function(x) stDepFun(x*1000, 1, 5:1)
 curve(fun1, 0, 1600, add=T, col=fiveColors[5])
