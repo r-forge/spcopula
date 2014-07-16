@@ -5,9 +5,9 @@
 # copula family candidates is limited. These chnages have been neces-
 # sary to maintain the "runability" of this demo.
 ######################################################################
-library(spcopula)
-library(evd)
-data(EU_RB)
+library("spcopula")
+library("evd")
+data("EU_RB")
 
 # estimate a GEV at each location for PM10 and EMEP
 parPM10 <- matrix(NA, length(EU_RB@sp), 3)

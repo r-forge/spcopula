@@ -34,8 +34,8 @@ Benedikt Graeler
 \code{\link{condStVine}} and \code{\link{spCopPredict}} for the spatial version.
 }
 \examples{
-library(sp)
-library(spacetime)
+library("sp")
+library("spacetime")
 
 spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
                                     claytonCopula(2), claytonCopula(1),

@@ -1,10 +1,10 @@
 ## librarys ##
-library(spcopula)
-library(sp)
-# library(evd)
+library("spcopula")
+library("sp")
+# library("evd")
 
 ## meuse - spatial poionts data.frame ##
-data(meuse)
+data("meuse")
 coordinates(meuse) = ~x+y
 
 spplot(meuse,"zinc", col.regions=bpy.colors(5))

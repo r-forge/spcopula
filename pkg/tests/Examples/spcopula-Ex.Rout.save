@@ -1,5 +1,5 @@
 
-R version 3.1.0 alpha (2014-03-13 r65184) -- "Unsuffered Consequences"
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -39,7 +39,7 @@ Loading required package: VineCopula
 > 
 > ### ** Examples
 > 
-> data(EU_RB)
+> data("EU_RB")
 > str(EU_RB)
 Formal class 'STFDF' [package "spacetime"] with 4 slots
   ..@ data   :'data.frame':	11834 obs. of  2 variables:
@@ -68,6 +68,60 @@ Formal class 'STFDF' [package "spacetime"] with 4 slots
   xts Attributes:  
  NULL
   ..@ endTime: POSIXct[1:61], format: "2005-06-02 02:00:00" "2005-06-03 02:00:00" ...
+> 
+> 
+> 
+> cleanEx()
+> nameEx("EU_RB_2005")
+> ### * EU_RB_2005
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: EU_RB_2005
+> ### Title: Daily mean PM10 concentrations over Europe in 2005 as used in
+> ###   the JSS manuscript
+> ### Aliases: EU_RB_2005
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> data("EU_RB_2005")
+> str(EU_RB_2005)
+Formal class 'STFDF' [package "spacetime"] with 4 slots
+  ..@ data   :'data.frame':	70810 obs. of  3 variables:
+  .. ..$ PM10         : num [1:70810] 28 7 11.9 12.9 14.6 30 31.1 8.4 37.8 37.8 ...
+  .. ..$ EMEP         : num [1:70810] 6.36 4.13 5.84 4.93 5.86 ...
+  .. ..$ logResidKrige: num [1:70810] 12.8 12.4 10.6 11.6 17.1 ...
+  ..@ sp     :Formal class 'SpatialPointsDataFrame' [package "sp"] with 5 slots
+  .. .. ..@ data       :'data.frame':	194 obs. of  8 variables:
+  .. .. .. ..$ station_altitude     : int [1:194] 525 581 918 560 172 117 665 1137 330 330 ...
+  .. .. .. ..$ station_european_code: Factor w/ 7734 levels "AD0942A","AD0944A",..: 12 61 112 69 73 14 194 184 23 25 ...
+  .. .. .. ..$ country_iso_code     : Factor w/ 39 levels "AD","AL","AT",..: 3 3 3 3 3 3 3 3 3 3 ...
+  .. .. .. ..$ station_start_date   : Factor w/ 2344 levels "1900-01-01","1951-04-01",..: 1117 377 296 411 649 134 658 429 672 684 ...
+  .. .. .. ..$ station_end_date     : Factor w/ 811 levels "","1900-01-01",..: 1 1 1 1 1 1 1 1 1 736 ...
+  .. .. .. ..$ type_of_station      : Factor w/ 5 levels "","Background",..: 2 2 2 2 2 2 2 2 2 2 ...
+  .. .. .. ..$ station_type_of_area : Factor w/ 5 levels "","rural","suburban",..: 2 2 2 2 2 2 2 2 2 2 ...
+  .. .. .. ..$ street_type          : Factor w/ 5 levels "","Canyon street: L/H < 1.5",..: 1 1 5 4 4 1 4 1 2 1 ...
+  .. .. ..@ coords.nrs : num(0) 
+  .. .. ..@ coords     : num [1:194, 1:2] 4592866 4761515 4658756 4690954 4799839 ...
+  .. .. .. ..- attr(*, "dimnames")=List of 2
+  .. .. .. .. ..$ : NULL
+  .. .. .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. ..@ bbox       : num [1:2, 1:2] 2749697 1647732 6412269 4604814
+  .. .. .. ..- attr(*, "dimnames")=List of 2
+  .. .. .. .. ..$ : chr [1:2] "coords.x1" "coords.x2"
+  .. .. .. .. ..$ : chr [1:2] "min" "max"
+  .. .. ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
+  .. .. .. .. ..@ projargs: chr " +proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+  ..@ time   :An 'xts' object on 2005-01-01/2005-12-31 containing:
+  Data: int [1:365, 1] 5115 5116 5117 5118 5119 5120 5121 5122 5123 5124 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : chr "..1"
+  Indexed by objects of class: [POSIXct,POSIXt] TZ: GMT
+  xts Attributes:  
+ NULL
+  ..@ endTime: POSIXct[1:365], format: "2005-01-02 01:00:00" "2005-01-03 01:00:00" ...
 > 
 > 
 > 
@@ -137,8 +191,8 @@ Class "Copula", by class "copula", distance 2
 > 
 > ### ** Examples
 > 
-> library(sp)
-> data(meuse)
+> library("sp")
+> data("meuse")
 > coordinates(meuse) = ~x+y
 > meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 > 
@@ -187,8 +241,8 @@ Copulas:
 > 
 > ### ** Examples
 > 
-> library(sp)
-> library(spacetime)
+> library("sp")
+> library("spacetime")
 > 
 > sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
 > time <- as.POSIXct("2014-03-18")+60*60*24*c(0,1,2)
@@ -225,7 +279,7 @@ detaching 'package:spacetime', 'package:sp'
 > 
 > ### ** Examples
 > 
-> data(spCopDemo)
+> data("spCopDemo")
 > 
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -670,15 +724,15 @@ Sum of squared residuals: 0.006503102
 > ### ** Examples
 > 
 > # reload some spatial data
-> library(sp)
-> data(meuse)
+> library("sp")
+> data("meuse")
 > coordinates(meuse) <- ~x+y
 > 
 > # drop margins
 > meuse$marZinc <- plnorm(meuse$zinc, mean(log(meuse$zinc)), sd(log(meuse$zinc)))
 > 
 > # load data from a provided binning
-> data(spCopDemo)
+> data("spCopDemo")
 > 
 > fitSpCopula(bins, meuse, 600)
 
@@ -825,7 +879,7 @@ Note: the copula will be empirically represented by a sample of size: 500
 > 
 > ### ** Examples
 > 
-> library(sp)
+> library("sp")
 > spdf <- data.frame(x=c(112,154,212,289,345),y=c(124,198,85,168,346),measure=rlnorm(5))
 > coordinates(spdf) <- ~x+y
 > 
@@ -852,8 +906,8 @@ detaching 'package:sp'
 > 
 > ### ** Examples
 > 
-> library(sp)
-> library(spacetime)
+> library("sp")
+> library("spacetime")
 > 
 > sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
 > time <- as.POSIXct("2014-03-18")+60*60*24*c(0,1,2)
@@ -930,15 +984,15 @@ detaching 'package:spacetime', 'package:sp'
 > ### ** Examples
 > 
 > # load spatial data
-> library(sp)
-> data(meuse)
+> library("sp")
+> data("meuse")
 > coordinates(meuse) <- ~x+y
 > 
 > # drop margins
 > meuse$marZinc <- plnorm(meuse$zinc, mean(log(meuse$zinc)), sd(log(meuse$zinc)))
 > 
 > # load parts of the workspace from demo(spCopula)
-> data(spCopDemo) 
+> data("spCopDemo") 
 > 
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -996,15 +1050,15 @@ detaching 'package:sp'
 > 
 > # the spatial case
 > # load spatial data
-> library(sp)
-> data(meuse)
+> library("sp")
+> data("meuse")
 > coordinates(meuse) <- ~x+y
 > 
 > # drop margins
 > meuse$marZinc <- plnorm(meuse$zinc, mean(log(meuse$zinc)), sd(log(meuse$zinc)))
 > 
 > # load parts of the workspace from demo(spCopula)
-> data(spCopDemo) 
+> data("spCopDemo") 
 > 
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -1062,7 +1116,7 @@ detaching 'package:sp'
 > 
 > ### ** Examples
 > 
-> library(sp)
+> library("sp")
 > spdf <- data.frame(x=c(112,154,212,289),y=c(124,198,85,168),measure=rlnorm(4))
 > coordinates(spdf) <- ~x+y
 > 
@@ -1089,7 +1143,7 @@ detaching 'package:sp'
 > 
 > ### ** Examples
 > 
-> library(sp)
+> library("sp")
 > spdf <- data.frame(x=c(112,154,212,289),y=c(124,198,85,168),measure=rlnorm(4))
 > coordinates(spdf) <- ~x+y
 > 
@@ -1150,7 +1204,7 @@ detaching 'package:sp'
 > 
 > ### ** Examples
 > 
-> data(simulatedTriples)
+> data("simulatedTriples")
 > str(rankTransform(triples))
 'data.frame':	494 obs. of  3 variables:
  $ peak    : num  0.00202 0.00404 0.00606 0.00808 0.0101 ...
@@ -1171,8 +1225,8 @@ detaching 'package:sp'
 > 
 > ### ** Examples
 > 
-> library(sp)
-> library(spacetime)
+> library("sp")
+> library("spacetime")
 > 
 > sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
 > time <- as.POSIXct("2014-03-18")+60*60*24*c(0,1,2,3,4)
@@ -1206,7 +1260,7 @@ detaching 'package:spacetime', 'package:sp'
 > 
 > ### ** Examples
 > 
-> data(simulatedTriples)
+> data("simulatedTriples")
 > str(triples)
 'data.frame':	494 obs. of  3 variables:
  $ peak    : num  0.167 0.335 0.488 0.586 0.753 ...
@@ -1229,7 +1283,7 @@ detaching 'package:spacetime', 'package:sp'
 > 
 > ### ** Examples
 > 
-> data(spCopDemo)
+> data("spCopDemo")
 > ls()
 [1] "bestFitTau"  "bins"        "calcKTauPol" "meuseSpVine" "spCop"      
 > 
@@ -1248,14 +1302,14 @@ detaching 'package:spacetime', 'package:sp'
 > 
 > ### ** Examples
 > 
-> library(sp)
-> data(meuse.grid)
+> library("sp")
+> data("meuse.grid")
 > coordinates(meuse.grid) <- ~x+y
 > gridded(meuse.grid) <- TRUE
 > 
-> data(meuse)
+> data("meuse")
 > coordinates(meuse) <- ~x+y
-> data(spCopDemo)
+> data("spCopDemo")
 > 
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -1323,7 +1377,7 @@ detaching 'package:sp'
 > ### ** Examples
 > 
 > # data from demo(spcopula_estimation)
-> data(spCopDemo) 
+> data("spCopDemo") 
 > 
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -1372,7 +1426,7 @@ parameter at boundary ==> returning indepCopula()
 > 
 > ### ** Examples
 > 
-> data(spCopDemo)
+> data("spCopDemo")
 > 
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -1412,7 +1466,7 @@ In case no 1-1 relation is known, the copula as in components is used.
 > ### ** Examples
 > 
 > # load data from the Meuse demo
-> data(spCopDemo)
+> data("spCopDemo")
 > 
 > # calculate the correlation function based on Kendall's tau
 > calcKTauPol <- fitCorFun(bins, degree=1)
@@ -1435,12 +1489,12 @@ Sum of squared residuals: 0.03354387
 + }
 > 
 > # get some prediction data
-> library(sp)
-> data(meuse.grid)
+> library("sp")
+> data("meuse.grid")
 > coordinates(meuse.grid) <- ~x+y
 > gridded(meuse.grid) <- TRUE
 > 
-> data(meuse)
+> data("meuse")
 > coordinates(meuse) <- ~x+y
 > 
 > meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
@@ -1483,10 +1537,10 @@ detaching 'package:sp'
 > 
 > ### ** Examples
 > 
-> library(spcopula)
+> library("spcopula")
 > 
 > # load data from the Meuse demo
-> data(spCopDemo)
+> data("spCopDemo")
 > 
 > # calculate the correlation function based on Kendall's tau
 > calcKTauPol <- fitCorFun(bins, degree=1)
@@ -1509,8 +1563,8 @@ Sum of squared residuals: 0.03354387
 + }
 > 
 > # get the neighbours
-> library(sp)
-> data(meuse)
+> library("sp")
+> data("meuse")
 > coordinates(meuse) <- ~x+y
 > 
 > meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
@@ -1565,7 +1619,7 @@ Known Subclasses: "mixedSpVineCopula", "pureSpVineCopula"
 > ### ** Examples
 > 
 > # a spatial C-vine copula (with independent dummy copulas in the upper vine)
-> data(spCopDemo)
+> data("spCopDemo")
 > 
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -1594,7 +1648,7 @@ parameter at boundary ==> returning indepCopula()
 parameter at boundary ==> returning indepCopula()
 parameter at boundary ==> returning indepCopula()
 > 
-> library(VineCopula)
+> library("VineCopula")
 > RVM <- RVineMatrix(matrix(c(1,0,0,2,2,0,3,3,3),3,byrow=TRUE))
 > spVineCopula(spCop, vineCopula(RVM))
 Spatial vine copula family with 1 spatial tree(s). 
@@ -1685,8 +1739,8 @@ Dimension:  10
 > 
 > ### ** Examples
 > 
-> library(sp)
-> library(spacetime)
+> library("sp")
+> library("spacetime")
 > 
 > spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
 +                                     claytonCopula(2), claytonCopula(1),
@@ -1851,8 +1905,8 @@ Class: data.frame      array      array  character  character    logical
 > 
 > ### ** Examples
 > 
-> library(sp)
-> library(spacetime)
+> library("sp")
+> library("spacetime")
 > 
 > sp <- SpatialPoints(matrix(c(181000,181100,333500,333600),2))
 > time <- as.POSIXct("2014-03-18")+60*60*24*c(0,1,2)
@@ -1954,7 +2008,7 @@ Dimension:  10
 > 
 > ### ** Examples
 > 
-> data(simulatedTriples)
+> data("simulatedTriples")
 > X <- rankTransform(triples[,c(1,3)])
 >   
 > tdfEmp <- empTailDepFun(X)
@@ -2049,7 +2103,7 @@ Class "Copula", by class "evCopula", distance 3
 > 
 > ### ** Examples
 > 
-> data(loss)
+> data("loss")
 > rt_loss <- rankTransform(loss[,1:2])
 > unitScatter(smpl=rt_loss)
 > 
@@ -2059,7 +2113,7 @@ Class "Copula", by class "evCopula", distance 3
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.31 0.21 15.71 NA NA 
+Time elapsed:  17.44 0.42 25.01 NA NA 
 > grDevices::dev.off()
 null device 
           1 

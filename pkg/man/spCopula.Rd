@@ -38,7 +38,7 @@ Benedikt Graeler
 See also \code{\link{calcBins}} or \code{\link{loglikByCopulasLags}} and \code{demo(spcopula_estimation)}.
 }
 \examples{
-data(spCopDemo)
+data("spCopDemo")
 
 calcKTauPol <- fitCorFun(bins, degree=3)
 

@@ -31,15 +31,15 @@ loglikByCopulasStLags(stBins, data, families = c(normalCopula(),
 \examples{
 # the spatial case
 # load spatial data
-library(sp)
-data(meuse)
+library("sp")
+data("meuse")
 coordinates(meuse) <- ~x+y
 
 # drop margins
 meuse$marZinc <- plnorm(meuse$zinc, mean(log(meuse$zinc)), sd(log(meuse$zinc)))
 
 # load parts of the workspace from demo(spCopula)
-data(spCopDemo) 
+data("spCopDemo") 
 
 calcKTauPol <- fitCorFun(bins, degree=3)
 

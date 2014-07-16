@@ -1,5 +1,5 @@
 ## get the data
-data(simulatedTriples)
+data("simulatedTriples")
 
 ## rank order transformation
 peakVol <- rankTransform(triples[,1],triples[,3])

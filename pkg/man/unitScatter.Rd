@@ -28,7 +28,7 @@ A lattice plot.
 Benedikt Graeler
 }
 \examples{
-data(loss)
+data("loss")
 rt_loss <- rankTransform(loss[,1:2])
 unitScatter(smpl=rt_loss)
 }

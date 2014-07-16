@@ -25,7 +25,7 @@ Benedikt Graeler
 }
 \examples{
 # a spatial C-vine copula (with independent dummy copulas in the upper vine)
-data(spCopDemo)
+data("spCopDemo")
 
 calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -36,7 +36,7 @@ spCop <- spCopula(components=list(normalCopula(0), tCopula(0, dispstr = "un"),
                   distances=bins$meanDists,
                   spDepFun=calcKTauPol, unit="m")
 
-library(VineCopula)
+library("VineCopula")
 RVM <- RVineMatrix(matrix(c(1,0,0,2,2,0,3,3,3),3,byrow=TRUE))
 spVineCopula(spCop, vineCopula(RVM))
 }

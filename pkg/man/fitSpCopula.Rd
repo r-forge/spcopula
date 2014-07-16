@@ -38,15 +38,15 @@ Take a look at \code{\link{fitCorFun}}, \code{\link{loglikByCopulasLags}}, \code
 }
 \examples{
 # reload some spatial data
-library(sp)
-data(meuse)
+library("sp")
+data("meuse")
 coordinates(meuse) <- ~x+y
 
 # drop margins
 meuse$marZinc <- plnorm(meuse$zinc, mean(log(meuse$zinc)), sd(log(meuse$zinc)))
 
 # load data from a provided binning
-data(spCopDemo)
+data("spCopDemo")
 
 fitSpCopula(bins, meuse, 600)
 }

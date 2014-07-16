@@ -1,4 +1,4 @@
-library(spcopula)
+library("spcopula")
 spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
                                     claytonCopula(2), claytonCopula(1),
                                     claytonCopula(0.5), indepCopula()),

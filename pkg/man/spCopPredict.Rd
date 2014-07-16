@@ -38,14 +38,14 @@ Benedikt Graeler
 \code{\link{condSpVine}}
 }
 \examples{
-library(sp)
-data(meuse.grid)
+library("sp")
+data("meuse.grid")
 coordinates(meuse.grid) <- ~x+y
 gridded(meuse.grid) <- TRUE
 
-data(meuse)
+data("meuse")
 coordinates(meuse) <- ~x+y
-data(spCopDemo)
+data("spCopDemo")
 
 calcKTauPol <- fitCorFun(bins, degree=3)
 

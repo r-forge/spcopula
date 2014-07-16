@@ -38,7 +38,7 @@ Benedikt Graeler
 \code{\link{getNeighbours}}
 }
 \examples{
-library(sp)
+library("sp")
 spdf <- data.frame(x=c(112,154,212,289),y=c(124,198,85,168),measure=rlnorm(4))
 coordinates(spdf) <- ~x+y
 

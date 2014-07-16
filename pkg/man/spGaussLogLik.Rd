@@ -28,10 +28,10 @@ Benedikt Graeler
 }
 
 \examples{
-library(spcopula)
+library("spcopula")
 
 # load data from the Meuse demo
-data(spCopDemo)
+data("spCopDemo")
 
 # calculate the correlation function based on Kendall's tau
 calcKTauPol <- fitCorFun(bins, degree=1)
@@ -45,8 +45,8 @@ meuseGaussCorFun <- function(h) {
 }
 
 # get the neighbours
-library(sp)
-data(meuse)
+library("sp")
+data("meuse")
 coordinates(meuse) <- ~x+y
 
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)

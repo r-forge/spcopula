@@ -1,5 +1,5 @@
-library(spcopula)
-data(spCopDemo)
+library("spcopula")
+data("spCopDemo")
 calcKTauPol <- fitCorFun(bins, degree=3)
 
 spCop <- spCopula(components=list(normalCopula(), tCopula(),

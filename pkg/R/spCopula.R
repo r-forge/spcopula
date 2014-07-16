@@ -721,14 +721,15 @@ dropSpTree <- function(neigh, dataLocs, spCop) {
   
   varSplit <- strsplit(neigh@var,"|",fixed=TRUE)[[1]]
   cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
+  coVar <- neigh@coVar
   if(is.na(cond)) {
     var <- paste(neigh@var,"|0",sep="")
-    coVar <- paste(neigh@coVar,"|0",sep="")
+    if(length(coVar)>0)
+      coVar <- paste(neigh@coVar,"|0",sep="")
     colnames(u1) <- paste(paste("N", rep(1:(ncol(u1)), each=length(var)), sep=""),
                           rep(var,ncol(u1)),sep=".")
   } else {
     var <- paste(neigh@var,cond+1,sep="")
-    coVar <- neigh@coVar
     colnames(u1) <- paste(paste("N", rep(cond:(ncol(u1)+cond-1)+2,
                                          each=length(var)), sep=""),
                           rep(var,ncol(u1)),sep=".")

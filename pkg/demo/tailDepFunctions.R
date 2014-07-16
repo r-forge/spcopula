@@ -1,5 +1,5 @@
-library(spcopula)
-data(simulatedTriples)
+library("spcopula")
+data("simulatedTriples")
 
 rtPair <- 1-as.matrix(rankTransform(triples[,c(1,3)]))
 

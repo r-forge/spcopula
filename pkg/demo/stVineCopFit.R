@@ -2,8 +2,8 @@
 ## selected smaller subset of the original data to reduce calculation demands.
 ## Thus, results are likely to differ (a little) from the original study.
 
-library(spcopula)
-load(url("http://ifgi.uni-muenster.de/~b_grae02/publications/EU_RB_2005.RData"))
+library("spcopula")
+data("EU_RB_2005")
 
 ## spatio-temporal copula
 # binning, using only 90 out of all temporal instances

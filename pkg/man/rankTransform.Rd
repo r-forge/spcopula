@@ -23,7 +23,7 @@ A matrix or data.frame (as provided) with the transformed data. Rows containing 
 Benedikt Graeler
 }
 \examples{
-data(simulatedTriples)
+data("simulatedTriples")
 str(rankTransform(triples))
 }
 \keyword{ function}

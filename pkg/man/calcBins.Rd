@@ -56,8 +56,8 @@ Benedikt Graeler
 \code{\link{VineCopula-package}}
 }
 \examples{
-library(sp)
-data(meuse)
+library("sp")
+data("meuse")
 coordinates(meuse) = ~x+y
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 

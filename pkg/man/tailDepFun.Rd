@@ -43,7 +43,7 @@ Benedikt Graeler
 }
 
 \examples{
-data(simulatedTriples)
+data("simulatedTriples")
 X <- rankTransform(triples[,c(1,3)])
   
 tdfEmp <- empTailDepFun(X)

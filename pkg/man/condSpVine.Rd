@@ -35,7 +35,7 @@ Benedikt Graeler
 \code{\linkS4class{spVineCopula}}
 }
 \examples{
-data(spCopDemo)
+data("spCopDemo")
 
 calcKTauPol <- fitCorFun(bins, degree=3)
 

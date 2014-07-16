@@ -7,7 +7,7 @@ Daily mean PM10 concentrations over Europe in June and July 2005
 \description{
 Daily mean PM10 concentrations over Europe in June and July 2005
 }
-\usage{data(EU_RB)}
+\usage{data("EU_RB")}
 \format{
   The format is:
 Formal class 'STSDF' [package "spacetime"] with 5 slots
@@ -29,7 +29,7 @@ Formal class 'STSDF' [package "spacetime"] with 5 slots
   .. .. .. .. ..$ : chr [1:2] "min" "max"
   .. .. ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slots
   .. .. .. .. ..@ projargs: chr " +proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
-  ..@ time   :An ?xts? object on 2005-06-01/2005-07-31 containing:
+  ..@ time   :An 'xts' object on 2005-06-01/2005-07-31 containing:
   Data: int [1:61, 1] 5266 5267 5268 5269 5270 5271 5272 5273 5274 5275 ...
  - attr(*, "dimnames")=List of 2
   ..$ : NULL
@@ -49,7 +49,7 @@ Graeler, B., L. E. Gerharz, & E. Pebesma (2012): Spatio-temporal analysis and in
 http://acm.eionet.europa.eu/reports/ETCACM_TP_2011_10_spatio-temp_AQinterpolation
 }
 \examples{
-data(EU_RB)
+data("EU_RB")
 str(EU_RB)
 }
 \keyword{datasets}

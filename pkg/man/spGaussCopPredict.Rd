@@ -48,7 +48,7 @@ Benedikt Graeler
 }
 \examples{
 # load data from the Meuse demo
-data(spCopDemo)
+data("spCopDemo")
 
 # calculate the correlation function based on Kendall's tau
 calcKTauPol <- fitCorFun(bins, degree=1)
@@ -62,12 +62,12 @@ meuseGaussCorFun <- function(h) {
 }
 
 # get some prediction data
-library(sp)
-data(meuse.grid)
+library("sp")
+data("meuse.grid")
 coordinates(meuse.grid) <- ~x+y
 gridded(meuse.grid) <- TRUE
 
-data(meuse)
+data("meuse")
 coordinates(meuse) <- ~x+y
 
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)

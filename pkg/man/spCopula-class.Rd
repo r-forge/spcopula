@@ -48,7 +48,7 @@ Benedikt Graeler
 
 \examples{
 # data from demo(spcopula_estimation)
-data(spCopDemo) 
+data("spCopDemo") 
 
 calcKTauPol <- fitCorFun(bins, degree=3)
 
