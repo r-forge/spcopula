@@ -214,7 +214,7 @@ spCopPredict.expectation <- function(predNeigh, dataLocs, predLocs, spVine, marg
   close(pb)
   
   if ("data" %in% slotNames(predLocs)) {
-    res <- predNeigh@predLocs
+    res <- predLocs
     res@data[["expect"]] <- predMean
     return(res)
   } else {

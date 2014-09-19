@@ -638,11 +638,16 @@ loglikByCopulasLags <- function(bins, data, families=c(normalCopula(),
                                 calcCor, lagSub=1:length(bins$meanDists)) {
   var <- attr(bins, "variable")
   
-  lagData <- lapply(bins$lags[lagSub], 
-                    function(x) {
-                      as.matrix((cbind(data[x[,1], var]@data, 
-                                       data[x[,2], var]@data)))
-                    })
+  if(missing(data)) {
+    lagData <- bins$lagData
+  }
+  else {
+    lagData <- lapply(bins$lags[lagSub], 
+                      function(x) {
+                        as.matrix((cbind(data[x[, 1], var]@data,
+                                         data[x[, 2], var]@data)))
+    })
+  }
   
   lagData <- lapply(lagData, 
                     function(pairs) {

@@ -204,6 +204,8 @@ calcNeighBins <- function(data, var=data@var, nbins=9, boundaries=NA,
 
   data <- as.matrix(data@data)
   
+  lagData <- list()
+  
   for (i in 1:nbins) {
     bools <- (dists <= boundaries[i+1] & dists > boundaries[i])
     
@@ -212,7 +214,7 @@ calcNeighBins <- function(data, var=data@var, nbins=9, boundaries=NA,
       pairs <- rbind(pairs, data[bools[,col],c(1,1+col)])
     }
     
-#    lagData <- append(lagData, list(pairs))
+    lagData[[i]] <- pairs
     moa[i] <- corFun(pairs)
     meanDists[i] <- mean(dists[bools])
     np[i] <- sum(bools)
@@ -224,8 +226,7 @@ calcNeighBins <- function(data, var=data@var, nbins=9, boundaries=NA,
     abline(h=c(-min(moa),0,min(moa)),col="grey")
   }
   
-#   res <- list(np=np, meanDists = meanDists, lagCor=moa, lagData=lagData)
-  res <- list(np=np, meanDists = meanDists, lagCor=moa)
+  res <- list(np=np, meanDists = meanDists, lagCor=moa, lagData=lagData)
   attr(res,"cor.method") <- switch(cor.method, fasttau="kendall", cor.method)
   attr(res,"variable") <- var
   
