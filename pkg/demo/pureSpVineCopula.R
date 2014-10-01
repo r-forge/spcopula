@@ -28,9 +28,10 @@ dMar <- function(x) dlnorm(x, meanLog, sdLog)
 # dMar <- function(x) dgev(x, gevEsti[1], gevEsti[2], gevEsti[3])
 
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
-
+hist(meuse$rtZinc)
 ## lag classes ##
 bins <- calcBins(meuse,var="rtZinc", nbins=10, cutoff=800)
+
 
 ## calculate parameters for Kendall's tau function ##
 calcKTau <- fitCorFun(bins, degree=2)

@@ -19,7 +19,7 @@ rankTransform <- function(u,v=NULL, na.last=TRUE, ties.method="average") {
 ##
 dependencePlot <- function(var=NULL, smpl, bandwidth=0.075, 
                            main="Stength of dependence", 
-                           transformation=function (x) x, ...) {
+                           transformation=function (x) x, margin=NULL, ...) {
   if(is.null(var)) {
     if (ncol(smpl)>2) {
       smpl <- smpl[,1:2]
@@ -28,9 +28,13 @@ dependencePlot <- function(var=NULL, smpl, bandwidth=0.075,
     smpl <- smpl[,var]
   }
   
-  smoothScatter(smpl,bandwidth=bandwidth, asp=1, xlim=c(0,1), ylim=c(0,1), 
-                nrpoints=0, main=main,
-                transformation=transformation, ...)
+  if(is.null(margin))
+    smoothScatter(smpl,bandwidth=bandwidth, asp=1, xlim=c(0,1), ylim=c(0,1), 
+                  nrpoints=0, main=main,
+                  transformation=transformation, ...)
+  else
+    smoothScatter(margin(smpl), bandwidth=bandwidth, asp=1, 
+                  nrpoints=0, main=main, ...)
 }
 
 ##

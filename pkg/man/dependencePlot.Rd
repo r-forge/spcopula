@@ -8,28 +8,17 @@ Plots a kernel smoothed scatter plot of the provided rank-transformed sample. Th
 }
 \usage{
 dependencePlot(var = NULL, smpl, bandwidth = 0.075,  main="Stength of dependence",
-               transformation = function(x) x, ...)
+               transformation = function(x) x, margin=NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{var}{
-Column IDs or variable names to be used. If not provided, the first two columns will be used.
-}
-  \item{smpl}{
-a matrix (two-columns at least) holding the data
-}
-  \item{bandwidth}{
-the bandwidth passed to the smoothing kernel
-}
-\item{main}{
-the title of the plot
-}
-  \item{transformation}{
-a transformation passed to the kernel
-}
-  \item{\dots}{
-passed on to the function \code{\link{panel.smoothScatter}}
-}
+  \item{var}{Column IDs or variable names to be used. If not provided, the first two columns will be used.}
+  \item{smpl}{a matrix (two-columns at least) holding the data}
+  \item{bandwidth}{the bandwidth passed to the smoothing kernel}
+  \item{main}{the title of the plot}
+  \item{transformation}{a transformation passed to the kernel}
+  \item{margin}{a quantile function to back transform the uniform margins to any other desired marginal distribution (typically \code{\link{qnorm}}). Note that the \code{bandwidth} parameter might need adjustment.}
+  \item{\dots}{passed on to the function \code{\link{panel.smoothScatter}}}
 }
 \details{
 see \code{\link{panel.smoothScatter}}
