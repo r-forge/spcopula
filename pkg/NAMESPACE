@@ -40,6 +40,7 @@ export(empTailDepFun, lowerEmpTailDepFun, upperEmpTailDepFun)
 export(genEmpKenFun, genInvKenFun)
 export(kendallRP, criticalLevel, kendallDistribution, getKendallDistr)
 export(criticalPair, criticalTriple)
+export(kendall)
 
 ## classes
 exportClasses(asCopula, cqsCopula, tawn3pCopula, neighbourhood, stNeighbourhood, empiricalCopula)

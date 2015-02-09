@@ -2,7 +2,11 @@ genEmpKenFun <- function(copula, sample=NULL) {
   if(is.null(sample)) sample <- rCopula(1e6,copula)
   # as empirical copula:
   # copula <- genEmpCop(copula, sample)
-  ken <- pCopula(sample, copula)
+  if(missing(copula)) {
+    ken <- mapply(function(x,y) sum(x > sample[,1] & y > sample[,2])/length(x), sample[,1], sample[,2])
+  } else {
+    ken <- pCopula(sample, copula)
+  }
   
   empKenFun <- function(tlevel) {
     sapply(tlevel,function(t) sum(ken<=t))/nrow(sample)
@@ -165,6 +169,11 @@ setMethod("qCopula_v", signature("copula"), qCopula_v.def)
 
 ## kendall distribution
 
+# generic kendall function
+kendall <- function(t, copula) {
+  standardGeneric(t, copula)
+}
+
 # empirical default
 getKendallDistr <- function(copula, sample=NULL) {
   standardGeneric("getKendallDistr")
@@ -187,7 +196,7 @@ setGeneric("getKendallDistr")
 ## 
 
 kendallDistribution <- function(copula, t) {
-  stop("There is no analytical expression implemented for this copula family. See 'getKendallDstr' for a numerical solution instead.")
+  stop("There is no analytical expression implemented for this copula family. See 'getKendallDistr' for a numerical solution instead.")
 }
 
 setGeneric("kendallDistribution")
@@ -204,7 +213,8 @@ kendall.Clayton <- function(copula, t){
   return(kt)  
 }
 
-setMethod("kendallDistribution", signature("claytonCopula"), kendall.Clayton)
+setMethod("kendallDistribution", signature("claytonCopula"), kendall.Clayton) # for easy backwards compatibility
+setMethod("kendall", signature("numeric", "claytonCopula"), function(t, copula) kendall.Clayton(copula, t))
 
 setMethod("getKendallDistr", signature("claytonCopula"), 
           function(copula) return(function(t) kendall.Clayton(copula, t)))
@@ -221,7 +231,8 @@ kendall.Gumbel <- function(copula, t){
   return(kt)  
 }
 
-setMethod("kendallDistribution", signature("gumbelCopula"), kendall.Gumbel)
+setMethod("kendallDistribution", signature("gumbelCopula"), kendall.Gumbel) # for easy backwards compatibility
+setMethod("kendall", signature("numeric","gumbelCopula"), function(t, copula) kendall.Gumbel(copula, t)) 
 
 setMethod("getKendallDistr", signature("gumbelCopula"), 
           function(copula) return(function(t) kendall.Gumbel(copula, t)))
@@ -238,7 +249,8 @@ kendall.Frank <- function(copula, t){
   return(kt)  
 }
 
-setMethod("kendallDistribution", signature("frankCopula"), kendall.Frank)
+setMethod("kendallDistribution", signature("frankCopula"), kendall.Frank) # for easy backwards compatibility
+setMethod("kendall", signature("numeric", "frankCopula"),  function(t, copula) kendall.Frank)
 
 setMethod("getKendallDistr", signature("frankCopula"), 
           function(copula) return(function(t) kendall.Frank(copula, t)))
@@ -259,6 +271,11 @@ kendall.BB1 <- function(copula, t){
 }
 
 setMethod("kendallDistribution", signature("BB1Copula"), kendall.BB1)
+setMethod("kendall", signature("numeric", "BB1Copula"), 
+          function(t, copula) {
+            stopifnot(copula@dimension <= 2) 
+            kendall.BB1(copula, t)
+          })
 
 setMethod("getKendallDistr", signature("BB1Copula"), function(copula) return(function(t) kendall.BB1(copula, t)) )
 
@@ -276,7 +293,12 @@ kendall.BB6 <- function(copula, t){
   return(kt)  
 }
 
-setMethod("kendallDistribution", signature("BB6Copula"), kendall.BB6)
+setMethod("kendallDistribution", signature("BB6Copula"), kendall.BB6) # for easy backwards compatibility
+setMethod("kendall", signature("numeric", "BB6Copula"), 
+          function(t, copula) {
+            stopifnot(copula@dimension <= 2) 
+            kendall.BB6(copula, t)
+          })
 
 setMethod("getKendallDistr", signature("BB6Copula"), 
           function(copula) return(function(t) kendall.BB6(copula, t)))
@@ -296,6 +318,11 @@ kendall.BB7 <- function(copula, t){
 }
 
 setMethod("kendallDistribution", signature("BB7Copula"), kendall.BB7)
+setMethod("kendall", signature("numeric", "BB7Copula"), 
+          function(t, copula) {
+            stopifnot(copula@dimension <= 2) 
+            kendall.BB7(copula, t)
+          })
 
 setMethod("getKendallDistr", signature("BB7Copula"), 
           function(copula) return(function(t) kendall.BB7(copula, t)))
@@ -313,23 +340,32 @@ kendall.BB8 <- function(copula, t){
   return(kt)  
 }
 
-setMethod("kendallDistribution", signature("BB8Copula"), kendall.BB8)
+setMethod("kendallDistribution", signature("BB8Copula"), kendall.BB8) # for easy backwards compatibility
+setMethod("kendall", signature("numeric", "BB8Copula"), 
+          function(t, copula) {
+            stopifnot(copula@dimension <= 2) 
+            kendall.BB8(copula, t)
+          })
+
 setMethod("getKendallDistr", signature("BB8Copula"), 
           function(copula) return(function(t) kendall.BB8(copula, t)))
 
 # BiJoe
-## kendall distribution/measure, taken from VineCopula:::obs.stat
-kendall.Joe <- function(copula, t){
-  par = copula@parameters[1]
+kendall.Joe <- function(copula, t) kdJoe(t, copula)
   
-  kt <- rep(NA,length(t))
-  kt <- t - (log(1 - (1 - t)^par) * (1 - (1 - t))^par)/(par * (1 - t)^(par - 1))
-  kt[t==1] <- 1
-  kt[t==0] <- 0
-  return(kt)  
-}
+  ## kendall distribution/measure, taken from VineCopula:::obs.stat
+#   {
+#   par = copula@parameters[1]
+#   
+#   kt <- rep(NA,length(t))
+#   kt <- t - (log(1 - (1 - t)^par) * (1 - (1 - t))^par)/(par * (1 - t)^(par - 1))
+#   kt[t==1] <- 1
+#   kt[t==0] <- 0
+#   return(kt)  
+# }
 
 setMethod("kendallDistribution", signature("joeBiCopula"), kendall.Joe)
+
 setMethod("getKendallDistr", signature("joeBiCopula"), 
           function(copula) return(function(t) kendall.Joe(copula, t)))
 
