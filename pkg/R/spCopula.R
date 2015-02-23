@@ -4,7 +4,6 @@
 # param.names = "character" appropriate names
 # param.lowbnd = "numeric"  appropriate lower bounds
 # param.upbnd = "numeric"   appropriate upper bounds
-# fullname = "character"     messgae printed with "show"
 # components="list"         list of copulas (will be automatically supplemented 
 #			      by the independent copula)
 # distances="numeric"       the linking distances + the range (will be assigned
@@ -437,6 +436,16 @@ invddvSpCopula <- function(v, copula, y, h, tol=.Machine$double.eps^0.5) {
 
 setMethod("invddvCopula", signature("numeric", "spCopula"), invddvSpCopula)
 
+## simulation
+
+spCop.rCop <- function(n, copula, h) {
+  u <- runif(n)
+  v <- invdduCopula(u, copula, y=runif(n), h=h)
+  
+  return(cbind(u, v))
+}
+
+setMethod("rCopula", signature("numeric", "spCopula"), spCop.rCop)
 
 #############
 ##         ##
