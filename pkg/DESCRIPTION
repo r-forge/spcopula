@@ -2,7 +2,7 @@ Package: spcopula
 Type: Package
 Title: copula driven spatial analysis
 Version: 0.2-1
-Date: 2015-02-06
+Date: 2015-05-25
 Authors@R: c(person("Benedikt", "Graeler", role = c("aut", "cre"),
                     email = "ben.graeler@uni-muenster.de"),
              person("Marius", "Appel",role = "ctb"))
