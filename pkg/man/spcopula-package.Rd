@@ -2,11 +2,9 @@
 \alias{spcopula-package}
 \alias{spcopula}
 \docType{package}
-\title{
-copula driven spatial analysis
-}
+\title{Copula Driven Spatio-Temporal Analysis}
 \description{
-This package provides a framework to analyse spatial data provided in the format of the \code{\link[sp:sp]{sp}} package with copulas. Additionally, support for calculating multivariate return periods is implemented.
+A framework is provided to analyse spatial and spatio-temporal data with copulas and vine copulas. Data handled needs to be in the format of the sp or spacetime R packages respectively. Additionally, support for calculating multivariate return periods based on copulas and vine copulas is implemented.
 }
 \details{
 \tabular{ll}{

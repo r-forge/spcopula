@@ -43,7 +43,6 @@ d3igenFrank <- function(s, theta) {
 }
 
 kdFrank <- function(t, cop) {
-  # K^d (t) = t + sum_{i=1}^{d-1} (−1)^i/i! \varphi(t)^i (\varphi^{-1})^(i)(\varphi(t))
   stopifnot(cop@dimension <=4)
   .theta <- cop@parameters
   .val <- 0 < t & t < 1
@@ -97,7 +96,6 @@ d3igenGumbel <- function(s, theta) {
 }
 
 kdGumbel <- function(t, cop) {
-  # K^d (t) = t + sum_{i=1}^{d-1} (−1)^i/i! \varphi(t)^i (\varphi^{-1})^(i)(\varphi(t))
   stopifnot(cop@dimension <=4)
   .theta <- cop@parameters
   .val <- 0 < t & t < 1
@@ -148,7 +146,6 @@ d3igenClayton <- function(s, theta) {
 }
 
 kdClayton <- function(t, cop) {
-  # K^d (t) = t + sum_{i=1}^{d-1} (−1)^i/i! \varphi(t)^i (\varphi^{-1})^(i)(\varphi(t))
   stopifnot(cop@dimension <=4)
   .theta <- cop@parameters
   .val <- 0 < t & t < 1
@@ -214,7 +211,6 @@ d3igenJoe <- function(s, theta) {
 }
 
 kdJoe <- function(t, cop) {
-  # K^d (t) = t + sum_{i=1}^{d-1} (−1)^i/i! \varphi(t)^i (\varphi^{-1})^(i)(\varphi(t))
   stopifnot(cop@dimension <= 4)
   .theta <- cop@parameters
   .val <- 0 < t & t < 1
