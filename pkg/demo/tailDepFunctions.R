@@ -1,3 +1,4 @@
+library("VineCopula")
 library("spcopula")
 data("simulatedTriples")
 

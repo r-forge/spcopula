@@ -43,6 +43,7 @@ The distribution is linearly approximated at a limited number (\code{n}) of poin
 }
 
 \examples{
+library("VineCopula")
 spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
                                     claytonCopula(2), claytonCopula(1),
                                     claytonCopula(0.5), indepCopula()),

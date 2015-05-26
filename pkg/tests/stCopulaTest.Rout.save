@@ -1,6 +1,6 @@
 
-R version 3.1.1 (2014-07-10) -- "Sock it to Me"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.0 (2015-04-16) -- "Full of Ingredients"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,7 +17,6 @@ Type 'q()' to quit R.
 
 > library("spcopula")
 Loading required package: copula
-Loading required package: VineCopula
 > spCopT0 <- spCopula(components=list(claytonCopula(8), claytonCopula(4), 
 +                                     claytonCopula(2), claytonCopula(1),
 +                                     claytonCopula(0.5), indepCopula()),
@@ -56,4 +55,4 @@ invdduCopula is numerically evalauted.
 > 
 > proc.time()
    user  system elapsed 
-   6.03    0.24    6.33 
+   3.08    0.10    3.19 

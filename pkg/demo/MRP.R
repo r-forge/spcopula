@@ -1,3 +1,5 @@
+library("VineCopula")
+
 ## get the data
 data("simulatedTriples")
 

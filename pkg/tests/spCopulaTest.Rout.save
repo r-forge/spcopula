@@ -1,6 +1,6 @@
 
-R version 3.1.1 (2014-07-10) -- "Sock it to Me"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.0 (2015-04-16) -- "Full of Ingredients"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,7 +17,6 @@ Type 'q()' to quit R.
 
 > library("spcopula")
 Loading required package: copula
-Loading required package: VineCopula
 > data("spCopDemo")
 > calcKTauPol <- fitCorFun(bins, degree=3)
 
@@ -63,4 +62,4 @@ invddvCopula is numerically evalauted.
 > 
 > proc.time()
    user  system elapsed 
-   6.92    0.17    7.19 
+   3.72    0.06    3.79 

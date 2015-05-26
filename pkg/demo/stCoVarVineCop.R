@@ -6,6 +6,7 @@
 # sary to maintain the "runability" of this demo.
 ######################################################################
 library("spcopula")
+library("VineCopula")
 library("evd")
 data("EU_RB")
 

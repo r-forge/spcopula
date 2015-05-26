@@ -43,6 +43,7 @@ Benedikt Graeler
 }
 
 \examples{
+library("VineCopula")
 data("simulatedTriples")
 X <- rankTransform(triples[,c(1,3)])
   

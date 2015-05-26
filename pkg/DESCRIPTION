@@ -1,17 +1,17 @@
 Package: spcopula
 Type: Package
-Title: copula driven spatial analysis
+Title: Copula Driven Spatio-Temporal Analysis
 Version: 0.2-1
-Date: 2015-05-25
+Date: 2015-05-26
 Authors@R: c(person("Benedikt", "Graeler", role = c("aut", "cre"),
                     email = "ben.graeler@uni-muenster.de"),
              person("Marius", "Appel",role = "ctb"))
 Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
-Description: This package provides a framework to analyse via copulas spatial and spatio-temporal data provided in the format of sp and spacetime package respectively. Additionally, support for calculating different multivariate return periods is implemented.
+Description: We provide a framework to analyse spatial and spatio-temporal data via copulas and vine copulas. The data needs to be provided in the form of the sp and spacetime package respectively. Additionally, support for calculating different multivariate return periods based on copulas and vine copulas is implemented.
 License: GPL-3
 LazyLoad: yes
-Depends: copula (>= 0.999-12), VineCopula (>= 1.4), R (>= 3.1.0)
-Imports: methods, sp, spacetime (>= 1.0-9)
+Depends: copula (>= 0.999-12), R (>= 3.1.0)
+Imports: methods, sp, spacetime (>= 1.0-9), VineCopula (>= 1.4)
 Suggests: evd
 URL: http://r-forge.r-project.org/projects/spcopula/
 Collate:

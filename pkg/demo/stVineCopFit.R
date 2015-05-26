@@ -2,6 +2,7 @@
 ## selected smaller subset of the original data to reduce calculation demands.
 ## Thus, results are likely to differ (a little) from the original study.
 
+library("VineCopula")
 library("spcopula")
 data("EU_RB_2005")
 

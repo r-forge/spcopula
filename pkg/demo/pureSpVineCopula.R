@@ -1,6 +1,5 @@
 ## librarys ##
-library("spcopula")
-# library("evd")
+library("VineCopula")
 library("sp")
 par(mfrow=c(1,1))
 ## meuse - spatial poionts data.frame ##
