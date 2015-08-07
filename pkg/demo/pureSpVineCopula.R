@@ -29,15 +29,15 @@ dMar <- function(x) dlnorm(x, meanLog, sdLog)
 meuse$rtZinc <- rank(meuse$zinc)/(length(meuse)+1)
 hist(meuse$rtZinc)
 ## lag classes ##
-bins <- calcBins(meuse,var="rtZinc", nbins=10, cutoff=800)
+bins <- calcBins(meuse, var="rtZinc", nbins=10, cutoff=800)
 
 
 ## calculate parameters for Kendall's tau function ##
 calcKTau <- fitCorFun(bins, degree=2)
 curve(calcKTau,0, 1000, col="purple",add=T)
 
-families <- list(normalCopula(0), tCopula(0,df=2.15), claytonCopula(0),
-                 gumbelCopula(1), frankCopula(1), joeBiCopula(1.5),
+families <- list(normalCopula(0.3), tCopula(0.3,df=2.15), claytonCopula(0.3),
+                 gumbelCopula(2), frankCopula(1), joeBiCopula(1.5),
                  surClaytonCopula(1), surGumbelCopula(1), surJoeBiCopula(1.5))
 
 ## find best fitting copula per lag class
@@ -112,7 +112,7 @@ bestFitTau4 <- apply(apply(loglikTau4$loglik, 1, rank, na.last=T), 2,
                      function(x) which(x==9))
 colnames(loglikTau4$loglik)[bestFitTau4]
 
-## set up the third bivariate spatial Copula
+## set up the fourth bivariate spatial Copula
 #############################################
 spCop4 <- spCopula(c(families[bestFitTau4[1:3]], normalCopula(0),indepCopula()),
                    distances=bins4$meanDists[1:5],
