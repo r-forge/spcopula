@@ -61,8 +61,8 @@ export(reduceNeighbours)
 
 # fitting
 export(fitCorFun, loglikByCopulasLags, loglikByCopulasStLags, fitSpCopula, composeSpCopula)
-export(tailDepFun, lowerTailDepFun, upperTailDepFun)
-export(empTailDepFun, lowerEmpTailDepFun, upperEmpTailDepFun)
+export(bivTailDepFun, lowerBivTailDepFun, upperBivTailDepFun)
+export(empBivTailDepFun, lowerEmpBivTailDepFun, upperEmpBivTailDepFun)
 
 # MRP functions
 export(genEmpKenFun, genInvKenFun)

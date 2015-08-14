@@ -8,7 +8,7 @@ The Kendall Return Period corresponding to a given critical level and a given
 Kendall distribution or its underlying copula.
 }
 \usage{
-kendallRP(kendallFun = NULL, cl = c(0.99, 0.999), mu = 1, copula = NULL)
+kendallRP(kendallFun, cl = c(0.99, 0.999), mu = 1, copula)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

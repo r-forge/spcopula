@@ -8,7 +8,7 @@ The critical level corresponding to a given Kendall Return Period and a given
 Kendall distribution or its underlying copula.
 }
 \usage{
-criticalLevel(kendallFun = NULL, KRP = c(100, 1000), mu = 1, copula = NULL)
+criticalLevel(kendallFun, KRP = c(100, 1000), mu = 1, copula)
 }
 \arguments{
   \item{kendallFun}{

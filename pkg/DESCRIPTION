@@ -2,7 +2,7 @@ Package: spcopula
 Type: Package
 Title: Copula Driven Spatio-Temporal Analysis
 Version: 0.2-1
-Date: 2015-08-07
+Date: 2015-08-14
 Authors@R: c(person("Benedikt", "Graeler", role = c("aut", "cre"),
                     email = "ben.graeler@uni-muenster.de"),
              person("Marius", "Appel",role = "ctb"))

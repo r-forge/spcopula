@@ -402,8 +402,8 @@ iRhoCQSec.b <- function(b, rho=0) {
 setMethod("iRho",signature="cqsCopula",
           function(copula, rho) {
             switch(copula@fixed,
-                   a=function(copula, rho) c(a,iRhoCQSec.a(copula@parameters[1],rho)), 
-                   b=function(copula, rho) c(iRhoCQSec.b(copula@parameters[2],rho),b),
+                   a=function(copula, rho) c(copula@parameters[1],iRhoCQSec.a(copula@parameters[1],rho)), 
+                   b=function(copula, rho) c(iRhoCQSec.b(copula@parameters[2],rho),copula@parameters[2]),
                    stop("iRho may only be used for cqsCopula with one parameter fixed."))
             })
 
