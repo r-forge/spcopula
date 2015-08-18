@@ -17,9 +17,9 @@ lower joint dependence (shortfall):
 \eqn{\frac{P(U \leq u | V \leq u)}{P(V \leq v)}=\frac{C(u,u)}{u}}{P(U <= u | V <= u)/P(V <= u) = C(u,u)/u}
 
 upper joint dependence (exceedance):
-\eqn{\frac{P(U \geq u | V \geq u)}{P(V \geq v)}=1-2u+\frac{C(u,u)}{1-u}}{P(U >= u | V >= u)/P(V >= u) = 1 - 2u + C(u,u)/(1-u)}
+\eqn{\frac{P(U \geq u | V \geq u)}{P(V \geq v)}=1-2u+\frac{C(u,u)}{1-u}}{P(U >= u | V >= u)/P(V >= u) = (1 - 2u + C(u,u))/(1-u)}
 
-Taking the limits of the above for \eqn{u \rightarrow 0}{u -> 0} and \eqn{u \rightarrow 1}{u -> 1} respectively yields the lower and upper tail index. For tail dependence of multivariate copulas, see the papers by Joe et al. (2010) and Nikoloulopoulos et al. (2012).
+Taking the limits of the above for \eqn{u \rightarrow 0}{u -> 0} and \eqn{u \rightarrow 1}{u -> 1} respectively yields the lower and upper tail dependence index. For tail dependence of multivariate copulas, see the papers by Joe et al. (2010) and Nikoloulopoulos et al. (2012).
 }
 \usage{
 bivJointDepFun(copula)
