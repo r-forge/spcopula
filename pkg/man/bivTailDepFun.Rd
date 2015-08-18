@@ -1,26 +1,34 @@
-\name{bivTailDepFun}
-\alias{bivTailDepFun}
-\alias{lowerBivTailDepFun}
-\alias{upperBivTailDepFun}
+\name{bivJointDepFun}
+\alias{bivJointDepFun}
+\alias{lowerBivJointDepFun}
+\alias{upperBivJointDepFun}
 
-\alias{empBivTailDepFun}
-\alias{lowerEmpBivTailDepFun}
-\alias{upperEmpBivTailDepFun}
+\alias{empBivJointDepFun}
+\alias{lowerEmpBivJointDepFun}
+\alias{upperEmpBivJointDepFun}
 
 \title{
-Tail dependence functions
+Bivariate joint dependence functions
 }
 \description{
-Functions returning a (empirical) tail dependence function for a bivariate copula (sample). The tail dependence functions can be upper, lower or joint, where values below 0.5 are calculated from the lower tail dependence function and values larger 0.5 for the upper tail dependence function. The definition follows the one by Nelsen (2006, Theorem 5.4.2.). For tail dependence of multivariate copulas, see the papers by Joe et al. (2010) and Nikoloulopoulos et al. (2012).
+Functions returning a (empirical) joint shortfall/exceedance dependence function for a bivariate copula (sample). The functions can be lower (shortfall), upper (exceedance), or both, where values below 0.5 are calculated from the lower joint dependence function and values larger 0.5 from the upper joint dependence function. The definition follows the one by Nelsen for the tail dependence index (2006, Theorem 5.4.2.):
+
+lower joint dependence (shortfall):
+\eqn{\frac{P(U \leq u | V \leq u)}{P(V \leq v)}=\frac{C(u,u)}{u}}{P(U <= u | V <= u)/P(V <= u) = C(u,u)/u}
+
+upper joint dependence (exceedance):
+\eqn{\frac{P(U \geq u | V \geq u)}{P(V \geq v)}=1-2u+\frac{C(u,u)}{1-u}}{P(U >= u | V >= u)/P(V >= u) = 1 - 2u + C(u,u)/(1-u)}
+
+Taking the limits of the above for \eqn{u \rightarrow 0}{u -> 0} and \eqn{u \rightarrow 1}{u -> 1} respectively yields the lower and upper tail index. For tail dependence of multivariate copulas, see the papers by Joe et al. (2010) and Nikoloulopoulos et al. (2012).
 }
 \usage{
-bivTailDepFun(copula)
-lowerBivTailDepFun(copula)
-upperBivTailDepFun(copula)
+bivJointDepFun(copula)
+lowerBivJointDepFun(copula)
+upperBivJointDepFun(copula)
 
-empBivTailDepFun(u)
-lowerEmpBivTailDepFun(u)
-upperEmpBivTailDepFun(u)
+empBivJointDepFun(u)
+lowerEmpBivJointDepFun(u)
+upperEmpBivJointDepFun(u)
 }
 
 \arguments{
@@ -33,7 +41,7 @@ a bivariate sample on (0,1)
 }
 
 \value{
-A function taking arguments from the unit interval (0,1) and returning the corresponding tail index.
+A function taking arguments from the unit interval (0,1) and returning the corresponding index.
 }
 \references{
 Definition: 
@@ -48,7 +56,7 @@ Nikoloulopoulos, Aristidis K., Harry Joe, and Haijun Li. "Vine copulas with asym
 
 Plots inspired by:
 
-\url{http://freakonometrics.blog.free.fr/index.php?post/2012/09/11/Copulas-and-statistical-inference}
+\url{http://freakonometrics.hypotheses.org/2435}
 }
 \author{
 Benedikt Graeler
@@ -59,7 +67,7 @@ library("VineCopula")
 data("simulatedTriples")
 X <- rankTransform(triples[,c(1,3)])
   
-tdfEmp <- empBivTailDepFun(X)
+tdfEmp <- empBivJointDepFun(X)
 plot(tdfEmp,ylim=c(0,1),
      ylab="tail dependence index")  
 abline(v=0.5, col="grey")
@@ -67,15 +75,15 @@ abline(v=0.5, col="grey")
 smplTau <- cor(X,method="kendall")[1,2]
 
 # Gauss
-tdfGauss <- bivTailDepFun(normalCopula(sin(smplTau*pi/2)))
+tdfGauss <- bivJointDepFun(normalCopula(sin(smplTau*pi/2)))
 curve(tdfGauss,add=TRUE,col="blue")
 
 # survival Gumbel
-tdfGumbel <- bivTailDepFun(surGumbelCopula(1/(1-smplTau)))
+tdfGumbel <- bivJointDepFun(surGumbelCopula(1/(1-smplTau)))
 curve(tdfGumbel,add=TRUE,col="darkgreen")
 
 # survival BB6 copula
-tdfBB6 <- bivTailDepFun(surBB6Copula(c(4.65,2.28)))
+tdfBB6 <- bivJointDepFun(surBB6Copula(c(4.65,2.28)))
 curve(tdfBB6,add=TRUE,col="red")
 
 legend("bottomleft",c("empircal","Gauss","surv. Gumbel","surv. BB6"),
