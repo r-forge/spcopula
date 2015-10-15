@@ -14,7 +14,6 @@
 \usepackage{amssymb}
 %% \usepackage{amsthm}
 \usepackage{amsmath}
-\usepackage{natbib}
 
 %% extra packages
 \usepackage{array}
@@ -453,7 +452,6 @@ The bivariate spatio-temporal copulas on the first tree mainly incorporate a Gum
 \section*{Acknowledgements}
 This research has been funded by the German Research Foundation (DFG) under project number PE 1632/4-1.
 
-\bibliographystyle{natbib}
 \bibliography{bib_spcopula}
 
 \end{document}
