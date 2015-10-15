@@ -14,6 +14,7 @@
 \usepackage{amssymb}
 %% \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{natbib}
 
 %% extra packages
 \usepackage{array}
@@ -48,6 +49,7 @@ The \pkg{spcopula} \proglang{R}~package provides tools to model spatial and spat
 \graphicspath{{figures/}}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 <<eval=TRUE,echo=FALSE>>=
 options(prompt = "R> ", continue = "+  ", width = 70, useFancyQuotes = FALSE)
 set.seed(1331)
@@ -451,7 +453,7 @@ The bivariate spatio-temporal copulas on the first tree mainly incorporate a Gum
 \section*{Acknowledgements}
 This research has been funded by the German Research Foundation (DFG) under project number PE 1632/4-1.
 
-\bibliographystyle{jss}
+\bibliographystyle{natbib}
 \bibliography{bib_spcopula}
 
 \end{document}
