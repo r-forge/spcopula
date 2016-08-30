@@ -521,10 +521,11 @@ fitCorFun <- function(bins, degree=3, cutoff=NA, tlags, bounds=c(0,1),
     return(fitCorFunSng(bins, degree, cutoff, bounds, cor.method, weighted))
     
   # the spatio-temporal case
-  degree <- rep(degree,length.out=nrow(bins$lagCor))
+  degree <- rep(degree, length.out = nrow(bins$lagCor))
   calcKTau <- list()
-  for(j in 1:nrow(bins$lagCor)) {
-    calcKTau[[paste("fun",j,sep="")]] <- fitCorFunSng(data.frame(meanDists=bins$meanDists, 
+  for (j in 1:nrow(bins$lagCor)) {
+    calcKTau[[paste("fun",j,sep="")]] <- fitCorFunSng(data.frame(np=bins$lagNp[j,],
+                                                                 meanDists=bins$meanDists, 
                                                                  lagCor=bins$lagCor[j,]),
                                                       degree[j], cutoff, bounds, 
                                                       cor.method, weighted)
@@ -653,8 +654,8 @@ loglikByCopulasLags <- function(bins, data, families=c(normalCopula(),
   else {
     lagData <- lapply(bins$lags[lagSub], 
                       function(x) {
-                        as.matrix((cbind(data[x[, 1], var]@data,
-                                         data[x[, 2], var]@data)))
+                        as.matrix((cbind(data[x[, 1], var, drop=FALSE]@data,
+                                         data[x[, 2], var, drop=FALSE]@data)))
     })
   }
   

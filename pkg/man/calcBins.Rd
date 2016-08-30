@@ -52,9 +52,6 @@ The largest spatial distance to be investigated, if set to \code{NA}, one third 
 \author{
 Benedikt Graeler
 }
-\seealso{
-\code{\link{VineCopula-package}}
-}
 \examples{
 library("sp")
 data("meuse")

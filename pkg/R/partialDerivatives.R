@@ -339,7 +339,7 @@ setMethod("invddvCopula", signature("numeric", "frankCopula", "numeric"), invddv
 ##########################
 
 dduStudent <- function(u, copula){
-  df <- copula@df
+  df <- copula@parameters[2]
   v <- qt(u,df=df)
   
   rho <- copula@parameters[1]
@@ -358,7 +358,7 @@ setMethod("dduCopula", signature("matrix","tCopula"), dduStudent)
 ##########################
 
 ddvStudent <- function(u, copula){
-  df <- copula@df
+  df <- copula@parameters[2]
   v <- qt(u, df=df)
   
   rho <- copula@parameters[1]

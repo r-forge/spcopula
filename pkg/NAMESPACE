@@ -2,6 +2,12 @@ import(copula)
 import(sp, spacetime)
 import(methods)
 
+importFrom("graphics", "abline", "smoothScatter")
+  importFrom("stats", "D", "approxfun", "cor", "ecdf", "integrate", "lm",
+             "optim", "optimise", "optimize", "pnorm", "predict", "pt",
+             "qnorm", "qt", "quantile", "runif", "uniroot", "var")
+  importFrom("utils", "setTxtProgressBar", "txtProgressBar")
+
 importMethodsFrom(VineCopula, fitCopula)
 importMethodsFrom(VineCopula, dduCopula,ddvCopula)
 

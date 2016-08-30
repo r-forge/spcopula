@@ -151,7 +151,7 @@ calcSpBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA, ...,
     
   mDists <- sapply(lags, function(x) mean(x[,3]))
   np <- sapply(lags, function(x) length(x[,3]))
-  lagData <- lapply(lags, function(x) as.matrix((cbind(data[x[,1],var]@data, data[x[,2],var]@data))))
+  lagData <- lapply(lags, function(x) as.matrix((cbind(data[x[,1],var,drop=FALSE]@data, data[x[,2],var,drop=FALSE]@data))))
   
   if(cor.method == "fasttau")
     lagCor <- sapply(lagData, function(x) TauMatrix(x)[1,2])

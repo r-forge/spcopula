@@ -242,14 +242,16 @@ loglikByCopulasStLags <- function(stBins, data, families = c(normalCopula(),
                                                              gumbelCopula()),
                                   calcCor, lagSub=1:length(stBins$meanDists)) {
   nTimeLags <- dim(stBins$lagCor)[1]
+  if(is.null(nTimeLags))
+    nTimeLags <- 1
   var <- attr(stBins, "variable")
   
   retrieveData <- function(spIndex, tempIndices) {
     binnedData <- NULL
     for (i in 1:(ncol(tempIndices)/2)) {
       binnedData <- cbind(binnedData, 
-                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], var]@data, 
-                                           data[spIndex[,2], tempIndices[,2*i], var]@data))))
+                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], var, drop=FALSE]@data, 
+                                           data[spIndex[,2], tempIndices[,2*i], var, drop=FALSE]@data))))
     }
     return(binnedData)
   }

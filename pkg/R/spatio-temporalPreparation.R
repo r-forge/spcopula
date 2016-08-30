@@ -349,13 +349,13 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
   if(is.na(cutoff)) 
     cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
   if(is.na(boundaries)) 
-    boundaries <- ((1:nbins) * cutoff / nbins)
+    boundaries <- (1:nbins) * cutoff / nbins
   if(is.na(instances)) 
     instances=length(data@time)
   
   spIndices <- calcSpLagInd(data@sp, boundaries)
   
-  mDists <- sapply(spIndices,function(x) mean(x[,3]))
+  mDists <- sapply(spIndices, function(x) mean(x[,3]))
   
   lengthTime <- length(data@time)
   if (!is.numeric(instances) | !length(instances)==1) {
@@ -375,48 +375,52 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
     }
   }
   
-  retrieveData <- function(spIndex, tempIndices) {
-    binnedData <- NULL
-    for (i in 1:(ncol(tempIndices)/2)) {
-      binnedData <- cbind(binnedData, 
-                          as.matrix((cbind(data[spIndex[,1], tempIndices[,2*i-1], var]@data, 
-                                           data[spIndex[,2], tempIndices[,2*i], var]@data))))
-    }
-    return(binnedData)
-  }
-  
-  lagData <- lapply(spIndices, retrieveData, tempIndices=tempIndices)
-  
+  # internal stat function
   calcStats <- function(binnedData) {
-    cors <- NULL
-    for(i in 1:(ncol(binnedData)/2)) {
-      cors <- c(cors, cor(binnedData[,2*i-1], binnedData[,2*i], method=cor.method, use="pairwise.complete.obs"))
-    }
-    return(cors)
+    return(c(sum(!apply(binnedData, 1, function(x) any(is.na))),
+             cor(binnedData[,1], binnedData[,2], 
+                 method=cor.method, 
+                 use="pairwise.complete.obs")))
   }
   
-  calcTau <- function(binnedData) {
-    cors <- NULL
-    for(i in 1:(ncol(binnedData)/2)) {
-      tmpData <- binnedData[,2*i+c(-1,0)]
+  # internal fast tau function
+  calcTau <- function(tmpData) {
       tmpData <- tmpData[!apply(tmpData, 1, function(x) any(is.na(x))),]
-      cors <- c(cors, TauMatrix(tmpData)[1,2])
-    }
-    return(cors)
+    return(c(nrow(tmpData), TauMatrix(tmpData)[1,2]))
   }
   
   calcCor <- switch(cor.method, fasttau=calcTau, calcStats)
   
-  lagCor <- sapply(lagData, calcCor)
-  
-  if(plot) { 
-    plot(mDists, as.matrix(lagCor)[1,], xlab="distance",ylab=paste("correlation [",cor.method,"]",sep=""), 
-         ylim=1.05*c(-abs(min(lagCor)),max(lagCor)), xlim=c(0,max(mDists)))
-    abline(h=c(-min(lagCor),0,min(lagCor)),col="grey")
+  retrieveData <- function(spIndex, tempIndices, corFun) {
+    binStats <- matrix(NA, nrow = ncol(tempIndices)/2, ncol = 2)
+    for (i in 1:(ncol(tempIndices)/2)) {
+      binStats[i,] <- corFun(cbind(data[spIndex[,1], tempIndices[,2*i-1], var, drop=F]@data[[1]],
+                                   data[spIndex[,2], tempIndices[,2*i], var, drop=F]@data[[1]]))
+    }
+    
+  return(binStats)
   }
   
-  # res <- list(meanDists = mDists, lagCor=lagCor, lagData=lagData, lags=list(sp=spIndices, time=tempIndices))
-  res <- list(meanDists = mDists, lagCor=lagCor, lags=list(sp=spIndices, time=tempIndices))
+  lagStats <- lapply(spIndices, retrieveData, tempIndices=tempIndices, corFun=calcCor)
+  
+  lagCor <- matrix(NA, length(tlags), nbins)
+  lagNp  <- matrix(NA, length(tlags), nbins)
+  for (i in 1:length(lagStats)) {
+    lagNp[,i]  <- lagStats[[i]][,1]
+    lagCor[,i] <- lagStats[[i]][,2]
+  }
+  
+  if(plot) { 
+    plot(mDists, lagCor[1,], 
+         xlab="distance", 
+         ylab=paste("correlation [",cor.method,"]",sep=""), 
+         ylim=1.05*c(-abs(min(lagCor)), max(lagCor)), 
+         xlim=c(0,max(mDists)))
+    abline(h=c(-min(lagCor), 0, min(lagCor)), col="grey")
+  }
+  
+  res <- list(meanDists = mDists, lagCor = lagCor, lagNp=lagNp,
+              lags=list(sp=spIndices, time=tempIndices))
   attr(res,"cor.method") <- cor.method
   attr(res, "variable") <- var
   return(res)
