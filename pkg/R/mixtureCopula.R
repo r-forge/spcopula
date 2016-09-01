@@ -8,7 +8,7 @@
 setClass("mixtureCopula", contains = "copula", slots = list(memberCops= "list"))
 
 # constructor
-mixtureCopula <- function (param = c(0.2, 0.2, 0.5), memberCops = c(normalCopula(), claytonCopula())) {
+mixtureCopula <- function (param = c(0.2, 0.2, 0.5), memberCops = c(normalCopula(0), claytonCopula(1))) {
   stopifnot(length(memberCops) == 2)
   stopifnot(memberCops[[1]]@dimension == memberCops[[2]]@dimension)
   
@@ -18,7 +18,7 @@ mixtureCopula <- function (param = c(0.2, 0.2, 0.5), memberCops = c(normalCopula
   if (missing(param))
     param <- 0.5
   if (length(param) == 1)
-    param <- c(memberCops[[1]]@parameters, memberCops[[2]]@parameters, 0.5)
+    param <- c(memberCops[[1]]@parameters, memberCops[[2]]@parameters, param)
   else {
     stopifnot(length(param) == cop1.nPar + cop2.nPar + 1)
   
@@ -118,49 +118,56 @@ setMethod("rCopula", signature(copula = "mixtureCopula"), rMixCop)
 ## fitment
 fitMixCop <- function(copula, data, start, method="mpl",
                       lower = NULL, upper = NULL, 
-                      optim.method = "BFGS", optim.control = list(maxit = 1000), 
-                      estimate.variance = FALSE, ...){
+                      optim.method = "L-BFGS-B", 
+                      optim.control = list(maxit = 1000)){
   if (missing(start))
     start <- copula@parameters
   stopifnot(method %in% c("ml", "mpl"))
   
+  if(any(is.na(start)))
+    stop("Copula parameters or 'start' contains an 'NA' value.")
+  
   if(is.null(lower))
     lower <- copula@param.lowbnd
   if(is.null(upper))
-    upper <- copula@param.lowbnd
+    upper <- copula@param.upbnd
     
-  copula:::fitCopula.ml(copula, data, start = start, method = method,  
-                              lower = lower, upper = upper, 
-                              optim.method = optim.method, 
-                              optim.control = optim.control, 
-                              estimate.variance = estimate.variance , ...)
+  optFun <- function(parSet) {
+    cop <- mixtureCopula(parSet, copula@memberCops)
+    cat(cop@parameters, "\n")
+    -sum(log(dCopula(data, cop)))
+  }
+  
+  optOut <- optim(start, optFun, method = optim.method, 
+                  lower = lower, upper = upper, 
+                  control = optim.control)
+
+  new("fitCopula",
+      copula = mixtureCopula(optOut$par, copula@memberCops),
+      estimate = optOut$par,
+      var.est = matrix(NA),
+      loglik = -optOut$value,
+      nsample = nrow(data),
+      method = method,
+      fitting.stats = append(optOut[c("convergence","counts","message")],
+                             optim.control))
 }
 
 setMethod(fitCopula, 
           signature = c(copula = "mixtureCopula"), 
           fitMixCop)
 
-mixCop <- mixtureCopula(c(0.2,0.5,0.3))
-fitCopula(mixCop, rCopula(300, mixCop))
+## 
 
-fitMixCop(mixCop, rCopula(300, mixCop))
+setMethod("tau", signature = c(copula = "mixtureCopula"),
+          function(copula, ...) {
+            mixLambda <- tail(copula@parameters, 1)
+            (1-mixLambda) * tau(copula@memberCops[[1]], ...) + mixLambda * tau(copula@memberCops[[2]], ...)
+          })
 
-# 
-# fitCopulaASC2 <- function (copula, data, method = "ml", start=c(0,0),
-#                            lower=c(-3,-1), upper=c(1,1), 
-#                            optim.method="L-BFGS-B", optim.control=list(),
-#                            estimate.variance = FALSE) {
-#   fit <- switch(method, 
-#                 ml=fitASC2.ml(copula, data, start, lower, upper, optim.control, optim.method),
-#                 itau=fitASC2.itau(copula, data, estimate.variance),
-#                 irho=fitASC2.irho(copula, data, estimate.variance),
-#                 stop("Implemented methods for copulas in the spCopula package are: ml, itau, and irho."))
-#   return(fit)
-# }
-# 
-# setMethod("fitCopula", signature("asCopula"), fitCopulaASC2)
 
-# setMethod("tau",signature("asCopula"),tauASC2)
-# setMethod("rho", signature("asCopula"), rhoASC2)
-# setMethod("lambda", signature("asCopula"), 
-#           function(copula, ...) c(lower = 0, upper = 0))
+setMethod("lambda", signature = c(copula = "mixtureCopula"),
+          function(copula, ...) {
+            mixLambda <- tail(copula@parameters, 1)
+            (1-mixLambda) * lambda(copula@memberCops[[1]], ...) + mixLambda * lambda(copula@memberCops[[2]], ...)
+          })
