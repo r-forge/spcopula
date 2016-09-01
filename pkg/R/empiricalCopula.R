@@ -26,7 +26,7 @@ empiricalCopula <- function (sample=NULL, copula) {
 # simplified constructor
 genEmpCop <- function(copula, sample.size=1e5) {
   cat("Note: the copula will be empirically represented by a sample of size:", sample.size, "\n")
-  empiricalCopula(rCopula(sample.size,copula), copula)
+  empiricalCopula(rCopula(sample.size, copula), copula)
 }
 
 
@@ -35,10 +35,6 @@ genEmpCop <- function(copula, sample.size=1e5) {
 ## jcdf ##
 # from package copula
 pempCop.C <- function(u, copula) {
-  # r-forge hack, to be removed after release of copula 0.999-6
-  if(exists("C.n")) {
-    return(C.n(u, copula@sample, offset=0, method="C"))
-  } else
     return(Cn(copula@sample,u))
 }
 
@@ -53,17 +49,19 @@ tauempCop <- function(copula){
   TauMatrix(copula@sample)[1,2]
 }
 
-setMethod("tau",signature("asCopula"),tauempCop)
+setMethod("tau",signature("empiricalCopula"), tauempCop)
 
 
 rhoempCop <- function(copula){
   cor(copula@sample,method="spearman")
 }
 
-setMethod("rho",signature("asCopula"),rhoempCop)
+setMethod("rho",signature("empiricalCopula"), rhoempCop)
 
+setMethod("lambda", signature("empiricalCopula"), 
+          function(copula, ...) stop("No evaluation possible, try to plot 'empBivJointDepFun' for a visual assessment."))
 
-# Vine Copula
+# Vine Copula - empirical evaluation
 ## jcdf ##
 pvineCopula <- function(u, copula) {
   empCop <- genEmpCop(copula, 1e5)
@@ -72,9 +70,9 @@ pvineCopula <- function(u, copula) {
 }
 
 setMethod("pCopula", signature("numeric","vineCopula"), 
-          function(u,copula) {
-            pvineCopula(matrix(u, ncol=copula@dimension),copula)
+          function(u, copula) {
+            pvineCopula(matrix(u, ncol=copula@dimension), copula)
           })
 setMethod("pCopula", signature("data.frame","vineCopula"), 
-          function(u,copula) pvineCopula(as.matrix(u),copula))
+          function(u, copula) pvineCopula(as.matrix(u), copula))
 setMethod("pCopula", signature("matrix","vineCopula"), pvineCopula)

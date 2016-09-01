@@ -417,3 +417,6 @@ rhoCQSec <- function(copula){
 }
 
 setMethod("rho",signature("cqsCopula"),rhoCQSec)
+
+setMethod("lambda", signature("cqsCopula"), 
+          function(copula, ...) c(lower = 0, upper = 0))

@@ -307,4 +307,7 @@ rhoASC2 <- function(copula){
   return((a+3*b)/12)
 }
 
-setMethod("rho",signature("asCopula"), rhoASC2)
+setMethod("rho", signature("asCopula"), rhoASC2)
+
+setMethod("lambda", signature("asCopula"), 
+          function(copula, ...) c(lower = 0, upper = 0))
