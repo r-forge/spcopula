@@ -35,7 +35,7 @@ genEmpCop <- function(copula, sample.size=1e5) {
 ## jcdf ##
 # from package copula
 pempCop.C <- function(u, copula) {
-    return(Cn(copula@sample,u))
+  F.n(u, copula@sample)
 }
 
 setMethod("pCopula", signature("numeric", "empiricalCopula"),

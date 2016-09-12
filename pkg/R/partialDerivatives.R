@@ -1,9 +1,3 @@
-# partial derivatives and their inverse of some copulas from the copula package
-# new defined copulas store their partial derivative separately
-# 
-# setGeneric("dduCopula", function(u, copula, ...) standardGeneric("dduCopula"))
-# setGeneric("ddvCopula", function(u, copula, ...) standardGeneric("ddvCopula"))
-
 ## inverse partial derivatives 
 # numerical standard function
 invdduCopula <- function(u, copula, y, ..., tol=.Machine$double.eps^0.5) {

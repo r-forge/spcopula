@@ -87,7 +87,8 @@ setMethod("dCopula",signature=signature("data.frame","spVineCopula"),
           })
 
 # fitting the spatial vine for a given list of spatial copulas
-fitSpVine <- function(copula, data, method, estimate.variance=FALSE) {
+fitSpVine <- function(copula, data, method="ml", estimate.variance=FALSE) {
+  cat("fitSpVine \n")
   stopifnot(is.list(data))
   stopifnot(length(data)==2)
   neigh <- data[[1]]

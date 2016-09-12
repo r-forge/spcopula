@@ -10,6 +10,8 @@
 \alias{pCopula,matrix,tawn3pCopula-method}
 \alias{pCopula,numeric,tawn3pCopula-method}
 \alias{rCopula,numeric,tawn3pCopula-method}
+\alias{dduCopula,ANY,tawn3pCopula-method}
+\alias{ddvCopula,ANY,tawn3pCopula-method}
 
 \title{Class \code{"tawn3pCopula"}}
 \description{

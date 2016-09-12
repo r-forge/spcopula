@@ -1,13 +1,11 @@
 
-R version 3.2.2 (2015-08-14) -- "Fire Safety"
-Copyright (C) 2015 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -20,8 +18,22 @@ Type 'q()' to quit R.
 > pkgname <- "spcopula"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
+> options(pager = "console")
+> base::assign(".ExTimings", "spcopula-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
 > library('spcopula')
 Loading required package: copula
+Loading required package: VineCopula
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 > cleanEx()
@@ -30,6 +42,7 @@ Loading required package: copula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: EU_RB
 > ### Title: Daily mean PM10 concentrations over Europe in June and July 2005
 > ### Aliases: EU_RB
@@ -57,7 +70,7 @@ Formal class 'STFDF' [package "spacetime"] with 4 slots
   .. .. .. .. ..$ : chr [1:2] "min" "max"
   .. .. ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slot
   .. .. .. .. ..@ projargs: chr " +proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
-  ..@ time   :An ‘xts’ object on 2005-06-01/2005-07-31 containing:
+  ..@ time   :An 'xts' object on 2005-06-01/2005-07-31 containing:
   Data: int [1:61, 1] 5266 5267 5268 5269 5270 5271 5272 5273 5274 5275 ...
  - attr(*, "dimnames")=List of 2
   ..$ : NULL
@@ -69,12 +82,15 @@ Formal class 'STFDF' [package "spacetime"] with 4 slots
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("EU_RB", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("EU_RB_2005")
 > ### * EU_RB_2005
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: EU_RB_2005
 > ### Title: Daily mean PM10 concentrations over Europe in 2005 as used in
 > ###   the JSS manuscript
@@ -111,7 +127,7 @@ Formal class 'STFDF' [package "spacetime"] with 4 slots
   .. .. .. .. ..$ : chr [1:2] "min" "max"
   .. .. ..@ proj4string:Formal class 'CRS' [package "sp"] with 1 slot
   .. .. .. .. ..@ projargs: chr " +proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
-  ..@ time   :An ‘xts’ object on 2005-01-01/2005-12-31 containing:
+  ..@ time   :An 'xts' object on 2005-01-01/2005-12-31 containing:
   Data: int [1:365, 1] 5115 5116 5117 5118 5119 5120 5121 5122 5123 5124 ...
  - attr(*, "dimnames")=List of 2
   ..$ : NULL
@@ -123,12 +139,15 @@ Formal class 'STFDF' [package "spacetime"] with 4 slots
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("EU_RB_2005", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("asCopula-class")
 > ### * asCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: asCopula-class
 > ### Title: Class '"asCopula"'
 > ### Aliases: asCopula-class dduCopula,matrix,asCopula-method
@@ -153,16 +172,20 @@ Class:    character
 
 Extends: 
 Class "copula", directly
-Class "Copula", by class "copula", distance 2
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("asCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("asCopula")
 > ### * asCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: asCopula
 > ### Title: Constructor of an asymmetric copula with cubic and quadratic
 > ###   sections (Nelsen 2006).
@@ -175,12 +198,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("asCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("bivTailDepFun")
 > ### * bivTailDepFun
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: bivJointDepFun
 > ### Title: Bivariate joint dependence functions
 > ### Aliases: bivJointDepFun lowerBivJointDepFun upperBivJointDepFun
@@ -216,15 +242,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("bivTailDepFun", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:VineCopula’
-
 > nameEx("calcBins")
 > ### * calcBins
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: calcBins
 > ### Title: A function calculating the spatial/spatio-temporal bins
 > ### Aliases: calcBins calcBins-methods calcBins,Spatial-method
@@ -243,15 +269,18 @@ detaching ‘package:VineCopula’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("calcBins", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("composeSpCopula")
 > ### * composeSpCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: composeSpCopula
 > ### Title: Composing a bivariate Spatial Copula
 > ### Aliases: composeSpCopula
@@ -271,12 +300,15 @@ Copulas:
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("composeSpCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("condCovariate")
 > ### * condCovariate
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: condCovariate
 > ### Title: Conditioning of a Covariate
 > ### Aliases: condCovariate
@@ -305,15 +337,18 @@ Numerical evaluation of invddu takes place.
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("condCovariate", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:spacetime’, ‘package:sp’
+detaching 'package:spacetime', 'package:sp'
 
 > nameEx("condSpVine")
 > ### * condSpVine
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: condSpVine
 > ### Title: Conditions a spatial vine copula for conditional prediction
 > ### Aliases: condSpVine
@@ -363,15 +398,15 @@ parameter at boundary ==> returning indepCopula()
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("condSpVine", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:VineCopula’
-
 > nameEx("condStCoVarVine")
 > ### * condStCoVarVine
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: condStCoVarVine
 > ### Title: conditional distribution function of spatio-temporal covariate
 > ###   vine copula
@@ -409,15 +444,15 @@ detaching ‘package:VineCopula’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("condStCoVarVine", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:VineCopula’
-
 > nameEx("condStVine")
 > ### * condStVine
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: condStVine
 > ### Title: Conditions a spatio-temporal vine copula for conditional
 > ###   prediction
@@ -453,15 +488,15 @@ detaching ‘package:VineCopula’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("condStVine", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:VineCopula’
-
 > nameEx("cqsCopula-class")
 > ### * cqsCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: cqsCopula-class
 > ### Title: Class '"cqsCopula"'
 > ### Aliases: cqsCopula-class dduCopula,matrix,cqsCopula-method
@@ -486,16 +521,20 @@ Class:      numeric    character
 
 Extends: 
 Class "copula", directly
-Class "Copula", by class "copula", distance 2
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("cqsCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("cqsCopula")
 > ### * cqsCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: cqsCopula
 > ### Title: Constructor of a symmetric copula with cubic quadratic sections.
 > ### Aliases: cqsCopula
@@ -507,12 +546,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("cqsCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("criticalLevel")
 > ### * criticalLevel
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: criticalLevel
 > ### Title: Calculating the critical level for a given Kendall Return Period
 > ### Aliases: criticalLevel
@@ -525,12 +567,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("criticalLevel", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("criticalPair")
 > ### * criticalPair
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: criticalPair
 > ### Title: Calculate Critical Pairs
 > ### Aliases: criticalPair
@@ -544,12 +589,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("criticalPair", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("criticalTriple")
 > ### * criticalTriple
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: criticalTriple
 > ### Title: calculate critical triples
 > ### Aliases: criticalTriple
@@ -566,12 +614,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("criticalTriple", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("dduCopula")
 > ### * dduCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: dduCopula
 > ### Title: partial derivatives of copulas
 > ### Aliases: dduCopula ddvCopula
@@ -609,12 +660,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("dduCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("dependencePlot")
 > ### * dependencePlot
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: dependencePlot
 > ### Title: Kernel smoothed scatter plot
 > ### Aliases: dependencePlot
@@ -626,12 +680,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("dependencePlot", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("empiricalCopula-class")
 > ### * empiricalCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: empiricalCopula-class
 > ### Title: Class '"empiricalCopula"'
 > ### Aliases: empiricalCopula-class
@@ -652,16 +709,20 @@ Class:      numeric    character
 
 Extends: 
 Class "copula", directly
-Class "Copula", by class "copula", distance 2
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("empiricalCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("empiricalCopula")
 > ### * empiricalCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: empiricalCopula
 > ### Title: Constructor of an empirical copula class
 > ### Aliases: empiricalCopula
@@ -713,12 +774,15 @@ Formal class 'empiricalCopula' [package "spcopula"] with 7 slots
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("empiricalCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("fitCorFun")
 > ### * fitCorFun
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: fitCorFun
 > ### Title: Automated fitting of a correlation function to the correlogram
 > ### Aliases: fitCorFun
@@ -764,12 +828,15 @@ Sum of squared residuals: 0.006503102
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("fitCorFun", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("fitSpCopula")
 > ### * fitSpCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: fitSpCopula
 > ### Title: Spatial Copula Fitting
 > ### Aliases: fitSpCopula
@@ -826,15 +893,18 @@ A spatial dependence function is used.
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("fitSpCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("genEmpCop")
 > ### * genEmpCop
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: genEmpCop
 > ### Title: Generate an empirical copula
 > ### Aliases: genEmpCop
@@ -855,12 +925,15 @@ Note: the copula will be empirically represented by a sample of size: 500
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("genEmpCop", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("genEmpKenFun")
 > ### * genEmpKenFun
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: genEmpKenFun
 > ### Title: Generates an empirical Kendall distribution function
 > ### Aliases: genEmpKenFun
@@ -874,12 +947,15 @@ Note: the copula will be empirically represented by a sample of size: 500
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("genEmpKenFun", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("genInvKenFun")
 > ### * genInvKenFun
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: genInvKenFun
 > ### Title: Generate the inverse Kendall distribution function
 > ### Aliases: genInvKenFun
@@ -897,12 +973,15 @@ Note: the copula will be empirically represented by a sample of size: 500
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("genInvKenFun", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("getKendallDistr")
 > ### * getKendallDistr
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: getKendallDistr
 > ### Title: Retrieving the Kendall Distribution function for a given copula
 > ### Aliases: getKendallDistr getKendallDistr,claytonCopula-method
@@ -920,12 +999,15 @@ Note: the copula will be empirically represented by a sample of size: 500
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("getKendallDistr", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("getNeighbours")
 > ### * getNeighbours
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: getNeighbours
 > ### Title: Creating Local Neighbourhoods
 > ### Aliases: getNeighbours
@@ -944,15 +1026,18 @@ measure
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("getNeighbours", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("getStNeighbours")
 > ### * getStNeighbours
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: getStNeighbours
 > ### Title: Creating Local Spatio-Temporal Neighbourhoods
 > ### Aliases: getStNeighbours
@@ -979,15 +1064,18 @@ measure
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("getStNeighbours", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:spacetime’, ‘package:sp’
+detaching 'package:spacetime', 'package:sp'
 
 > nameEx("kendallDistribution")
 > ### * kendallDistribution
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: kendallDistribution
 > ### Title: The Kendall distribution
 > ### Aliases: kendallDistribution kendallDistribution,claytonCopula-method
@@ -1006,12 +1094,15 @@ detaching ‘package:spacetime’, ‘package:sp’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("kendallDistribution", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("kendallRP")
 > ### * kendallRP
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: kendallRP
 > ### Title: calculating the Kendall Return Period
 > ### Aliases: kendallRP
@@ -1024,12 +1115,15 @@ detaching ‘package:spacetime’, ‘package:sp’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("kendallRP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("loglikByCopulasLags")
 > ### * loglikByCopulasLags
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: loglikByCopulasLags
 > ### Title: Log-likelihoods by copula family and spatial lag class
 > ### Aliases: loglikByCopulasLags
@@ -1087,15 +1181,18 @@ Gumbel copula family; Archimedean copula; Extreme value copula
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("loglikByCopulasLags", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("loglikByCopulasStLags")
 > ### * loglikByCopulasStLags
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: loglikByCopulasStLags
 > ### Title: Log-likelihoods by copula family and spatio-temporal lag class
 > ### Aliases: loglikByCopulasStLags
@@ -1153,15 +1250,77 @@ Gumbel copula family; Archimedean copula; Extreme value copula
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("loglikByCopulasStLags", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
+> nameEx("mixtureCopula-class")
+> ### * mixtureCopula-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: mixtureCopula-class
+> ### Title: Class '"mixtureCopula"'
+> ### Aliases: mixtureCopula-class dduCopula,ANY,mixtureCopula-method
+> ###   ddvCopula,ANY,mixtureCopula-method fitCopula,mixtureCopula-method
+> ###   invdduCopula,numeric,mixtureCopula,numeric-method
+> ###   invddvCopula,numeric,mixtureCopula,numeric-method
+> ### Keywords: classes
+> 
+> ### ** Examples
+> 
+> showClass("mixtureCopula")
+Class "mixtureCopula" [package "spcopula"]
+
+Slots:
+                                                                       
+Name:    memberCops    dimension   parameters  param.names param.lowbnd
+Class:         list      integer      numeric    character      numeric
+                                
+Name:   param.upbnd     fullname
+Class:      numeric    character
+
+Extends: 
+Class "copula", directly
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("mixtureCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("mixtureCopula")
+> ### * mixtureCopula
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: mixtureCopula
+> ### Title: Constructor of a mixture copula
+> ### Aliases: mixtureCopula
+> 
+> ### ** Examples
+> 
+> 
+> mixCop <- mixtureCopula()
+> 
+> persp(mixCop, dCopula)
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("mixtureCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
 > nameEx("neighbourhood-class")
 > ### * neighbourhood-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: neighbourhood-class
 > ### Title: Class 'neighbourhood'
 > ### Aliases: neighbourhood-class names,neighbourhood-method
@@ -1181,15 +1340,18 @@ measure
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("neighbourhood-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("neighbourhood")
 > ### * neighbourhood
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: neighbourhood
 > ### Title: Constructor of the 'neighbourhood' class.
 > ### Aliases: neighbourhood
@@ -1216,15 +1378,18 @@ measure
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("neighbourhood", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("qCopula_u")
 > ### * qCopula_u
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: qCopula_u
 > ### Title: The inverse of a bivariate copula given u or v
 > ### Aliases: qCopula_u qCopula_u,copula-method qCopula_v
@@ -1245,12 +1410,15 @@ detaching ‘package:sp’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("qCopula_u", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("rankTransform")
 > ### * rankTransform
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: rankTransform
 > ### Title: rank order transformation of margins
 > ### Aliases: rankTransform
@@ -1267,12 +1435,15 @@ detaching ‘package:sp’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("rankTransform", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("reduceNeighbours")
 > ### * reduceNeighbours
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: reduceNeighbours
 > ### Title: Selecting the strongest correlated neighbours
 > ### Aliases: reduceNeighbours
@@ -1298,15 +1469,18 @@ var1
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("reduceNeighbours", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:spacetime’, ‘package:sp’
+detaching 'package:spacetime', 'package:sp'
 
 > nameEx("simulatedTriples")
 > ### * simulatedTriples
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: simulatedTriples
 > ### Title: annual extreme rainfall triples
 > ### Aliases: triples
@@ -1323,12 +1497,15 @@ detaching ‘package:spacetime’, ‘package:sp’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("simulatedTriples", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("spCopDemo")
 > ### * spCopDemo
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spCopDemo
 > ### Title: workspace produced in 'demo(spCopula)'
 > ### Aliases: lokliktau bestFitTau bins calcKTauLin calcKTauPol dataSet
@@ -1343,12 +1520,15 @@ detaching ‘package:spacetime’, ‘package:sp’
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spCopDemo", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("spCopPredict")
 > ### * spCopPredict
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spCopPredict
 > ### Title: spatial prediction based on a spatial vine copula
 > ### Aliases: spCopPredict
@@ -1413,15 +1593,18 @@ In case no 1-1 relation is known, the copula as in components is used.
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spCopPredict", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:VineCopula’, ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("spCopula-class")
 > ### * spCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spCopula-class
 > ### Title: Class '"spCopula"'
 > ### Aliases: spCopula-class dduCopula,matrix,spCopula-method
@@ -1468,12 +1651,15 @@ parameter at boundary ==> returning indepCopula()
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("spCopula")
 > ### * spCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spCopula
 > ### Title: Spatial Copula
 > ### Aliases: spCopula
@@ -1507,12 +1693,15 @@ In case no 1-1 relation is known, the copula as in components is used.
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("spGaussCopPredict")
 > ### * spGaussCopPredict
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spGaussCopPredict
 > ### Title: spatial prediction using a Gaussian Copula
 > ### Aliases: spGaussCopPredict
@@ -1576,15 +1765,18 @@ Sum of squared residuals: 0.03354387
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spGaussCopPredict", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("spGaussLogLik")
 > ### * spGaussLogLik
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spGaussLogLik
 > ### Title: Density evaluation for a spatial Gaussian Copula
 > ### Aliases: spGaussLogLik
@@ -1634,15 +1826,18 @@ Sum of squared residuals: 0.03354387
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spGaussLogLik", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:sp’
+detaching 'package:sp'
 
 > nameEx("spVineCopula-class")
 > ### * spVineCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spVineCopula-class
 > ### Title: Class '"spVineCopula"'
 > ### Aliases: spVineCopula-class mixedSpVineCopula-class
@@ -1660,12 +1855,15 @@ Known Subclasses: "mixedSpVineCopula", "pureSpVineCopula"
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spVineCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("spVineCopula")
 > ### * spVineCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: spVineCopula
 > ### Title: Constructor of the virtual super class 'spVineCopula'.
 > ### Aliases: spVineCopula
@@ -1712,15 +1910,15 @@ Dimension:  4
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spVineCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:VineCopula’
-
 > nameEx("stCoVarVineCopula-class")
 > ### * stCoVarVineCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stCoVarVineCopula-class
 > ### Title: Class '"stCoVarVineCopula"'
 > ### Aliases: stCoVarVineCopula-class
@@ -1741,16 +1939,20 @@ Class:    character      numeric      numeric    character
 
 Extends: 
 Class "copula", directly
-Class "Copula", by class "copula", distance 2
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stCoVarVineCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("stCoVarVineCopula")
 > ### * stCoVarVineCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stCoVarVineCopula
 > ### Title: Constructor for 'stCoVarVineCopula'
 > ### Aliases: stCoVarVineCopula
@@ -1785,15 +1987,15 @@ Dimension:  10
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stCoVarVineCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:VineCopula’
-
 > nameEx("stCopPredict")
 > ### * stCopPredict
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stCopPredict
 > ### Title: Spatio-Temporal Prediction based on a Spatio-Temporal Vine
 > ###   Copula
@@ -1864,15 +2066,18 @@ Slot "endTime":
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stCopPredict", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:VineCopula’, ‘package:spacetime’, ‘package:sp’
+detaching 'package:spacetime', 'package:sp'
 
 > nameEx("stCopula-class")
 > ### * stCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stCopula-class
 > ### Title: Class '"stCopula"'
 > ### Aliases: stCopula-class show,stCopula-method
@@ -1895,16 +2100,20 @@ Class:    character      numeric      numeric    character
 
 Extends: 
 Class "copula", directly
-Class "Copula", by class "copula", distance 2
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("stCopula")
 > ### * stCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stCopula
 > ### Title: Spatio-Temporal Copula
 > ### Aliases: stCopula
@@ -1932,12 +2141,15 @@ Class "Copula", by class "copula", distance 2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("stNeighbourhood-class")
 > ### * stNeighbourhood-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stNeighbourhood-class
 > ### Title: Class '"stNeighbourhood"'
 > ### Aliases: stNeighbourhood-class [,stNeighbourhood,numeric,ANY,ANY-method
@@ -1956,12 +2168,15 @@ Class: data.frame      array      array  character  character    logical
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stNeighbourhood-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("stNeighbourhood")
 > ### * stNeighbourhood
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stNeighbourhood
 > ### Title: Constructor of the 'stNeighbourhood' class.
 > ### Aliases: stNeighbourhood
@@ -1988,15 +2203,18 @@ var1
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stNeighbourhood", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:spacetime’, ‘package:sp’
+detaching 'package:spacetime', 'package:sp'
 
 > nameEx("stVineCopula-class")
 > ### * stVineCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stVineCopula-class
 > ### Title: Class '"stVineCopula"'
 > ### Aliases: stVineCopula-class fitCopula,stVineCopula-method
@@ -2017,16 +2235,20 @@ Class:      numeric      numeric    character
 
 Extends: 
 Class "copula", directly
-Class "Copula", by class "copula", distance 2
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stVineCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("stVineCopula")
 > ### * stVineCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stVineCopula
 > ### Title: Constructor of the class 'stVineCopula'.
 > ### Aliases: stVineCopula
@@ -2061,15 +2283,15 @@ Dimension:  10
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stVineCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:VineCopula’
-
 > nameEx("tawn3pCopula-class")
 > ### * tawn3pCopula-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: tawn3pCopula-class
 > ### Title: Class '"tawn3pCopula"'
 > ### Aliases: tawn3pCopula-class A,tawn3pCopula-method
@@ -2077,7 +2299,8 @@ detaching ‘package:VineCopula’
 > ###   dCopula,numeric,tawn3pCopula-method fitCopula,tawn3pCopula-method
 > ###   pCopula,matrix,tawn3pCopula-method
 > ###   pCopula,numeric,tawn3pCopula-method
-> ###   rCopula,numeric,tawn3pCopula-method
+> ###   rCopula,numeric,tawn3pCopula-method dduCopula,ANY,tawn3pCopula-method
+> ###   ddvCopula,ANY,tawn3pCopula-method
 > ### Keywords: classes
 > 
 > ### ** Examples
@@ -2096,16 +2319,20 @@ Class:      numeric    character
 Extends: 
 Class "evCopula", directly
 Class "copula", by class "evCopula", distance 2
-Class "Copula", by class "evCopula", distance 3
+Class "parCopula", by class "evCopula", distance 3
+Class "Copula", by class "evCopula", distance 4
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("tawn3pCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("tawn3pCopula")
 > ### * tawn3pCopula
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: tawn3pCopula
 > ### Title: Tawn Copula Family constructor using all three parameters
 > ### Aliases: tawn3pCopula
@@ -2119,12 +2346,15 @@ Class "Copula", by class "evCopula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("tawn3pCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("unitScatter")
 > ### * unitScatter
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: unitScatter
 > ### Title: A scatter plot on the unit-square
 > ### Aliases: unitScatter univScatter
@@ -2138,11 +2368,13 @@ Class "Copula", by class "evCopula", distance 3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("unitScatter", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > ### * <FOOTER>
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  9.272 0.135 9.421 0 0 
+Time elapsed:  6.11 0.43 7.04 NA NA 
 > grDevices::dev.off()
 null device 
           1 

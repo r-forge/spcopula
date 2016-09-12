@@ -1,4 +1,5 @@
 import(copula)
+import(VineCopula)
 import(sp, spacetime)
 import(methods)
 
@@ -6,7 +7,7 @@ importFrom("graphics", "abline", "smoothScatter")
   importFrom("stats", "D", "approxfun", "cor", "ecdf", "integrate", "lm",
              "optim", "optimise", "optimize", "pnorm", "predict", "pt",
              "qnorm", "qt", "quantile", "runif", "uniroot", "var")
-  importFrom("utils", "setTxtProgressBar", "txtProgressBar")
+  importFrom("utils", "setTxtProgressBar", "txtProgressBar", "tail")
 
 importMethodsFrom(VineCopula, fitCopula)
 importMethodsFrom(VineCopula, dduCopula,ddvCopula)
@@ -44,6 +45,7 @@ export(spVineCopula, stVineCopula)
 export(stCoVarVineCopula)
 export(neighbourhood, stNeighbourhood)
 export(empiricalCopula, genEmpCop)
+export(mixtureCopula)
 
 # general functions
 export(rankTransform, dependencePlot, unitScatter, univScatter)
@@ -80,3 +82,4 @@ export(kendall)
 exportClasses(asCopula, cqsCopula, tawn3pCopula, neighbourhood, stNeighbourhood, empiricalCopula)
 exportClasses(spCopula, stCopula, spVineCopula, stVineCopula)
 exportClasses(stCoVarVineCopula)
+exportClasses(mixtureCopula)

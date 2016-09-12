@@ -1,7 +1,5 @@
 ## librarys ##
-library("spcopula")
 library("sp")
-# library("evd")
 
 ## meuse - spatial poionts data.frame ##
 data("meuse")
@@ -83,8 +81,10 @@ text(x=(1:10+0.5), y=spLoglik, lapply(lagData,length))
 vineDim <- 5L
 meuseNeigh <- getNeighbours(meuse,var="marZinc",size=vineDim)
 
-meuseSpVine <- fitCopula(spVineCopula(spCop, vineCopula(as.integer(vineDim-1))),
-                         list(meuseNeigh, meuse))
+vineCop <- vineCopula(4L)
+
+meuseSpVine <- fitCopula(spVineCopula(spCop, vineCop),
+                         list(meuseNeigh, meuse), method="none")
 
 # log-likelihood:
 meuseSpVine@loglik

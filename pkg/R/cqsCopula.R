@@ -1,6 +1,3 @@
-## make fitCopula generic
-setGeneric("fitCopula",fitCopula)
-
 ######################################################
 ##                                                  ##
 ## a symmetric copula with cubic quadratic sections ##
