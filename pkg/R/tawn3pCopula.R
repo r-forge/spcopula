@@ -127,18 +127,18 @@ setMethod("ddvCopula", signature(copula = "tawn3pCopula"), ddvtawn3pCopula)
 # dduCopula(cbind(runif(10), runif(10)), tawn3pCop)
 ## fit
 
-fitTawn3pCop <- function(copula, data, method = c("mpl", "ml"), 
-                         start = copula@parameters,
-                         lower = copula@param.lowbnd,
-                         upper = copula@param.upbnd,
-                         optim.method = "L-BFGS-B", 
-                         optim.control = list(maxit = 1000), estimate.variance = FALSE, 
-                         hideWarnings = TRUE) {
-  
-  fitCopulaAny <- selectMethod(fitCopula, "copula")
-  fitCopulaAny(copula, data, method, start, lower, upper, 
-               optim.method, optim.control, estimate.variance,
-               hideWarnings)
-}
-            
-setMethod("fitCopula", signature("tawn3pCopula"), fitTawn3pCop)
+# fitTawn3pCop <- function(copula, data, method = c("mpl", "ml"), 
+#                          start = copula@parameters,
+#                          lower = copula@param.lowbnd,
+#                          upper = copula@param.upbnd,
+#                          optim.method = "L-BFGS-B", 
+#                          optim.control = list(maxit = 1000), estimate.variance = FALSE, 
+#                          hideWarnings = TRUE) {
+#   
+#   fitCopulaAny <- selectMethod(fitCopula, "copula")
+#   fitCopulaAny(copula, data, method, start, lower, upper, 
+#                optim.method, optim.control, estimate.variance,
+#                hideWarnings)
+# }
+#             
+# setMethod("fitCopula", signature("tawn3pCopula"), fitTawn3pCop)

@@ -265,13 +265,20 @@ setMethod("ddvCopula", signature("matrix","gumbelCopula"), ddvGumbel)
 ## partial derivative d/du
 ##########################
 
+## Wolfram alpha:
+# -e^α/(e^(α u) - e^α) - ((e^α - 1) e^(α + α u))/((e^(α u) - e^α) (e^α - e^(α + α u) + e^(α u + α v) - e^(α + α v)))
+
 dduFrank <- function(u, copula){
   rho <- copula@parameters
 
-  u1 <- u[,1]
-  u2 <- u[,2]
-
-  exp(-rho*u1)*(exp(-rho*u2)-1) / ( (exp(-rho)-1) + (exp(-rho*u1)-1)*(exp(-rho*u2)-1) )
+  v <- u[,2]
+  u <- u[,1]
+  E <- exp(1)
+  eRho <- E^rho
+  eRhoU <- E^(rho * u)
+  eRhoV <- E^(rho * v)
+  
+  -eRho/(eRhoU - eRho) - ((eRho - 1) * eRho * eRhoU)/((eRhoU - eRho) * (eRho - eRho * eRhoU + eRhoU * eRhoV - eRho * eRhoV))
 }
 
 setMethod("dduCopula", signature("numeric","frankCopula"),
@@ -280,30 +287,20 @@ setMethod("dduCopula", signature("numeric","frankCopula"),
           })
 setMethod("dduCopula", signature("matrix","frankCopula"), dduFrank)
 
-
-## inverse of the partial derivative d/du
-#########################################
-
-invdduFrank <- function(u, copula, y){
-    rho <- copula@parameters[1]
-    if (length(u)!=length(y)) 
-        stop("Length of u and y differ!")
-    return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*u)-y*(exp(-rho*u)-1)) +1) ) # by DL
-}
-
-setMethod("invdduCopula", signature("numeric", "frankCopula", "numeric"), invdduFrank)
-
-
 ## partial derivative d/dv
 ##########################
 
 ddvFrank <- function(u, copula){
   rho <- copula@parameters
-
-  u1 <- u[,1]
-  u2 <- u[,2]
-
-  exp(-rho*u2)*(exp(-rho*u1)-1) / ( (exp(-rho)-1) + (exp(-rho*u2)-1)*(exp(-rho*u1)-1) )
+  
+  v <- u[,2]
+  u <- u[,1]
+  E <- exp(1)
+  eRho <- E^rho
+  eRhoU <- E^(rho * u)
+  eRhoV <- E^(rho * v)
+  
+  -eRho/(eRhoV - eRho) - ((eRho - 1) * eRho * eRhoV)/((eRhoV - eRho) * (eRho - eRho * eRhoV + eRhoV * eRhoU - eRho * eRhoU))
 }
 
 setMethod("ddvCopula", signature("numeric","frankCopula"),
@@ -311,19 +308,6 @@ setMethod("ddvCopula", signature("numeric","frankCopula"),
             ddvFrank(matrix(u,ncol=copula@dimension),copula)
           })
 setMethod("ddvCopula", signature("matrix","frankCopula"), ddvFrank)
-
-
-## inverse of the partial derivative d/dv
-#########################################
-
-invddvFrank <- function(v, copula, y){
-    rho <- copula@parameters[1]
-    if (length(v)!=length(y)) 
-        stop("Length of v and y differ!")
-    return( (-1/rho) * log( y*( exp(-rho)-1)/(exp(-rho*v)-y*(exp(-rho*v)-1)) +1) )
-}
-
-setMethod("invddvCopula", signature("numeric", "frankCopula", "numeric"), invddvFrank)
 
 ####################
 ## student Copula ##
