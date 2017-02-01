@@ -1,13 +1,15 @@
 \name{genEmpCop}
 \alias{genEmpCop}
+\alias{genEmpSurCop}
 \title{
 Generate an empirical copula
 }
 \description{
-Generates an empirical copula from a sample and returns the corresponding function.
+Generates an empirical (survival) copula from a sample and returns the corresponding function.
 }
 \usage{
 genEmpCop(copula, sample.size=1e5)
+genEmpSurCop(copula, sample.size=1e5)
 }
 \arguments{
   \item{copula}{

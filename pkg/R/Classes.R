@@ -82,6 +82,22 @@ setClass("empiricalCopula",
 )
 
 ####
+## an empirical survival copula representation
+
+validEmpSurCopula <- function(object) {
+  if(ncol(object@sample) != object@dimension)
+    return("Dimension of the copula and the sample do not match.")
+  else
+    return(TRUE)
+}
+
+setClass("empSurCopula",
+         representation = representation("copula", sample="matrix"),
+         validity = validEmpSurCopula,
+         contains = list("copula")
+)
+
+####
 ## the leaf copula
 
 validLeafCopula <- function(object) {

@@ -3,7 +3,7 @@
 
 \title{Log-likelihoods by copula family and spatio-temporal lag class}
 
-\description{This function works through a set of copula family and evaluates the best fitting one for each spatiao-temporal lag.}
+\description{This function works through a set of copula families and evaluates the best fitting one for each spatio-temporal lag.}
 
 \usage{
 loglikByCopulasStLags(stBins, data, families = c(normalCopula(),

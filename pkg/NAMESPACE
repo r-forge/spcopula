@@ -44,7 +44,7 @@ export(spCopula, stCopula)
 export(spVineCopula, stVineCopula)
 export(stCoVarVineCopula)
 export(neighbourhood, stNeighbourhood)
-export(empiricalCopula, genEmpCop)
+export(empiricalCopula, genEmpCop, empSurCopula, genEmpSurCop)
 export(mixtureCopula)
 
 # general functions
@@ -79,7 +79,7 @@ export(criticalPair, criticalTriple)
 export(kendall)
 
 ## classes
-exportClasses(asCopula, cqsCopula, tawn3pCopula, neighbourhood, stNeighbourhood, empiricalCopula)
+exportClasses(asCopula, cqsCopula, tawn3pCopula, neighbourhood, stNeighbourhood, empiricalCopula, empSurCopula)
 exportClasses(spCopula, stCopula, spVineCopula, stVineCopula)
 exportClasses(stCoVarVineCopula)
 exportClasses(mixtureCopula)

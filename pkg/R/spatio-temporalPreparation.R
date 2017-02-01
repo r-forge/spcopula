@@ -348,7 +348,7 @@ calcStBins <- function(data, var, nbins=15, boundaries=NA, cutoff=NA,
                        cor.method="fasttau", plot=FALSE) {
   if(is.na(cutoff)) 
     cutoff <- spDists(coordinates(t(data@sp@bbox)))[1,2]/3
-  if(is.na(boundaries)) 
+  if(any(is.na(boundaries)))
     boundaries <- (1:nbins) * cutoff / nbins
   if(is.na(instances)) 
     instances=length(data@time)
