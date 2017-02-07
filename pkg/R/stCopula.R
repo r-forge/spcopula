@@ -47,8 +47,8 @@ showStCopula <- function(object) {
   cat("Copulas:\n")
   for (i in 1:length(object@spCopList)) {
     cmpCop <- object@spCopList[[i]]
-    cat("  ", cmpCop@fullname, "at", object@tlags[i], 
-      paste("[",object@tres,"]",sep=""), "\n")
+    cat("  ", describeCop(cmpCop, "very short"), "at", object@tlags[i], 
+        paste("[",object@tres,"]",sep=""), "\n")
     show(cmpCop)
   }
 }
@@ -302,19 +302,19 @@ dropStTree <- function (stNeigh, dataLocs, stCop) {
   }
   close(pb)
   
-#   # add covariate to the conditioned neighbourhood?
-#   if (length(stNeigh@coVar) > 0)
-#     u1[,ncol(u0)-(1:length(stNeigh@coVar))] <- u0[,ncol(u0) + 1 - (1:length(stNeigh@coVar))]
+  #   # add covariate to the conditioned neighbourhood?
+  #   if (length(stNeigh@coVar) > 0)
+  #     u1[,ncol(u0)-(1:length(stNeigh@coVar))] <- u0[,ncol(u0) + 1 - (1:length(stNeigh@coVar))]
   
   varSplit <- strsplit(stNeigh@var, "|", fixed = TRUE)[[1]]
   cond <- suppressWarnings(as.numeric(varSplit[length(varSplit)]))
   
   if (is.na(cond)) {
-#     coVar <- paste(stNeigh@coVar, "|0", sep = "")
+    #     coVar <- paste(stNeigh@coVar, "|0", sep = "")
     cond <- paste(stNeigh@var, "|0", sep = "")
   }
   else {
-#     coVar <- stNeigh@coVar
+    #     coVar <- stNeigh@coVar
     cond <- paste(stNeigh@var, cond + 1, sep = "")
   }
   

@@ -20,8 +20,23 @@ An object of class \linkS4class{mixtureCopula}}
 Benedikt Graeler}
 
 \examples{
+cop <- mixtureCopula(c(5,-0.8,2,0.5),
+                     memberCops = list(gumbelCopula(), tCopula()))
+cop
 
-mixCop <- mixtureCopula()
+smpl <- rCopula(100, cop)
 
-persp(mixCop, dCopula)
-}
+par(mfrow=c(2,2), mai=c(0.4,0.4,0.4,0.4))
+plot(smpl,asp=1, main="sample")
+persp(cop, dCopula, asp=1, main="density")
+
+contour(cop, pCopula, asp=1, main="CDF")
+points(rCopula_y(0.4, cop, 10), col="red")
+
+tau(cop)
+rho(cop)
+lambda(cop)
+
+# too few points, but faster for package compilation
+kenCop <- getKendallDistr(cop, smpl)
+curve(kenCop, main="Kendall function", asp=1)}

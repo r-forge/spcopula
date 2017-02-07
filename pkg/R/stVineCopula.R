@@ -96,7 +96,7 @@ fitStVine <- function(copula, data, method, estimate.variance=F) {
   
   cat("[Estimating a",ncol(u0),"dimensional copula at the top.]\n")
   vineCopFit <- fitCopula(copula@topCop, u0, method, estimate.variance) 
-    
+  
   stVineCop <- stVineCopula(copula@stCop, vineCopFit@copula)
   loglik <- vineCopFit@loglik
   
@@ -150,11 +150,11 @@ stCopPredict.expectation <- function(predNeigh, dataST, predST, stVine, margin, 
     
     ePred <- integrate(condExp,0,1,subdivisions=10000L,stop.on.error=stop.on.error, ...)
     if(ePred$abs.error > 0.01)
-            warning("Numerical integration in predExpectation performed at a level of absolute error of only ",
-                    ePred$abs.error, " for location ",i,".")
+      warning("Numerical integration in predExpectation performed at a level of absolute error of only ",
+              ePred$abs.error, " for location ",i,".")
     predMean <- c(predMean, ePred$value)
   }
-    
+  
   if ("data" %in% slotNames(predST)) {
     res <- predST
     res@data[["expect"]] <- predMean
@@ -185,7 +185,7 @@ stCopPredict.quantile <- function(predNeigh, dataST, predST, stVine, margin, p=0
     
     predQuantile <- c(predQuantile, margin$q(xVals[lower]+xRes))
   }
-
+  
   if ("data" %in% slotNames(predST)) {
     res <- predST
     res@data[[paste("quantile.",p,sep="")]] <- predQuantile

@@ -5,6 +5,41 @@
 ##########################
 # (see Example 3.16 in: Nelsen, Roger B. (2006): An Introduction to Copulas, second edition, Springer)
 
+validAsCopula = function(object) {
+  if (object@dimension != 2)
+    return("Only copulas with cubic quadratic sections of dimension 2 are supported.")
+  param <- object@parameters
+  upper <- object@param.upbnd
+  lower <- object@param.lowbnd
+  if (length(param) != length(upper))
+    return("Parameter and upper bound have non-equal length")
+  if (length(param) != length(lower))
+    return("Parameter and lower bound have non-equal length")
+  if (any(is.na(param) | param > upper | param < lower))
+    return("Parameter value out of bound")
+  else return (TRUE)
+}
+
+# the lower bound of the parameter a dependening on the parameter b
+limA <- function (b) {
+  stopifnot(abs(b) <= 1)
+  0.5*(-sqrt(-3*b^2+6*b+9)+b-3)
+}
+
+# the lower and upper bound of the parameter b dependening on the parameter a
+limB <- function (a) {
+  stopifnot(a <=1 & a >= -3)
+  if(a>-2)
+    return(c(-1,1))
+  pmax(pmin(0.5*(c(-1,1)*(sqrt(3)*sqrt(-a^2-2*a+3))+a+3),1),-1)
+}
+
+setClass("asCopula",
+         representation = representation("copula"),
+         validity = validAsCopula,
+         contains = list("copula")
+)
+
 # constructor
 asCopula <- function (param=c(0,0)) {
   val <- new("asCopula", dimension = as.integer(2), parameters = param, 
@@ -12,6 +47,24 @@ asCopula <- function (param=c(0,0)) {
              param.upbnd = c(1, 1), fullname = "asymmetric copula family with cubic and quadratic sections")
   return(val)
 }
+
+## printing
+setMethod("describeCop", c("asCopula", "character"),
+          function(x, kind = c("short", "very short", "long"), prefix = "", ...) {
+            kind <- match.arg(kind)
+            if(kind == "very short") # e.g. for show() which has more parts
+              return(paste0(prefix, "AS-CQS copula"))
+            
+            name <- "asymmetric"
+            d <- dim(x)
+            ch <- paste0(prefix, name, " copula, dim. d = ", d)
+            switch(kind <- match.arg(kind),
+                   short = ch,
+                   long = paste0(ch, "\n", prefix, " param.: ",
+                                 capture.output(str(x@parameters,
+                                                    give.head=FALSE))),
+                   stop("invalid 'kind': ", kind))
+          })
 
 ## density ##
 
@@ -184,11 +237,14 @@ setMethod("rCopula", signature("numeric", "asCopula"), rASC2)
 fitCopulaASC2 <- function (copula, data, method = "ml", start=c(0,0),
                            lower=c(-3,-1), upper=c(1,1), 
                            optim.method="L-BFGS-B", optim.control=list(),
-                           estimate.variance = FALSE) {
+                           estimate.variance = FALSE, call) {
+  if(missing(call)) 
+    call <- match.call()
+
   fit <- switch(method, 
-                ml=fitASC2.ml(copula, data, start, lower, upper, optim.control, optim.method),
-                itau=fitASC2.itau(copula, data, estimate.variance),
-                irho=fitASC2.irho(copula, data, estimate.variance),
+                ml=fitASC2.ml(copula, data, start, lower, upper, optim.control, optim.method, call),
+                itau=fitASC2.itau(copula, data, estimate.variance, call),
+                irho=fitASC2.irho(copula, data, estimate.variance, call),
                 stop("Implemented methods for copulas in the spCopula package are: ml, itau, and irho."))
   return(fit)
 }
@@ -207,27 +263,33 @@ setMethod("fitCopula", signature("asCopula"), fitCopulaASC2)
 # method
 #  one of kendall or spearman according to the calculation of moa
 
-fitASC2.itau <- function(copula, data, estimate.variance, tau=NULL) {
+fitASC2.itau <- function(copula, data, estimate.variance, tau=NULL, call) {
+  if(missing(call)) 
+    call <- match.call()
   if(is.null(tau))
     tau <- TauMatrix(data)[1,2]
+  
   esti <- fitASC2.moa(tau, data, method="itau")
   copula <- asCopula(esti)
   
   new("fitCopula", estimate = esti, var.est = matrix(NA), 
       loglik = sum(log(dCopula(data, copula))), nsample = nrow(data),
-      method = "Inversion of Kendall's tau and MLE", 
+      method = "Inversion of Kendall's tau and MLE", call = call,
       fitting.stats = list(convergence=as.integer(NA)), copula = copula)
 }
 
 fitASC2.irho <- function(copula, data, estimate.variance, rho=NULL){
+  if(missing(call)) 
+    call <- match.call()
   if(is.null(rho))
     rho <- cor(data,method="spearman")[1,2]
+  
   esti <- fitASC2.moa(rho, data, method="irho")
   copula <- asCopula(esti)
   
   new("fitCopula", estimate = esti, var.est = matrix(NA), 
       loglik = sum(log(dCopula(data, copula))), nsample = nrow(data),
-      method = "Inversion of Spearman's rho and MLE",
+      method = "Inversion of Spearman's rho and MLE", call=call,
       fitting.stats = list(convergence=as.integer(NA)), copula = copula)
 }
 
@@ -252,8 +314,11 @@ fitASC2.moa <- function(moa, data, method="itau", tol=.Machine$double.eps^.5) {
 
 # maximum log-likelihood estimation of a and b using optim
 
-fitASC2.ml <- function(copula, data, start, lower, upper, optim.control, optim.method) { 
-  if(length(start)!=2) stop("Start values need to have same length as parameters:")
+fitASC2.ml <- function(copula, data, start, lower, upper, optim.control, optim.method, call) { 
+  if(missing(call)) 
+    call <- match.call()
+  if(length(start)!=2) 
+    stop("Start values need to have same length as parameters:")
   
   optFun <- function(param=c(0,0)) {
     if(any(param > 1) | param[2] < -1 | param[1] < limA(param[2])) return(1)
@@ -269,6 +334,7 @@ fitASC2.ml <- function(copula, data, start, lower, upper, optim.control, optim.m
              loglik = -optimized$value,
              nsample = nrow(data),
              method = "Numerical MLE over the full range.", 
+             call = call,
              fitting.stats = optimized,
              copula = asCopula(optimized$par)))
 }

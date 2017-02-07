@@ -1,5 +1,5 @@
 
-R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -194,12 +194,41 @@ Class "Copula", by class "copula", distance 3
 > 
 > ### ** Examples
 > 
-> persp(asCopula(c(-2,1)),dCopula)
+> cop <- asCopula(c(-2.1,0.8))
+> cop
+asymmetric copula, dim. d = 2 
+Dimension:  2 
+Parameters:
+  a   = -2.1
+  b   =  0.8
+> 
+> smpl <- rCopula(100, cop)
+> 
+> par(mfrow=c(2,2), mai=c(0.4,0.4,0.4,0.4))
+> plot(smpl,asp=1, main="sample")
+> persp(cop, dCopula, asp=1, main="density")
+> 
+> contour(cop, pCopula, asp=1, main="CDF")
+> points(rCopula_y(0.4, cop, 10), col="red")
+> 
+> copFit <- fitCopula(cop, smpl)
+> tau(cop)
+[1] 0.01897778
+> rho(cop)
+[1] 0.025
+> lambda(cop)
+lower upper 
+    0     0 
+> 
+> # too few points, but faster for package compilation
+> kenCop <- getKendallDistr(cop, smpl)
+> curve(kenCop, main="Kendall function", asp=1)
 > 
 > 
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("asCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("bivTailDepFun")
 > ### * bivTailDepFun
@@ -293,10 +322,10 @@ detaching 'package:sp'
 Spatial Copula: distance dependent convex combination of bivariate copulas 
 Dimension:  2 
 Copulas:
-   Frank copula family; Archimedean copula at 500 [m] 
-   Frank copula family; Archimedean copula at 1000 [m] 
-   Gumbel copula family; Archimedean copula; Extreme value copula at 1500 [m] 
-   Gumbel copula family; Archimedean copula; Extreme value copula at 2000 [m] 
+   Frank copula at 500 [m] 
+   Frank copula at 1000 [m] 
+   Gumbel copula at 1500 [m] 
+   Gumbel copula at 2000 [m] 
 > 
 > 
 > 
@@ -542,12 +571,41 @@ Class "Copula", by class "copula", distance 3
 > 
 > ### ** Examples
 > 
-> persp(cqsCopula(c(-2,1)),dCopula)
+> cop <- cqsCopula(c(-2.1,0.8))
+> cop
+cubic-quadratic sections copula, dim. d = 2 
+Dimension:  2 
+Parameters:
+  a   = -2.1
+  b   =  0.8
+> 
+> smpl <- rCopula(100, cop)
+> 
+> par(mfrow=c(2,2), mai=c(0.4,0.4,0.4,0.4))
+> plot(smpl,asp=1, main="sample")
+> persp(cop, dCopula, asp=1, main="density")
+> 
+> contour(cop, pCopula, asp=1, main="CDF")
+> points(rCopula_y(0.4, cop, 10), col="red")
+> 
+> copFit <- fitCopula(cop, smpl)
+> tau(cop)
+[1] -0.02182222
+> rho(cop)
+[1] -0.025
+> lambda(cop)
+lower upper 
+    0     0 
+> 
+> # too few points, but faster for package compilation
+> kenCop <- getKendallDistr(cop, smpl)
+> curve(kenCop, main="Kendall function", asp=1)
 > 
 > 
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("cqsCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("criticalLevel")
 > ### * criticalLevel
@@ -683,6 +741,100 @@ Class "Copula", by class "copula", distance 3
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("dependencePlot", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
+> nameEx("empSurCopula-class")
+> ### * empSurCopula-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: empSurCopula-class
+> ### Title: Class '"empiricalCopula"'
+> ### Aliases: empSurCopula-class
+> ### Keywords: classes
+> 
+> ### ** Examples
+> 
+> showClass("empSurCopula")
+Class "empSurCopula" [package "spcopula"]
+
+Slots:
+                                                                       
+Name:        sample    dimension   parameters  param.names param.lowbnd
+Class:       matrix      integer      numeric    character      numeric
+                                
+Name:   param.upbnd     fullname
+Class:      numeric    character
+
+Extends: 
+Class "copula", directly
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("empSurCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("empSurCopula")
+> ### * empSurCopula
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: empSurCopula
+> ### Title: Constructor of an empirical survival copula class
+> ### Aliases: empSurCopula
+> ### Keywords: multivariate
+> 
+> ### ** Examples
+> 
+> empCop <- empSurCopula(rCopula(500,frankCopula(0.7)))
+> str(empCop)
+Formal class 'empSurCopula' [package "spcopula"] with 7 slots
+  ..@ sample      : num [1:500, 1:2] 0.266 0.372 0.573 0.908 0.202 ...
+  ..@ dimension   : int 2
+  ..@ parameters  : num NA
+  ..@ param.names : chr "unknown"
+  ..@ param.lowbnd: num NA
+  ..@ param.upbnd : num NA
+  ..@ fullname    : chr "Unkown empirical survival copula based on a sample."
+> 
+> empCop <- empSurCopula(copula=frankCopula(0.7))
+Note: the survival copula will be empirically represented by a sample of size: 1e+05 
+> str(empCop)
+Formal class 'empSurCopula' [package "spcopula"] with 7 slots
+  ..@ sample      : num [1:100000, 1:2] 0.469 0.315 0.617 0.045 0.882 ...
+  ..@ dimension   : int 2
+  ..@ parameters  : num 0.7
+  ..@ param.names : chr "param"
+  ..@ param.lowbnd: num -Inf
+  ..@ param.upbnd : num Inf
+  ..@ fullname    : chr "Empirical survival copula derived from Frank copula"
+> 
+> empCop <- empSurCopula(rCopula(500,frankCopula(0.7)), frankCopula(0.7))
+> str(empCop)
+Formal class 'empSurCopula' [package "spcopula"] with 7 slots
+  ..@ sample      : num [1:500, 1:2] 0.8219 0.2413 0.0371 0.2891 0.7464 ...
+  ..@ dimension   : int 2
+  ..@ parameters  : num 0.7
+  ..@ param.names : chr "param"
+  ..@ param.lowbnd: num -Inf
+  ..@ param.upbnd : num Inf
+  ..@ fullname    : chr "Empirical survival copula derived from Frank copula"
+> 
+> # the empirical value
+> pCopula(c(0.3, 0.5), empCop)
+[1] 0.142
+> 
+> # the theoretical value
+> pCopula(c(0.3, 0.5), frankCopula(0.7))
+[1] 0.1682671
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("empSurCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
 > nameEx("empiricalCopula-class")
 > ### * empiricalCopula-class
 > 
@@ -751,7 +903,7 @@ Formal class 'empiricalCopula' [package "spcopula"] with 7 slots
   ..@ param.names : chr "param"
   ..@ param.lowbnd: num -Inf
   ..@ param.upbnd : num Inf
-  ..@ fullname    : chr "Empirical copula derived from Frank copula family; Archimedean copula"
+  ..@ fullname    : chr "Empirical copula derived from Frank copula"
 > 
 > empCop <- empiricalCopula(rCopula(500,frankCopula(0.7)), frankCopula(0.7))
 > str(empCop)
@@ -762,7 +914,7 @@ Formal class 'empiricalCopula' [package "spcopula"] with 7 slots
   ..@ param.names : chr "param"
   ..@ param.lowbnd: num -Inf
   ..@ param.upbnd : num Inf
-  ..@ fullname    : chr "Empirical copula derived from Frank copula family; Archimedean copula"
+  ..@ fullname    : chr "Empirical copula derived from Frank copula"
 > 
 > # the empirical value
 > pCopula(c(0.3, 0.5), empCop)
@@ -867,28 +1019,28 @@ poly(meanDists, degree)3
                 0.007255  
 
 Sum of squared residuals: 0.003770511 
-Normal copula family 
+Normal copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-t copula family  
+t-copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Clayton copula family; Archimedean copula 
+Clayton copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Frank copula family; Archimedean copula 
+Frank copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Gumbel copula family; Archimedean copula; Extreme value copula 
+Gumbel copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
 The parameters of the components will be recalculated according to the provided spDepFun where possible. 
 In case no 1-1 relation is known, the copula as in components is used. 
 Spatial Copula: distance dependent convex combination of bivariate copulas 
 Dimension:  2 
 Copulas:
-   Clayton copula family; Archimedean copula at 64.3911 [m] 
-   t copula family  at 128.1638 [m] 
-   Clayton copula family; Archimedean copula at 202.6198 [m] 
-   Clayton copula family; Archimedean copula at 280.8923 [m] 
-   Clayton copula family; Archimedean copula at 361.0112 [m] 
-   Clayton copula family; Archimedean copula at 441.5049 [m] 
-   Clayton copula family; Archimedean copula at 521.9185 [m] 
+   Clayton copula at 64.3911 [m] 
+   t-copula at 128.1638 [m] 
+   Clayton copula at 202.6198 [m] 
+   Clayton copula at 280.8923 [m] 
+   Clayton copula at 361.0112 [m] 
+   Clayton copula at 441.5049 [m] 
+   Clayton copula at 521.9185 [m] 
 A spatial dependence function is used. 
 > 
 > 
@@ -907,7 +1059,7 @@ detaching 'package:sp'
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: genEmpCop
 > ### Title: Generate an empirical copula
-> ### Aliases: genEmpCop
+> ### Aliases: genEmpCop genEmpSurCop
 > ### Keywords: multivariate
 > 
 > ### ** Examples
@@ -1070,6 +1222,94 @@ measure
 
 detaching 'package:spacetime', 'package:sp'
 
+> nameEx("hkCopula-class")
+> ### * hkCopula-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: hkCopula-class
+> ### Title: Class '"hkCopula"'
+> ### Aliases: hkCopula-class
+> ### Keywords: classes
+> 
+> ### ** Examples
+> 
+> showClass("hkCopula")
+Class "hkCopula" [package "spcopula"]
+
+Slots:
+                                                                       
+Name:    nestingCop  clusterCops      kenFuns    dimension   parameters
+Class:       copula         list         list      integer      numeric
+                                                          
+Name:   param.names param.lowbnd  param.upbnd     fullname
+Class:    character      numeric      numeric    character
+
+Extends: 
+Class "copula", directly
+Class "parCopula", by class "copula", distance 2
+Class "Copula", by class "copula", distance 3
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("hkCopula-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("hkCopula")
+> ### * hkCopula
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: hkCopula
+> ### Title: Constructor of a hierarchical Kendall copula
+> ### Aliases: hkCopula
+> ### Keywords: asymmetric copula cubic quadratic sections
+> 
+> ### ** Examples
+> 
+> hkCop <- hkCopula(gumbelCopula(5),list(list(frankCopula(3), c(1,2)),
++                                        list(claytonCopula(3), c(3,4))))
+> hkCop
+Hierarchical Kendall Copula 
+Dimension:  4 
+Nesting copula:
+Gumbel copula, dim. d = 2 
+Dimension:  2 
+Parameters:
+  param   = 5
+Cluster copulas:
+   Frank copula of dimension 2 for indices 1 2 
+   Clayton copula of dimension 2 for indices 3 4 
+> 
+> dCopula(matrix(runif(400), 100), hkCop)
+  [1] 6.433433e-01 3.348302e-01 3.615622e+00 3.410560e-07 1.178238e+00
+  [6] 8.048900e-02 1.690168e-01 5.305798e-04 4.618813e-05 5.350493e-02
+ [11] 2.493133e-03 6.152065e-01 6.518570e-02 2.235544e-02 2.490304e-01
+ [16] 5.326343e-02 6.808485e-06 3.509753e-02 7.258763e-07 5.410654e-02
+ [21] 1.090973e-08 2.237097e+00 8.512683e-01 1.026118e-02 4.835522e-04
+ [26] 6.857246e-01 1.159760e-02 3.133317e-04 1.517567e+00 3.591442e-02
+ [31] 3.169128e-01 2.619989e+00 2.550218e-01 3.861798e-02 2.348532e-07
+ [36] 2.789580e-01 7.755898e-01 4.785271e-01 9.267968e-03 1.396126e+00
+ [41] 2.202319e-03 4.192452e-03 1.617115e-01 2.707788e-01 9.914409e-01
+ [46] 1.407246e-01 5.628767e-02 5.521994e-02 8.575113e-01 1.788966e+01
+ [51] 4.491722e+00 8.727301e-07 1.246154e+00 2.252108e+00 9.402297e-03
+ [56] 6.001285e+00 2.176484e-01 9.225527e-02 8.551536e-01 1.638200e-01
+ [61] 3.016274e-03 1.506666e+00 2.882292e-01 1.687605e-01 1.485128e+00
+ [66] 6.532553e-02 2.726785e+01 3.229636e-01 1.050487e-02 3.309150e-02
+ [71] 6.898333e-04 1.498956e-06 5.406499e-01 2.848999e+00 1.931719e+00
+ [76] 7.757838e-06 1.306034e-02 4.851986e-03 2.861461e-03 9.615451e-05
+ [81] 9.392229e-05 7.126138e-01 6.744632e-01 8.199520e-01 2.249711e-06
+ [86] 1.270373e+01 9.117576e-03 4.630269e-02 3.049987e-01 1.445574e-01
+ [91] 8.568259e-01 2.902776e+01 7.210867e-08 6.693381e-05 4.088938e-02
+ [96] 8.225315e-02 5.198940e-02 1.005896e-02 3.204720e-04 7.409520e-05
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("hkCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
 > nameEx("kendallDistribution")
 > ### * kendallDistribution
 > 
@@ -1156,15 +1396,15 @@ poly(meanDists, degree)3
 Sum of squared residuals: 0.006621988 
 > 
 > loglikTau <- loglikByCopulasLags(bins, meuse, calcCor=calcKTauPol)
-Normal copula family 
+Normal copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-t copula family  
+t-copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Clayton copula family; Archimedean copula 
+Clayton copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Frank copula family; Archimedean copula 
+Frank copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Gumbel copula family; Archimedean copula; Extreme value copula 
+Gumbel copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
 > loglikTau$loglik
        normalCopula     tCopula claytonCopula frankCopula gumbelCopula
@@ -1225,15 +1465,15 @@ poly(meanDists, degree)3
 Sum of squared residuals: 0.006621988 
 > 
 > loglikTau <- loglikByCopulasLags(bins, meuse, calcCor=calcKTauPol)
-Normal copula family 
+Normal copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-t copula family  
+t-copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Clayton copula family; Archimedean copula 
+Clayton copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Frank copula family; Archimedean copula 
+Frank copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
-Gumbel copula family; Archimedean copula; Extreme value copula 
+Gumbel copula 
   |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
 > loglikTau$loglik
        normalCopula     tCopula claytonCopula frankCopula gumbelCopula
@@ -1305,15 +1545,42 @@ Class "Copula", by class "copula", distance 3
 > 
 > ### ** Examples
 > 
+> cop <- mixtureCopula(c(5,-0.8,2,0.5),
++                      memberCops = list(gumbelCopula(), tCopula()))
+> cop
+mixtureCopula copula, dim. d = 2 
+Dimension:  2 
+Parameters:
+  param       =  5.0
+  rho.1       = -0.8
+  df          =  2.0
+  mixLambda   =  0.5
 > 
-> mixCop <- mixtureCopula()
+> smpl <- rCopula(100, cop)
 > 
-> persp(mixCop, dCopula)
+> par(mfrow=c(2,2), mai=c(0.4,0.4,0.4,0.4))
+> plot(smpl,asp=1, main="sample")
+> persp(cop, dCopula, asp=1, main="density")
 > 
+> contour(cop, pCopula, asp=1, main="CDF")
+> points(rCopula_y(0.4, cop, 10), col="red")
+> 
+> tau(cop)
+[1] 0.1048328
+> rho(cop)
+[1] 0.07854988
+> lambda(cop)
+      lower       upper 
+0.006923416 0.432574239 
+> 
+> # too few points, but faster for package compilation
+> kenCop <- getKendallDistr(cop, smpl)
+> curve(kenCop, main="Kendall function", asp=1)
 > 
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("mixtureCopula", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("neighbourhood-class")
 > ### * neighbourhood-class
@@ -1412,6 +1679,28 @@ detaching 'package:sp'
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("qCopula_u", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("rCopula_y")
+> ### * rCopula_y
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: rCopula_y
+> ### Title: Sampling from a given contour level
+> ### Aliases: rCopula_y rCopula_y-methods rCopula_y,ANY-method
+> ###   rCopula_y,numeric,copula-method
+> ### Keywords: multivariate distribution
+> 
+> ### ** Examples
+> 
+> contour(frankCopula(4), pCopula, asp=1)
+> points(rCopula_y(0.4, frankCopula(4), 100), asp=1, xlim=c(0.8,1), col="red")
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("rCopula_y", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("rankTransform")
 > ### * rankTransform
@@ -2374,7 +2663,7 @@ Class "Copula", by class "evCopula", distance 4
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  6.11 0.43 7.04 NA NA 
+Time elapsed:  10.35 0.43 11.28 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -56,7 +56,7 @@ spCopula <- function(components, distances, spDepFun, unit="m") {
                                  if(class(x)=="indepCopula") 
                                    return(NA)
                                  x@param.upbnd}))
-     
+  
   new("spCopula", dimension=as.integer(2), parameters=param, param.names=param.names,
       param.lowbnd=param.low, param.upbnd=param.up,
       fullname="Spatial Copula: distance dependent convex combination of bivariate copulas",
@@ -70,14 +70,11 @@ showCopula <- function(object) {
   cat("Copulas:\n")
   for (i in 1:length(object@components)) {
     cmpCop <- object@components[[i]]
-    cat("  ", cmpCop@fullname, "at", object@distances[i], 
-      paste("[",object@unit,"]",sep=""), "\n")
-#     if (length(cmpCop@parameters) > 0) {
-#       for (i in (1:length(cmpCop@parameters))) 
-#         cat("    ", cmpCop@param.names[i], " = ", cmpCop@parameters[i], "\n")
-#     }
+    cat("  ", describeCop(cmpCop, "very short"), "at", object@distances[i], 
+        paste("[",object@unit,"]",sep=""), "\n")
   }
-  if(!is.null(object@calibMoa(normalCopula(0),0))) cat("A spatial dependence function is used. \n")
+  if(!is.null(object@calibMoa(normalCopula(0),0))) 
+    cat("A spatial dependence function is used. \n")
 }
 
 setMethod("show", signature("spCopula"), showCopula)
@@ -555,7 +552,7 @@ loglikByCopulasLags.dyn <- function(bins, lagData, families, calcCor) {
   loglik <- NULL
   copulas <- list()
   for (cop in families) {
-    cat(cop@fullname,"\n")
+    cat(describeCop(cop, "very short"),"\n")
     tmploglik <- NULL
     tmpCop <- list()
     
@@ -609,7 +606,7 @@ loglikByCopulasLags.static <- function(lagData, families) {
   
   fits <-lapply(families, 
                 function(cop) {
-                  cat(cop@fullname,"\n")
+                  cat(describeCop(cop, "very short"), "\n")
                   lapply(lagData,
                          function(x) {
                            tryCatch(fitCopula(cop, x, estimate.variance = FALSE),

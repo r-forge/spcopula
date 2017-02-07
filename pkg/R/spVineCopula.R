@@ -43,7 +43,7 @@ dspVine <- function(u, spCop, topCop, log, h) {
     tmpH <- h[[spTree]]
     if(!is.matrix(tmpH)) 
       tmpH <- matrix(tmpH, ncol=length(tmpH))
-
+    
     u1 <- NULL # current level of conditional data
     for(i in 1:ncol(tmpH)) { # i <- 1
       l0 <- l0 + dCopula(u0[,c(1,i+1)], spCop[[spTree]], h=tmpH[,i], log=T)
@@ -208,8 +208,8 @@ spCopPredict.expectation <- function(predNeigh, dataLocs, predLocs, spVine, marg
     
     ePred <- integrate(condExp,0+.Machine$double.eps,1-.Machine$double.eps,subdivisions=10000L,stop.on.error=stop.on.error, ...)
     if(ePred$abs.error > 0.05)
-            warning("Numerical integration in predExpectation performed at a level of absolute error of only ",
-                    ePred$abs.error, " for location ",i,".")
+      warning("Numerical integration in predExpectation performed at a level of absolute error of only ",
+              ePred$abs.error, " for location ",i,".")
     predMean <- c(predMean, ePred$value)
   }
   close(pb)
@@ -286,9 +286,9 @@ r.spVineCop <- function(n, spVine, h) {
       v[i,1] <- init[i]
       for (k in (i-1):1) { # k <- i-1
         v[i,1] <- uniroot(function(u) {
-                            v[i,1] - ddvCopula(cbind(u,v[k,k]), spVine@spCop[[k]],
-                                               h=h[[k]][i-k])
-                          }, c(0,1))$root
+          v[i,1] - ddvCopula(cbind(u,v[k,k]), spVine@spCop[[k]],
+                             h=h[[k]][i-k])
+        }, c(0,1))$root
       }  
       res <- c(res,v[i,1])
       if(i==spVineDim)

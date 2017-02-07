@@ -30,7 +30,26 @@ Benedikt Graeler
 See also \code{\link{asCopula}}.
 }
 \examples{
-persp(cqsCopula(c(-2,1)),dCopula)
+cop <- cqsCopula(c(-2.1,0.8))
+cop
+
+smpl <- rCopula(100, cop)
+
+par(mfrow=c(2,2), mai=c(0.4,0.4,0.4,0.4))
+plot(smpl,asp=1, main="sample")
+persp(cop, dCopula, asp=1, main="density")
+
+contour(cop, pCopula, asp=1, main="CDF")
+points(rCopula_y(0.4, cop, 10), col="red")
+
+copFit <- fitCopula(cop, smpl)
+tau(cop)
+rho(cop)
+lambda(cop)
+
+# too few points, but faster for package compilation
+kenCop <- getKendallDistr(cop, smpl)
+curve(kenCop, main="Kendall function", asp=1)
 }
 \keyword{copula}
 \keyword{cubic quadratic sections}

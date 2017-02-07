@@ -1,86 +1,3 @@
-## an asymmetric copula with cubic and quadratic sections
-
-validAsCopula = function(object) {
-  if (object@dimension != 2)
-    return("Only copulas with cubic quadratic sections of dimension 2 are supported.")
-  param <- object@parameters
-  upper <- object@param.upbnd
-  lower <- object@param.lowbnd
-  if (length(param) != length(upper))
-    return("Parameter and upper bound have non-equal length")
-  if (length(param) != length(lower))
-    return("Parameter and lower bound have non-equal length")
-  if (any(is.na(param) | param > upper | param < lower))
-    return("Parameter value out of bound")
-  else return (TRUE)
-}
-
-# the lower bound of the parameter a dependening on the parameter b
-limA <- function (b) {
-  stopifnot(abs(b) <= 1)
-  0.5*(-sqrt(-3*b^2+6*b+9)+b-3)
-}
-
-# the lower and upper bound of the parameter b dependening on the parameter a
-limB <- function (a) {
-  stopifnot(a <=1 & a >= -3)
-  if(a>-2)
-    return(c(-1,1))
-  pmax(pmin(0.5*(c(-1,1)*(sqrt(3)*sqrt(-a^2-2*a+3))+a+3),1),-1)
-}
-
-setClass("asCopula",
-  representation = representation("copula"),
-  validity = validAsCopula,
-  contains = list("copula")
-)
-
-####
-## a symmetric copula with cubic and quadratic sections
-
-validCqsCopula <- function(object) {
-  if (object@dimension != 2)
-    return("Only copulas with cubic quadratic sections of dimension 2 are supported.")
-  param <- object@parameters
-  upper <- object@param.upbnd
-  lower <- object@param.lowbnd
-  if (length(param) != length(upper))
-    return("Parameter and upper bound have non-equal length")
-  if (length(param) != length(lower))
-    return("Parameter and lower bound have non-equal length")
-  if (any(is.na(param) | param > upper | param < lower))
-    return("Parameter value out of bound")
-  if (object@fixed != ""){
-    if(!("a" %in% object@fixed | "b" %in% object@fixed))
-      return("The slot fixed may only refer to \"a\" or \"b\".")
-    if ("a" %in% object@fixed & "b" %in% object@fixed)
-      return("Only one of the parameters may be kept fixed.")
-  }
-  else return (TRUE)
-}
-
-setClass("cqsCopula",
-  representation = representation("copula",fixed="character"),
-  validity = validCqsCopula,
-  contains = list("copula")
-)
-
-####
-## an empirical copula representation
-
-validEmpCopula <- function(object) {
-  if(ncol(object@sample) != object@dimension)
-    return("Dimension of the copula and the sample do not match.")
-  else
-    return(TRUE)
-}
-
-setClass("empiricalCopula",
-         representation = representation("copula", sample="matrix"),
-         validity = validEmpCopula,
-         contains = list("copula")
-)
-
 ####
 ## an empirical survival copula representation
 
@@ -114,6 +31,32 @@ setClass("leafCopula",
          validity = validLeafCopula,
          contains = list("copula")
 )
+
+#####
+## Hierarchical Kendall Copulas
+
+validHkCopula <- function(object) {
+  stopifnot(all(sapply(object@clusterCops, function(x) inherits(x[[1]], "copula"))))
+  if (object@dimension != sum(sapply(object@clusterCops, function(x) x[[1]]@dimension))+object@nestingCop@dimension-length(object@clusterCops))
+    return("The dimensions of the hierarchical Kendall copula do not match.")
+  
+  if(length(object@clusterCops) != length(object@kenFuns))
+    return("Each cluster copula needs to have its Kendall function in 'kenFuns'.")
+  
+  else return (TRUE)
+}
+
+setClass("hkCopula",
+         representation = representation("copula",
+                                         nestingCop = "copula",
+                                         clusterCops = "list",
+                                         kenFuns = "list"),
+         validity = validHkCopula,
+         contains = list("copula")
+)
+
+
+
 
 ## 
 ## the spatial copula
@@ -158,10 +101,10 @@ validSpCopula <- function(object) {
       check.lower <- c(check.lower, is.na(object@calibMoa(object@components[[i]], c(0,object@distances)[i])))
     }
     if(sum(check.upper>0)) return(paste("Reconsider the upper boundary conditions of the following copula(s): \n",
-                                        paste(sapply(object@components[check.upper], function(x) x@fullname), 
+                                        paste(sapply(object@components[check.upper], function(x) describeCop(x, "very short")), 
                                               "at", object@distances[check.upper],collapse="\n")))
     if(sum(check.lower>0)) return(paste("Reconsider the lower boundary conditions of the following copula(s): \n",
-                                        paste(sapply(object@components[check.lower], function(x) x@fullname), 
+                                        paste(sapply(object@components[check.lower], function(x) describeCop(x, "very short")), 
                                               "at", object@distances[check.lower],collapse="\n")))
   }
   return(TRUE)
@@ -281,3 +224,4 @@ setClass("stNeighbourhood",
                                          coVar="character",
                                          prediction="logical"),
          validity = validStNeighbourhood)
+

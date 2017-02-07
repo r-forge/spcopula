@@ -43,7 +43,7 @@ dstCoVarVine <- function(u, coVarCop, stCop, topCop, log, h, stInd) {
 
   l0 <- rep(0,nrow(u)) # level 0 spatio-temporal density
   dimDists <- dim(h)
-
+  
   nrU <- nrow(u)
   
   u1 <- matrix(NA, nrU, ncol(u)-1)
@@ -51,12 +51,12 @@ dstCoVarVine <- function(u, coVarCop, stCop, topCop, log, h, stInd) {
     l0 <- l0 + dCopula(u[,c(1,i+1)], stCop, h=matrix(h[,i,], ncol=2), log=T)
     u1[,i] <- dduCopula(u[,c(1,i+1)], stCop, h=matrix(h[,i,], ncol=2))
   }
-
+  
   uCoVar <- numeric(nrU)
   for (i in 1:nrU) {
     uCoVar[i] <- dduCopula(u[i,1:2], coVarCop(stInd[i,]))
   }
-    
+  
   if(!is.null(topCop))
     l1 <- dCopula(cbind(uCoVar, u1), topCop, log=T)
   else 

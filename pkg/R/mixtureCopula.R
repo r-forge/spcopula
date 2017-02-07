@@ -30,7 +30,8 @@ mixtureCopula <- function (param = c(0.2, 0.2, 0.5), memberCops = c(normalCopula
       param.names = c(memberCops[[1]]@param.names, memberCops[[2]]@param.names, "mixLambda"),
       param.lowbnd = c(memberCops[[1]]@param.lowbnd, memberCops[[2]]@param.lowbnd, 0),
       param.upbnd = c(memberCops[[1]]@param.upbnd, memberCops[[2]]@param.upbnd, 1), 
-      fullname = paste("mixture of a", memberCops[[1]]@fullname, "and a", memberCops[[2]]@fullname))
+      fullname = paste("mixture of a", describeCop(memberCops[[1]], "very short"),
+                       "and a", describeCop(memberCops[[2]], "very short")))
 }
 
 ## density ##
@@ -71,14 +72,14 @@ setMethod("ddvCopula", signature(copula = "mixtureCopula"),
 # invddu
 invdduMixCop <- function (u, copula, y) {
   stopifnot(length(u) == length(y)) 
- 
+  
   opti <- function(ind) {
     optFun <- function(v) {
       (dduCopula(cbind(u[ind], v), copula) - y[ind])^2
     }
     optimise(optFun, c(0,1))$minimum
   }
-
+  
   sapply(1:length(y), opti)  
 }
 
@@ -131,17 +132,16 @@ fitMixCop <- function(copula, data, start, method="mpl",
     lower <- copula@param.lowbnd
   if(is.null(upper))
     upper <- copula@param.upbnd
-    
+  
   optFun <- function(parSet) {
     cop <- mixtureCopula(parSet, copula@memberCops)
-    cat(cop@parameters, "\n")
     -sum(log(dCopula(data, cop)))
   }
   
   optOut <- optim(start, optFun, method = optim.method, 
                   lower = lower, upper = upper, 
                   control = optim.control)
-
+  
   new("fitCopula",
       copula = mixtureCopula(optOut$par, copula@memberCops),
       estimate = optOut$par,
@@ -165,6 +165,11 @@ setMethod("tau", signature = c(copula = "mixtureCopula"),
             (1-mixLambda) * tau(copula@memberCops[[1]], ...) + mixLambda * tau(copula@memberCops[[2]], ...)
           })
 
+setMethod("rho", signature = c(copula = "mixtureCopula"),
+          function(copula, ...) {
+            mixLambda <- tail(copula@parameters, 1)
+            (1-mixLambda) * rho(copula@memberCops[[1]], ...) + mixLambda * rho(copula@memberCops[[2]], ...)
+          })
 
 setMethod("lambda", signature = c(copula = "mixtureCopula"),
           function(copula, ...) {

@@ -4,6 +4,21 @@
 ##                                    ##
 ########################################
 
+# validity
+validEmpCopula <- function(object) {
+  if(ncol(object@sample) != object@dimension)
+    return("Dimension of the copula and the sample do not match.")
+  else
+    return(TRUE)
+}
+
+# class definition
+setClass("empiricalCopula",
+         representation = representation("copula", sample="matrix"),
+         validity = validEmpCopula,
+         contains = list("copula")
+)
+
 # constructor
 empiricalCopula <- function (sample=NULL, copula) {
   if(is.null(sample) && missing(copula))
@@ -22,7 +37,7 @@ empiricalCopula <- function (sample=NULL, copula) {
   new("empiricalCopula", dimension = copula@dimension, 
       parameters = copula@parameters, param.names = copula@param.names, 
       param.lowbnd = copula@param.lowbnd, param.upbnd = copula@param.upbnd, 
-      fullname = paste("Empirical copula derived from",copula@fullname),
+      fullname = paste("Empirical copula derived from", describeCop(copula, "very short")),
       sample=sample)
 }
 
@@ -32,6 +47,24 @@ genEmpCop <- function(copula, sample.size=1e5) {
       sample.size, "\n")
   empiricalCopula(rCopula(sample.size, copula), copula)
 }
+
+# printing
+setMethod("describeCop", c("empiricalCopula", "character"),
+          function(x, kind = c("short", "very short", "long"), prefix = "", ...) {
+            kind <- match.arg(kind)
+            name <- "empirical"
+            if(kind == "very short") # e.g. for show() which has more parts
+              return(paste0(prefix, name, " copula"))
+            ## else
+            d <- dim(x)
+            ch <- paste0(prefix, name, " copula, dim. d = ", d)
+            switch(kind <- match.arg(kind),
+                   short = ch,
+                   long = paste0(ch, "\n", prefix, " param.: ",
+                                 capture.output(str(x@parameters,
+                                                    give.head=FALSE))),
+                   stop("invalid 'kind': ", kind))
+          })
 
 ## density, not yet needed and hence not implemented ##
 
@@ -88,7 +121,7 @@ empSurCopula <- function (sample=NULL, copula) {
   new("empSurCopula", dimension = copula@dimension, 
       parameters = copula@parameters, param.names = copula@param.names, 
       param.lowbnd = copula@param.lowbnd, param.upbnd = copula@param.upbnd, 
-      fullname = paste("Empirical survival copula derived from",copula@fullname),
+      fullname = paste("Empirical survival copula derived from", describeCop(copula, "very short")),
       sample=sample)
 }
 

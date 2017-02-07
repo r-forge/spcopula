@@ -3,13 +3,60 @@
 ## a symmetric copula with cubic quadratic sections ##
 ##                                                  ##
 ######################################################
+# (see Example 3.16 in: Nelsen, Roger B. (2006): An Introduction to Copulas, second edition, Springer)
 
+validCqsCopula <- function(object) {
+  if (object@dimension != 2)
+    return("Only copulas with cubic quadratic sections of dimension 2 are supported.")
+  param <- object@parameters
+  upper <- object@param.upbnd
+  lower <- object@param.lowbnd
+  if (length(param) != length(upper))
+    return("Parameter and upper bound have non-equal length")
+  if (length(param) != length(lower))
+    return("Parameter and lower bound have non-equal length")
+  if (any(is.na(param) | param > upper | param < lower))
+    return("Parameter value out of bound")
+  if (object@fixed != ""){
+    if(!("a" %in% object@fixed | "b" %in% object@fixed))
+      return("The slot fixed may only refer to \"a\" or \"b\".")
+    if ("a" %in% object@fixed & "b" %in% object@fixed)
+      return("Only one of the parameters may be kept fixed.")
+  }
+  else return (TRUE)
+}
+
+setClass("cqsCopula",
+         representation = representation("copula",fixed="character"),
+         validity = validCqsCopula,
+         contains = list("copula")
+)
+
+# constructor 
 cqsCopula <- function (param=c(0,0), fixed="") {
   new("cqsCopula", dimension = as.integer(2), parameters = param, 
       param.names = c("a", "b"), param.lowbnd = c(limA(param[2]),-1),
       param.upbnd = c(1, 1), 
       fullname = "copula family with cubic quadratic sections", fixed=fixed)
 }
+
+## printing
+setMethod("describeCop", c("cqsCopula", "character"),
+          function(x, kind = c("short", "very short", "long"), prefix = "", ...) {
+            kind <- match.arg(kind)
+            if(kind == "very short") # e.g. for show() which has more parts
+              return(paste0(prefix, "CQS copula"))
+            
+            name <- "cubic-quadratic sections"
+            d <- dim(x)
+            ch <- paste0(prefix, name, " copula, dim. d = ", d)
+            switch(kind <- match.arg(kind),
+                   short = ch,
+                   long = paste0(ch, "\n", prefix, " param.: ",
+                                 capture.output(str(x@parameters,
+                                                    give.head=FALSE))),
+                   stop("invalid 'kind': ", kind))
+          })
 
 ## density ##
 dCQSec <- function (u, copula, log=F) {

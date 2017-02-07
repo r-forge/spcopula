@@ -266,7 +266,7 @@ setMethod("ddvCopula", signature("matrix","gumbelCopula"), ddvGumbel)
 ##########################
 
 ## Wolfram alpha:
-# -e^α/(e^(α u) - e^α) - ((e^α - 1) e^(α + α u))/((e^(α u) - e^α) (e^α - e^(α + α u) + e^(α u + α v) - e^(α + α v)))
+# -e^a/(e^(a u) - e^a) - ((e^a - 1) e^(a + a u))/((e^(a u) - e^a) (e^a - e^(a + a u) + e^(a u + a v) - e^(a + a v)))
 
 dduFrank <- function(u, copula){
   rho <- copula@parameters

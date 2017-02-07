@@ -1,13 +1,13 @@
 Package: spcopula
 Type: Package
-Title: Copula Driven Spatio-Temporal Analysis
-Version: 0.2-1
-Date: 2016-09-12
+Title: Copula Driven Analysis - Multivariate, Spatial, Spatio-Temporal
+Version: 0.2-2
+Date: 2017-02-07
 Authors@R: c(person("Benedikt", "Graeler", role = c("aut", "cre"),
-                    email = "ben.graeler@uni-muenster.de"),
+                    email = "b.graeler@52north.org"),
              person("Marius", "Appel",role = "ctb"))
-Maintainer: Benedikt Graeler <ben.graeler@uni-muenster.de>
-Description: We provide a framework to analyse spatial and spatio-temporal data via copulas and vine copulas. The data needs to be provided in the form of the sp and spacetime package respectively. Additionally, support for calculating different multivariate return periods based on copulas and vine copulas is implemented.
+Maintainer: Benedikt Graeler <b.graeler@52north.org>
+Description: A framework to analyse multivariate, spatial and spatio-temporal data via copulas, vine copulas and hierarchical Kendall copulas is provided. The spatial/spatio-temporal data needs to be provided in the form of the sp and spacetime package respectively. Additionally, support for calculating different multivariate return periods based on copulas and vine copulas is implemented. As of version 0.2-2, Hierarchical Kendall Copulas are also provided.
 License: GPL-3
 LazyLoad: yes
 Depends: copula (>= 0.999-15), R (>= 3.1.0), VineCopula (>= 2.0.4)
@@ -35,4 +35,5 @@ Collate:
   tawn3pCopula.R
   tailDependenceFunctions.R
   KendallDistribution.R
+  hkCopula.R
   zzz.R
