@@ -131,7 +131,7 @@ fitSpVine <- function(copula, data, method="ml", estimate.variance=FALSE) {
     loglik <- dCopula(topCop,u0,log=TRUE)
   } else {
     cat("[Estimating a",ncol(u0),"dimensional copula at the top.]\n")
-    vineCopFit <- fitCopula(copula@topCop, u0, method, estimate.variance) 
+    vineCopFit <- fitCopula(copula@topCop, u0, method) 
     
     spVineCop <- spVineCopula(copula@spCop, vineCopFit@copula)
     loglik <- vineCopFit@loglik

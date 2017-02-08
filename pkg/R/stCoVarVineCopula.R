@@ -110,7 +110,7 @@ setMethod("dCopula",signature=signature("data.frame","stCoVarVineCopula"),
 #   cat("]\n")
 #   
 #   cat("[Estimating a",ncol(u0),"dimensional copula at the top.]\n")
-#   vineCopFit <- fitCopula(copula@topCop, u0, method, estimate.variance) 
+#   vineCopFit <- fitCopula(copula@topCop, u0, method) 
 #     
 #   stVineCop <- stVineCopula(copula@stCop, vineCopFit@copula)
 #   loglik <- vineCopFit@loglik
