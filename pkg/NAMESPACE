@@ -47,6 +47,7 @@ export(neighbourhood, stNeighbourhood)
 export(empiricalCopula, genEmpCop, empSurCopula, genEmpSurCop)
 export(mixtureCopula)
 export(hkCopula)
+export(trunCopula)
 
 # general functions
 export(rankTransform, dependencePlot, unitScatter, univScatter)
@@ -85,3 +86,4 @@ exportClasses(spCopula, stCopula, spVineCopula, stVineCopula)
 exportClasses(stCoVarVineCopula)
 exportClasses(mixtureCopula)
 exportClasses(hkCopula)
+exportClasses(trunCopula)

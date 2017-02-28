@@ -6,7 +6,7 @@
 \alias{dduCopula,numeric,asCopula-method}
 \alias{ddvCopula,matrix,asCopula-method}
 \alias{ddvCopula,numeric,asCopula-method}
-\alias{fitCopula,asCopula-method}
+\alias{fitCopula,asCopula,ANY-method}
 \alias{invdduCopula,numeric,asCopula,numeric-method}
 \alias{invddvCopula,numeric,asCopula,numeric-method}
 
